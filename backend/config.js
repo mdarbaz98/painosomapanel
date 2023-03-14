@@ -1,13 +1,35 @@
-const mysql = require('mysql');
+// const mysql = require('mysql');
 
-const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'pos',
-});
+// const conn = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: '',
+//     database: 'pos',
+// });
 
-conn.connect((err) => {
+// conn.connect((err) => {
+//     if(err){
+//         console.log(err)
+//     }
+//     else{
+//         console.log('connected to database')
+//     }
+// })
+
+
+// module.exports = conn;
+
+
+const mysql = require ('mysql');
+
+const sqlconnection = mysql.createConnection({
+    host : 'localhost',
+    user : 'root',
+    password : '',
+    database : 'pos'
+})
+
+sqlconnection.connect((err) => {
     if(err){
         console.log(err)
     }
@@ -16,5 +38,4 @@ conn.connect((err) => {
     }
 })
 
-
-module.exports = conn;
+module.exports = sqlconnection;

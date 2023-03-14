@@ -11,24 +11,30 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { CategoryService } from "../service/categoryServices";
 import { Dropdown } from "primereact/dropdown";
+import { Calendar } from 'primereact/calendar';
+        
 import Axios from "axios";
 
 function Categories() {
-    let initialValue =
-        [{ name: "none", value: "0" }];
 
-    const [categories , setCategories] = useState([]);
+
+    let initialValue =
+        [{ name: "none", value: "0" },{name:"walking" , value: "38"}];
+
+    const [categories , setCategories] = useState(initialValue);
 
     let emptyCategory = {
-        id: null,
-        category_name: "",
-        parent_category: null,
-        category_description: "",
-        category_slug: null,
-        category_title: "",
-        meta_description: "",
+        id: "",
+        cat_name : "",
+        cat_slug : "",
+        cat_title :"",
+        cat_desc : "",
+        parent_category:"",
+        status:"",
+        date : ""
     };
 
+    
     const [categoryList, setCategoryList] = useState("");
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -39,6 +45,8 @@ function Categories() {
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
+    
+    console.log(category)
 
     useEffect(() => {
         const blogCategory = new CategoryService();
@@ -51,7 +59,7 @@ function Categories() {
         const blogCategory = new CategoryService();
         const res = await blogCategory.getParentCategory()
         const output = res.map((data) => ({ name: data.category_name, value: data.id }))
-        setCategories([...initialValue, ...output]);
+        // setCategories([...initialValue, ...output]);
     }
 
     const openNew = () => {
@@ -75,7 +83,7 @@ function Categories() {
 
     const saveProduct = () => {
         setSubmitted(true);
-        if (category.category_name.trim()) {
+        if (category.cat_name.trim()) {
             let _categories = [...categoryList];
             let _category = { ...category };
             if (category.id) {
@@ -97,7 +105,7 @@ function Categories() {
     };
 
     const addCategoryFunction = (data) => {
-        Axios.post("http://localhost:5000/api/category", { name: data.category_name, parentName: data.parent_category, categoryDesc: data.category_description, CategorySlug: data.category_slug, CategoryTitle: data.category_title, metaDesc: data.meta_description })
+        Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, date: data.date })
             .then()
             .catch((err) => console.log(err));
     };
@@ -156,10 +164,10 @@ function Categories() {
 
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
-        deleteCategoryFunction(selectedProducts);
     };
-
+    
     const deleteSelectedProducts = () => {
+        deleteCategoryFunction(selectedProducts);
         let _categories = categoryList.filter((val) => !selectedProducts.includes(val));
         setCategoryList(_categories);
         setDeleteProductsDialog(false);
@@ -194,7 +202,7 @@ function Categories() {
         );
     };
 
-    const codeBodyTemplate = (rowData) => {
+    const idBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Id</span>
@@ -207,15 +215,23 @@ function Categories() {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.category_name}
+                {rowData.cat_name}
             </>
         );
     };
-    const parentNameBodyTemplate = (rowData) => {
+    const slugBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.parent_category}
+                {rowData.cat_slug}
+            </>
+        );
+    };
+    const titleBodyTemplate = (rowData) => {
+        return (
+            <>
+                <span className="p-column-title">Name</span>
+                {rowData.cat_title}
             </>
         );
     };
@@ -223,31 +239,31 @@ function Categories() {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.category_description}
+                {rowData.cat_desc}
             </>
         );
     };
-    const categoryTitleBodyTemplate = (rowData) => {
+    const parent_categoryBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.category_title}
+                {rowData.parent_category}
             </>
         );
     };
-    const categorySlugBodyTemplate = (rowData) => {
+    const statusBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.category_slug}
+                {rowData.status}
             </>
         );
     };
-    const metaDescBodyTemplate = (rowData) => {
+    const dateBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.meta_description}
+                {rowData.date}
             </>
         );
     };
@@ -317,13 +333,14 @@ function Categories() {
                         responsiveLayout="scroll"
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
-                        <Column field="id" header="Id" sortable body={codeBodyTemplate} headerStyle={{ width: '14%', minWidth: '10rem' }}></Column>
-                        <Column field="category_name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="parent_category" header="Parent Category" sortable body={parentNameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="category_description" header="Category Description" sortable body={categoryDescBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="category_title" header="Category Title" sortable body={categoryTitleBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="category_slug" header="Category Slug" sortable body={categorySlugBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="meta_description" header="Meta Description" sortable body={metaDescBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: '14%', minWidth: '10rem' }}></Column>
+                        <Column field="cat_name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="cat_slug" header="Slug" sortable body={slugBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="cat_title" header="Title" sortable body={titleBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="cat_desc" header="Description" sortable body={categoryDescBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="parent_category" header="Parent Category" sortable body={parent_categoryBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="status" header="Status" sortable body={statusBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="date" header="Date" sortable body={dateBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
@@ -333,8 +350,8 @@ function Categories() {
                             <div className="col-6">
                                 <div className="field">
                                     <label htmlFor="categoryName">Category Name</label>
-                                    <InputText id="name" value={category.category_name} onChange={(e) => onInputChange(e, "category_name")} required autoFocus className={classNames({ "p-invalid": submitted && !category.category_name })} />
-                                    {submitted && !category.category_name && <small className="p-invalid">Category Name is required.</small>}
+                                    <InputText id="name" value={category.cat_name} onChange={(e) => onInputChange(e, "cat_name")} required autoFocus className={classNames({ "p-invalid": submitted && !category.cat_name })} />
+                                    {submitted && !category.cat_name && <small className="p-invalid">Category Name is required.</small>}
                                 </div>
                                 <div className="field">
                                     <label htmlFor="parentCategory">Parent Category</label>
@@ -343,26 +360,26 @@ function Categories() {
                                 </div>
                                 <div className="field">
                                     <label htmlFor="description">Category Description</label>
-                                    <InputTextarea id="description" value={category.category_description} onChange={(e) => onInputChange(e, "category_description")} className={classNames({ "p-invalid": submitted && !category.category_description })} required rows={3} cols={20} />
-                                    {submitted && !category.category_description && <small className="p-invalid">Category description is required.</small>}
+                                    <InputTextarea id="description" value={category.cat_desc} onChange={(e) => onInputChange(e, "cat_desc")} className={classNames({ "p-invalid": submitted && !category.cat_desc })} required rows={3} cols={20} />
+                                    {submitted && !category.cat_desc && <small className="p-invalid">Category description is required.</small>}
                                 </div>
                             </div>
                             <div className="col-6">
                                 <div className="field">
                                     <label htmlFor="categorySlug">Category Slug</label>
-                                    <InputText id="categorySlug" value={category.category_slug} onChange={(e) => onInputChange(e, "category_slug")} required className={classNames({ "p-invalid": submitted && !category.category_slug })} />
-                                    {submitted && !category.category_slug && <small className="p-invalid">Category Slug is required.</small>}
+                                    <InputText id="categorySlug" value={category.cat_slug} onChange={(e) => onInputChange(e, "cat_slug")} required className={classNames({ "p-invalid": submitted && !category.cat_slug })} />
+                                    {submitted && !category.cat_slug && <small className="p-invalid">Category Slug is required.</small>}
                                 </div>
                                 <div className="field">
                                     <label htmlFor="categoryTitle">Category Title</label>
                                     {/* <Dropdown id="categoryTitle" options={categories} value={parentCategory} onChange={(e) => onInputChange(e,'categoryTitle')} optionLabel="name"></Dropdown> */}
-                                    <InputText id="categoryTitle" value={category.category_title} onChange={(e) => onInputChange(e, "category_title")} required className={classNames({ "p-invalid": submitted && !category.category_title })} />
-                                    {submitted && !category.category_title && <small className="p-invalid">Category Title is required.</small>}
+                                    <InputText id="categoryTitle" value={category.cat_title} onChange={(e) => onInputChange(e, "cat_title")} required className={classNames({ "p-invalid": submitted && !category.cat_title })} />
+                                    {submitted && !category.cat_title && <small className="p-invalid">Category Title is required.</small>}
                                 </div>
                                 <div className="field">
-                                    <label htmlFor="metaDescription">Category Meta Description</label>
-                                    <InputTextarea id="metaDescription" value={category.meta_description} onChange={(e) => onInputChange(e, "meta_description")} className={classNames({ "p-invalid": submitted && !category.meta_description })} required rows={3} cols={20} />
-                                    {submitted && !category.meta_description && <small className="p-invalid">Category Meta Description is required.</small>}
+                                    <label htmlFor="date">Date</label>
+                                    <Calendar id="date" value={category.date} onChange={(e) => onInputChange(e, "date")} />
+                                    {submitted && !category.date && <small className="p-invalid">Category Meta Description is required.</small>}
                                 </div>
                             </div>
                         </div>
@@ -388,7 +405,7 @@ function Categories() {
                 </div>
             </div>
         </div>
-    );
+    ); 
 }
 
 const comparisonFn = function (prevProps, nextProps) {
