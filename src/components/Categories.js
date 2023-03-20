@@ -19,9 +19,9 @@ function Categories() {
 
 
     let initialValue =
-        [{ name: "none", value: "0" },{name:"walking" , value: "38"}];
+        [{ name: "none", value: "0" }];
 
-    const [categories , setCategories] = useState(initialValue);
+    const [parentcategory , setparentcategory] = useState(initialValue);
 
     let emptyCategory = {
         id: "",
@@ -29,10 +29,10 @@ function Categories() {
         cat_slug : "",
         cat_title :"",
         cat_desc : "",
-        parent_category:"",
+        parent_category:{ name: "", value: "" },
         status:"",
-        date : ""
     };
+    
 
     
     const [categoryList, setCategoryList] = useState("");
@@ -49,18 +49,22 @@ function Categories() {
     console.log(category)
 
     useEffect(() => {
+        // fetching all categories list
         const blogCategory = new CategoryService();
         blogCategory.getCategory().then((data) => setCategoryList(data));
 
-        getCat();
+        getParentCategory();
     }, [categoryList.length]);
 
-    async function getCat(){
+    async function getParentCategory(){
         const blogCategory = new CategoryService();
         const res = await blogCategory.getParentCategory()
-        const output = res.map((data) => ({ name: data.category_name, value: data.id }))
-        // setCategories([...initialValue, ...output]);
+        console.log(res)
+        const output = res.map((data) => ({ name: data.cat_name, value: data.id }))
+        setparentcategory([...initialValue, ...output]);
     }
+
+    console.log(category.parent_category)
 
     const openNew = () => {
         setCategory(emptyCategory);
@@ -111,7 +115,7 @@ function Categories() {
     };
 
     const updateCategoryFunction = (data) => {
-        Axios.put(`http://localhost:5000/api/category/${data.id}`, { name: data.category_name, parentName: data.parent_category, categoryDesc: data.category_description, CategorySlug: data.category_slug, CategoryTitle: data.category_title, metaDesc: data.meta_description })
+        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title})
             .then()
             .catch((err) => {
                 console.log(err);
@@ -259,15 +263,6 @@ function Categories() {
             </>
         );
     };
-    const dateBodyTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.date}
-            </>
-        );
-    };
-
 
     const actionBodyTemplate = (rowData) => {
         return (
@@ -340,7 +335,6 @@ function Categories() {
                         <Column field="cat_desc" header="Description" sortable body={categoryDescBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="parent_category" header="Parent Category" sortable body={parent_categoryBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="status" header="Status" sortable body={statusBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="date" header="Date" sortable body={dateBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
@@ -355,7 +349,7 @@ function Categories() {
                                 </div>
                                 <div className="field">
                                     <label htmlFor="parentCategory">Parent Category</label>
-                                    <Dropdown id="parentCategory" options={categories} value={category.parent_category} onChange={(e) => onInputChange(e, "parent_category")} className={classNames({ "p-invalid": submitted && !category.parent_category })} optionLabel="name"></Dropdown>
+                                    <Dropdown id="parentCategory" options={parentcategory} value={category.parent_category} onChange={(e) => onInputChange(e, "parent_category")} className={classNames({ "p-invalid": submitted && !category.parent_category })} optionLabel="name"></Dropdown>
                                     {submitted && !category.parent_category && <small className="p-invalid">Parent Category Name is required.</small>}
                                 </div>
                                 <div className="field">
@@ -375,11 +369,6 @@ function Categories() {
                                     {/* <Dropdown id="categoryTitle" options={categories} value={parentCategory} onChange={(e) => onInputChange(e,'categoryTitle')} optionLabel="name"></Dropdown> */}
                                     <InputText id="categoryTitle" value={category.cat_title} onChange={(e) => onInputChange(e, "cat_title")} required className={classNames({ "p-invalid": submitted && !category.cat_title })} />
                                     {submitted && !category.cat_title && <small className="p-invalid">Category Title is required.</small>}
-                                </div>
-                                <div className="field">
-                                    <label htmlFor="date">Date</label>
-                                    <Calendar id="date" value={category.date} onChange={(e) => onInputChange(e, "date")} />
-                                    {submitted && !category.date && <small className="p-invalid">Category Meta Description is required.</small>}
                                 </div>
                             </div>
                         </div>

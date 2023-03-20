@@ -80,6 +80,17 @@ app.get("/api/category", (req, res) => {
         }
     })
 })
+// parent category
+
+app.get("/api/parentcategory",(req,res)=>{
+    con.query(`SELECT * FROM categories WHERE parent_category = 0`,(err,result)=>{
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(result);
+        }
+    })
+})
 
 app.get("/api/category/:id", (req, res) => {
     const id = req.params.id
@@ -95,8 +106,9 @@ app.get("/api/category/:id", (req, res) => {
 // category post
 
 app.post("/api/category", (req, res) => {
-    const { cat_name, cat_slug, cat_title, cat_desc, parent_cat, status, date } = req.body;
-    con.query('INSERT INTO `categories`( `cat_name`, `cat_slug`, `cat_title`, `cat_desc`, `parent_category`, `status`, `date`) VALUES (?,?,?,?,?,?,?)', [cat_name, cat_slug, cat_title, cat_desc, parent_cat, status, date], (err, response) => {
+    const { cat_name, cat_slug, cat_title, cat_desc, parent_category, status} = req.body;
+    console.log(req.body)
+    con.query('INSERT INTO `categories`( `cat_name`, `cat_slug`, `cat_title`, `cat_desc`, `parent_category`, `status`) VALUES (?,?,?,?,?,?)', [cat_name, cat_slug, cat_title, cat_desc, parent_category, status], (err, response) => {
         if (err) console.log(err)
     })
     res.send('record added')
@@ -118,9 +130,10 @@ app.delete("/api/category/:id", (req, res) => {
 // category update
 
 app.put("/api/category/:id", (req, res) => {
-    const { cat_name, cat_slug, cat_title, cat_desc, cat_status, status, date } = req.body;
+    const { cat_name, cat_slug, cat_title, cat_desc, parent_category, status} = req.body;
     const id = req.params.id;
-    con.query('UPDATE `categories` SET cat_name=? ,cat_slug=? ,cat_title=? ,cat_desc=? ,cat_status=? ,status=? ,date=?  WHERE id IN (?)', [cat_name, cat_slug, cat_title, cat_desc, cat_status, status, date, id], (err, result) => {
+    console.log(req.body)
+    con.query('UPDATE `categories` SET cat_name=? ,cat_slug=? ,cat_title=? ,cat_desc=? ,parent_category=? ,status=? ,WHERE id IN (?)', [cat_name, cat_slug, cat_title, cat_desc, parent_category, status, id], (err, result) => {
         res.send('updated')
     })
 })
@@ -129,4 +142,6 @@ app.put("/api/category/:id", (req, res) => {
 app.listen(5000, () => {
     console.log("server started");
 })
+
+
 
