@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
 import { DataTable } from "primereact/datatable";
@@ -11,8 +12,9 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { CategoryService } from "../service/categoryServices";
 import { Dropdown } from "primereact/dropdown";
+import { SelectButton } from 'primereact/selectbutton';
 import { Calendar } from 'primereact/calendar';
-        
+
 import Axios from "axios";
 
 function Categories() {
@@ -21,20 +23,20 @@ function Categories() {
     let initialValue =
         [{ name: "none", value: "0" }];
 
-    const [parentcategory , setparentcategory] = useState(initialValue);
+    const [parentcategory, setparentcategory] = useState(initialValue);
 
     let emptyCategory = {
         id: "",
-        cat_name : "",
-        cat_slug : "",
-        cat_title :"",
-        cat_desc : "",
-        parent_category:{ name: "", value: "" },
-        status:"",
+        cat_name: "",
+        cat_slug: "",
+        cat_title: "",
+        cat_desc: "",
+        parent_category: { name: "", value: "" },
+        status: "",
     };
-    
 
-    
+
+
     const [categoryList, setCategoryList] = useState("");
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -43,6 +45,8 @@ function Categories() {
     const [selectedProducts, setSelectedProducts] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
+    const options = ['On', 'Off'];
+    const [status, setstatus] = useState('Off');
     const toast = useRef(null);
     const dt = useRef(null);
     
@@ -56,7 +60,7 @@ function Categories() {
         getParentCategory();
     }, [categoryList.length]);
 
-    async function getParentCategory(){
+    async function getParentCategory() {
         const blogCategory = new CategoryService();
         const res = await blogCategory.getParentCategory()
         console.log(res)
@@ -115,7 +119,7 @@ function Categories() {
     };
 
     const updateCategoryFunction = (data) => {
-        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title})
+        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title })
             .then()
             .catch((err) => {
                 console.log(err);
@@ -133,7 +137,7 @@ function Categories() {
     };
 
     const deleteCategoryFunction = (data) => {
-        let selectedIds = typeof(data) === "number" ? data : data.map(res => res.id);
+        let selectedIds = typeof (data) === "number" ? data : data.map(res => res.id);
         Axios.delete(`http://localhost:5000/api/category/${selectedIds}`)
             .then()
             .catch((err) => {
@@ -169,7 +173,7 @@ function Categories() {
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
     };
-    
+
     const deleteSelectedProducts = () => {
         deleteCategoryFunction(selectedProducts);
         let _categories = categoryList.filter((val) => !selectedProducts.includes(val));
@@ -209,7 +213,6 @@ function Categories() {
     const idBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Id</span>
                 {rowData.id}
             </>
         );
@@ -218,7 +221,6 @@ function Categories() {
     const nameBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.cat_name}
             </>
         );
@@ -226,7 +228,6 @@ function Categories() {
     const slugBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.cat_slug}
             </>
         );
@@ -234,7 +235,6 @@ function Categories() {
     const titleBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.cat_title}
             </>
         );
@@ -242,7 +242,6 @@ function Categories() {
     const categoryDescBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.cat_desc}
             </>
         );
@@ -250,7 +249,6 @@ function Categories() {
     const parent_categoryBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.parent_category}
             </>
         );
@@ -258,8 +256,9 @@ function Categories() {
     const statusBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
-                {rowData.status}
+            <div>
+            <SelectButton value={category.status} options={options} onChange={(e) => onInputChange(e,'status')} />
+            </div>
             </>
         );
     };
@@ -370,6 +369,12 @@ function Categories() {
                                     <InputText id="categoryTitle" value={category.cat_title} onChange={(e) => onInputChange(e, "cat_title")} required className={classNames({ "p-invalid": submitted && !category.cat_title })} />
                                     {submitted && !category.cat_title && <small className="p-invalid">Category Title is required.</small>}
                                 </div>
+                                <div className="field">
+                                    <label htmlFor="categoryStatus">Status</label>
+                                    {/* <Dropdown id="categoryTitle" options={categories} value={parentCategory} onChange={(e) => onInputChange(e,'categoryTitle')} optionLabel="name"></Dropdown> */}
+                                    <SelectButton value={status} options={options} onChange={(e) => setstatus(e.value)} />
+                                    {submitted && !category.status && <small className="p-invalid">Category Title is required.</small>}
+                                </div>
                             </div>
                         </div>
                     </Dialog>
@@ -394,7 +399,7 @@ function Categories() {
                 </div>
             </div>
         </div>
-    ); 
+    );
 }
 
 const comparisonFn = function (prevProps, nextProps) {
