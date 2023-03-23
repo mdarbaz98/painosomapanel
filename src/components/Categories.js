@@ -20,10 +20,10 @@ import Axios from "axios";
 function Categories() {
 
 
-    let initialValue =
-        [{ name: "none", value: "0" }];
+    // let initialValue =
+    //     [{ name: "none", value: "0" }];
 
-    const [parentcategory, setparentcategory] = useState(initialValue);
+    const [parentcategory, setparentcategory] = useState(null);
 
     let emptyCategory = {
         id: "",
@@ -31,7 +31,7 @@ function Categories() {
         cat_slug: "",
         cat_title: "",
         cat_desc: "",
-        parent_category: { name: "", value: "" },
+        parent_category:null,
         status: "",
     };
 
@@ -63,13 +63,13 @@ function Categories() {
     async function getParentCategory() {
         const blogCategory = new CategoryService();
         const res = await blogCategory.getParentCategory()
-        console.log(res)
-        const output = res.map((data) => ({ name: data.cat_name, value: data.id }))
-        setparentcategory([...initialValue, ...output]);
+
+        const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}`}))
+        setparentcategory([{ name: "none", value: "0" }, ...output]);
     }
 
     console.log(category.parent_category)
-
+    console.log(parentcategory)
     const openNew = () => {
         setCategory(emptyCategory);
         setSubmitted(false);
@@ -401,6 +401,8 @@ function Categories() {
         </div>
     );
 }
+
+
 
 const comparisonFn = function (prevProps, nextProps) {
     return prevProps.location.pathname === nextProps.location.pathname;
