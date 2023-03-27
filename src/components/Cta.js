@@ -1,26 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import classNames from "classnames";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
-import { FileUpload } from "primereact/fileupload";
 import { Toolbar } from "primereact/toolbar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
 import { CtaServices } from "../service/CtaServices";
-import { Editor } from "primereact/editor";
 import Axios from "axios";
 
 function Blogs() {
-    const categories = [
-        { name: "Anxiety", value: "anxiety" },
-        { name: "Healthy Lifestyle", value: "healthylifestyle" },
-        { name: "none", value: "0" },
-    ];
-
     let emptyCta = {
         id: "",
         title: "",
@@ -34,13 +24,11 @@ function Blogs() {
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
-    // const [blog, setBlog] = useState(emptyBlog);
     const [cta, setCta] = useState(emptyCta);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
 
-    const [content, setContent] = useState("<p>Hello World!</p>");
     const [file, setFile] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
@@ -201,12 +189,7 @@ function Blogs() {
         _cta[`${name}`] = val;
         setCta(_cta);
     };
-
-    const myUploader = (event) => {
-        toast.current.show({ severity: "info", summary: "Successfully", detail: "File Added", life: 3000 });
-        setFile(event.files[0]);
-    };
-
+    
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>

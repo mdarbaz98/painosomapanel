@@ -1,19 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
-import classNames from "classnames";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 import { FileUpload } from "primereact/fileupload";
 import { Toolbar } from "primereact/toolbar";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
 import { ImagesServices } from "../service/GalleryServices";
-import { Editor } from "primereact/editor";
 import Axios from "axios";
-import { data } from "jquery";
 
 function Gallery() {
 
@@ -29,13 +24,11 @@ function Gallery() {
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
-    // const [blog, setBlog] = useState(emptyBlog);
     const [image, setImage] = useState(emptyImage);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
 
-    const [content, setContent] = useState("<p>Hello World!</p>");
     const [file, setFile] = useState([]);
     const toast = useRef(null);
     const dt = useRef(null);

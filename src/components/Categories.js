@@ -12,9 +12,6 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { CategoryService } from "../service/categoryServices";
 import { Dropdown } from "primereact/dropdown";
-import { SelectButton } from 'primereact/selectbutton';
-import { ToggleButton } from 'primereact/togglebutton';
-import { Calendar } from 'primereact/calendar';
 import Axios from "axios";
 
 function Categories() {
@@ -45,19 +42,22 @@ function Categories() {
     const [selectedProducts, setSelectedProducts] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
-    const [checked1, setChecked1] = useState(false);
     const toast = useRef(null);
     const dt = useRef(null);
     
-    console.log(category)
 
     useEffect(() => {
-        // fetching all categories list
-        const blogCategory = new CategoryService();
-        blogCategory.getCategory().then((data) => setCategoryList(data));
-        
+        console.log('run')
+        getAllCategories();
         getParentCategory();
-    }, [categoryList.length]);
+    }, [category]);
+
+    // all the categories 
+   const getAllCategories = () => {
+    // fetching all categories list
+    const blogCategory = new CategoryService();
+    blogCategory.getCategory().then((data) => setCategoryList(data));
+    }
 
     async function getParentCategory() {
         const blogCategory = new CategoryService();
@@ -67,8 +67,6 @@ function Categories() {
         setparentcategory([{ name: "none", value: "0" }, ...output]);
     }
 
-    console.log(category.parent_category)
-    console.log(parentcategory)
     const openNew = () => {
         setCategory(emptyCategory);
         setSubmitted(false);
@@ -130,11 +128,14 @@ function Categories() {
         setProductDialog(true);
     };
 // SAMPLE
-
 const categoryStatus =(rowData)=>{
-    
     console.log(rowData)
-    updateCategoryFunction(rowData)
+    let _category = { ...rowData };
+    _category["status"] = rowData.status === 0 ? 1 : 0;
+    setCategory(_category);
+    console.log(_category)
+    updateCategoryFunction(_category);
+    getAllCategories();
 }
     const confirmDeleteProduct = (category) => {
         setCategory(category);
@@ -174,7 +175,7 @@ const categoryStatus =(rowData)=>{
     const exportCSV = () => {
         dt.current.exportCSV();
     };
-
+  
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
     };
@@ -262,7 +263,7 @@ const categoryStatus =(rowData)=>{
         return (
             <>
              <div className="actions">
-                <Button icon={rowData.status == 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status == 0  ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => categoryStatus(rowData,"status")} />
+                <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0  ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => categoryStatus(rowData)} />
             </div>
             </>
         );
