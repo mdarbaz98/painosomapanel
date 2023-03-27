@@ -13,8 +13,8 @@ import { InputText } from "primereact/inputtext";
 import { CategoryService } from "../service/categoryServices";
 import { Dropdown } from "primereact/dropdown";
 import { SelectButton } from 'primereact/selectbutton';
+import { ToggleButton } from 'primereact/togglebutton';
 import { Calendar } from 'primereact/calendar';
-
 import Axios from "axios";
 
 function Categories() {
@@ -32,7 +32,7 @@ function Categories() {
         cat_title: "",
         cat_desc: "",
         parent_category:null,
-        status: "",
+        status: 0,
     };
 
 
@@ -45,8 +45,7 @@ function Categories() {
     const [selectedProducts, setSelectedProducts] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
-    const options = ['On', 'Off'];
-    const [status, setstatus] = useState('Off');
+    const [checked1, setChecked1] = useState(false);
     const toast = useRef(null);
     const dt = useRef(null);
     
@@ -56,7 +55,7 @@ function Categories() {
         // fetching all categories list
         const blogCategory = new CategoryService();
         blogCategory.getCategory().then((data) => setCategoryList(data));
-
+        
         getParentCategory();
     }, [categoryList.length]);
 
@@ -119,7 +118,7 @@ function Categories() {
     };
 
     const updateCategoryFunction = (data) => {
-        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title })
+        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
             .then()
             .catch((err) => {
                 console.log(err);
@@ -130,7 +129,13 @@ function Categories() {
         setCategory({ ...category });
         setProductDialog(true);
     };
+// SAMPLE
 
+const categoryStatus =(rowData)=>{
+    
+    console.log(rowData)
+    updateCategoryFunction(rowData)
+}
     const confirmDeleteProduct = (category) => {
         setCategory(category);
         setDeleteProductDialog(true);
@@ -256,8 +261,8 @@ function Categories() {
     const statusBodyTemplate = (rowData) => {
         return (
             <>
-            <div>
-            <SelectButton value={category.status} options={options} onChange={(e) => onInputChange(e,'status')} />
+             <div className="actions">
+                <Button icon={rowData.status == 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status == 0  ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => categoryStatus(rowData,"status")} />
             </div>
             </>
         );
@@ -266,8 +271,8 @@ function Categories() {
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning mt-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-pencil" className="p-button-rounded p-button-Primary mr-2" onClick={() => editProduct(rowData)} />
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger mt-2" onClick={() => confirmDeleteProduct(rowData)} />
             </div>
         );
     };
@@ -368,12 +373,6 @@ function Categories() {
                                     {/* <Dropdown id="categoryTitle" options={categories} value={parentCategory} onChange={(e) => onInputChange(e,'categoryTitle')} optionLabel="name"></Dropdown> */}
                                     <InputText id="categoryTitle" value={category.cat_title} onChange={(e) => onInputChange(e, "cat_title")} required className={classNames({ "p-invalid": submitted && !category.cat_title })} />
                                     {submitted && !category.cat_title && <small className="p-invalid">Category Title is required.</small>}
-                                </div>
-                                <div className="field">
-                                    <label htmlFor="categoryStatus">Status</label>
-                                    {/* <Dropdown id="categoryTitle" options={categories} value={parentCategory} onChange={(e) => onInputChange(e,'categoryTitle')} optionLabel="name"></Dropdown> */}
-                                    <SelectButton value={status} options={options} onChange={(e) => setstatus(e.value)} />
-                                    {submitted && !category.status && <small className="p-invalid">Category Title is required.</small>}
                                 </div>
                             </div>
                         </div>

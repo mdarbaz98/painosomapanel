@@ -28,37 +28,6 @@
 // })
 
 
-
-// const express = require('express');
-// const port = process.env.PORT || 5000;
-
-// const app = express();
-// const cors = require('cors')
-
-// //middelware
-// app.use(cors())
-// app.use(express.json());
-
-// const categoryRoute = require('./routes/categoryRoutes.js');
-// const blogRoute = require('./routes/blogRoutes.js');
-// const ctaRoute = require('./routes/ctaRoutes.js');
-// const imageRoute = require('./routes/imageRoutes.js');
-// const testRoute=require('./routes/testRoutes')
-// const parentCategoryRoute=require('./routes/parentCategoryRoutes')
-
-// app.use('/api/test',testRoute );
-// app.use('/api/category',categoryRoute );
-// app.use('/api/blog',blogRoute );
-// app.use('/api/cta',ctaRoute );
-// app.use('/api/image',imageRoute );
-// app.use('/api/parentcategory', parentCategoryRoute);
-
-
-// app.listen(port,()=>{
-//     console.log(`server is started on port ${port}`);
-// })
-
-
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser')
@@ -69,80 +38,12 @@ const con = require("./config");
 app.use(bodyParser.json())
 app.use(cors())
 
-// // category get
+// requiring routes
+const categoryRoute = require("./routes/categoryRoutes.js")
 
-// app.get("/api/category", (req, res) => {
-//     con.query('select * from categories', (err, result) => {
-//         if (err) {
-//             res.send(err);
-//         } else {
-//             res.send(result);
-//         }
-//     })
-// })
-// // parent category
 
-// app.get("/api/parentcategory",(req,res)=>{
-//     con.query(`SELECT * FROM categories WHERE parent_category = 0`,(err,result)=>{
-//         if (err) {
-//             res.send(err);
-//         } else {
-//             res.send(result);
-//         }
-//     })
-// })
-
-// app.get("/api/category/:id", (req, res) => {
-//     const id = req.params.id
-//     con.query(`SELECT categoryname FROM category WHERE id=${id}`, (err, result) => {
-//         if (err) {
-//             res.send(err);
-//         } else {
-//             res.send(result);
-//         }
-//     })
-// })
-
-// // category post
-
-// app.post("/api/category", (req, res) => {
-//     const { cat_name, cat_slug, cat_title, cat_desc, parent_category, status} = req.body;
-//     console.log(req.body)
-//     con.query('INSERT INTO `categories`( `cat_name`, `cat_slug`, `cat_title`, `cat_desc`, `parent_category`, `status`) VALUES (?,?,?,?,?,?)', [cat_name, cat_slug, cat_title, cat_desc, parent_category, status], (err, response) => {
-//         if (err) console.log(err)
-//     })
-//     res.send('record added')
-// })
-
-// // category delete
-
-// app.delete("/api/category/:id", (req, res) => {
-//     const id = req.params.id;
-//     const newid = JSON.parse(`[${id}]`)
-//     console.log(newid);
-
-//     con.query('DELETE FROM categories WHERE id IN (?)', [newid], (err, response) => {
-//         // if(err) console.log(err)
-//         res.send(response)
-//     })
-// })
-
-// // category update
-
-// app.put("/api/category/:id", (req, res) => {
-//     const { cat_name, cat_slug, cat_title, cat_desc, parent_category, status} = req.body;
-//     const id = req.params.id;
-//     console.log(req.body)
-//     con.query('UPDATE `categories` SET cat_name=? ,cat_slug=? ,cat_title=? ,cat_desc=? ,parent_category=? ,status=? WHERE id IN (?)', [cat_name, cat_slug, cat_title, cat_desc, parent_category, status, id], (err, result) => {
-//         if(err){
-//             console.log(err)
-//         }
-//         else{
-//             console.log(result)
-//             res.send('updated')
-//         }
-//     })
-// })
+// using routes
+app.use("/api/category",categoryRoute)
 
 
 app.listen(5000, () => {

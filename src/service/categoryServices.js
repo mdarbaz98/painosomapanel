@@ -6,7 +6,7 @@ export class CategoryService {
     }
 
     getParentCategory() {
-      return  axios.get('http://localhost:5000/api/parentcategory').then((res) =>   res.data);
+      return  axios.get('http://localhost:5000/api/category/parentcategory').then((res) =>   res.data);
     }
 }
 
