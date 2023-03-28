@@ -28,7 +28,7 @@ function Categories() {
         cat_slug: "",
         cat_title: "",
         cat_desc: "",
-        parent_category:null,
+        parent_category: null,
         status: 0,
     };
 
@@ -44,26 +44,26 @@ function Categories() {
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
-    
+
 
     useEffect(() => {
         console.log('run')
         getAllCategories();
         getParentCategory();
-    }, [category]);
+    }, [category, categoryList.length]);
 
     // all the categories 
-   const getAllCategories = () => {
-    // fetching all categories list
-    const blogCategory = new CategoryService();
-    blogCategory.getCategory().then((data) => setCategoryList(data));
+    const getAllCategories = () => {
+        // fetching all categories list
+        const blogCategory = new CategoryService();
+        blogCategory.getCategory().then((data) => setCategoryList(data));
     }
 
     async function getParentCategory() {
         const blogCategory = new CategoryService();
         const res = await blogCategory.getParentCategory()
 
-        const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}`}))
+        const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
         setparentcategory([{ name: "none", value: "0" }, ...output]);
     }
 
@@ -110,7 +110,7 @@ function Categories() {
     };
 
     const addCategoryFunction = (data) => {
-        Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, date: data.date })
+        Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
             .then()
             .catch((err) => console.log(err));
     };
@@ -127,16 +127,16 @@ function Categories() {
         setCategory({ ...category });
         setProductDialog(true);
     };
-// SAMPLE
-const categoryStatus =(rowData)=>{
-    console.log(rowData)
-    let _category = { ...rowData };
-    _category["status"] = rowData.status === 0 ? 1 : 0;
-    setCategory(_category);
-    console.log(_category)
-    updateCategoryFunction(_category);
-    getAllCategories();
-}
+    // SAMPLE
+    const categoryStatus = (rowData) => {
+        console.log(rowData)
+        let _category = { ...rowData };
+        _category["status"] = rowData.status === 0 ? 1 : 0;
+        setCategory(_category);
+        console.log(_category)
+        updateCategoryFunction(_category);
+        getAllCategories();
+    }
     const confirmDeleteProduct = (category) => {
         setCategory(category);
         setDeleteProductDialog(true);
@@ -157,7 +157,7 @@ const categoryStatus =(rowData)=>{
         setCategoryList(_categories);
         setDeleteProductDialog(false);
         setCategory(emptyCategory);
-        toast.current.show({ severity: "success", summary: "Successful", detail: "Category Deleted", life: 3000 });
+        toast.current.show({ severity: "error", summary: "Successful", detail: "Category Deleted", life: 3000 });
     };
 
     const findIndexById = (id) => {
@@ -175,7 +175,7 @@ const categoryStatus =(rowData)=>{
     const exportCSV = () => {
         dt.current.exportCSV();
     };
-  
+
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
     };
@@ -186,7 +186,7 @@ const categoryStatus =(rowData)=>{
         setCategoryList(_categories);
         setDeleteProductsDialog(false);
         setSelectedProducts(null);
-        toast.current.show({ severity: "success", summary: "Successful", detail: "Category Deleted", life: 3000 });
+        toast.current.show({ severity: "error", summary: "Successful", detail: "Category Deleted", life: 3000 });
     };
 
     const onInputChange = (e, name) => {
@@ -262,9 +262,9 @@ const categoryStatus =(rowData)=>{
     const statusBodyTemplate = (rowData) => {
         return (
             <>
-             <div className="actions">
-                <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0  ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => categoryStatus(rowData)} />
-            </div>
+                <div className="actions">
+                    <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0 ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => categoryStatus(rowData)} />
+                </div>
             </>
         );
     };

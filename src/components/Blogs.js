@@ -20,19 +20,18 @@ import Axios from "axios";
 
 function Blogs() {
     let emptyBlog = {
-        blog_title: "",
-        seo_title: "",
-        blog_slug: "",
-        keywords: "",
-        meta_desc: "",
-        author_name: "",
-        feature_img: "",
-        alt_title: "",
-        img_title: "",
-        parent_category: null,
-        category: [],
-        excerpt: "",
-        content: null,
+       id: "",
+       blog_title: "",
+       seo_title: "",
+       slug: "",
+       author_id :"",
+       review_id :"",
+       feature_image :"",
+       parentcategory_id:"",
+       subcategory_id :"",
+       blogdate:"",
+       status:"",
+       publishdate:""
     };
 
     const [blogs, setBlogs] = useState([]);
@@ -139,17 +138,18 @@ function Blogs() {
 
     const addBlogFunction = async (data) => {
         var createPost = {
-            blogTitle: data.blog_title,
+            id: data.id,
+            blog_title: data.blog_title,
             seo_title: data.seo_title,
-            blog_slug: data.blog_slug,
-            keywords: data.keywords,
-            meta_desc: data.meta_desc,
-            author_name: data.author_name,
-            image: images.toString(),
-            parent_category: data.parent_category,
-            category: data.category,
-            excerpt: data.excerpt,
-            content: data.content,
+            slug: data.slug,
+            author_id :data.author_id,
+            review_id :data.review_id,
+            feature_image :data.feature_image,
+            parentcategory_id:data.parentcategory_id,
+            subcategory_id :data.subcategory_id,
+            blogdate:data.blogdate,
+            status:data.status,
+            publishdate:data.publishdate
         };
 
         await Axios.post("http://localhost:5000/api/blog", createPost);
@@ -161,17 +161,18 @@ function Blogs() {
         const newImg = images.length > 0 ? images.toString() : data.image;
 
         var updatePost = {
-            blogTitle: data.blog_title,
+            id: data.id,
+            blog_title: data.blog_title,
             seo_title: data.seo_title,
-            blog_slug: data.blog_slug,
-            keywords: data.keywords,
-            meta_desc: data.meta_desc,
-            author_name: data.author_name,
-            image: newImg,
-            parent_category: data.parent_category,
-            category: data.category,
-            excerpt: data.excerpt,
-            content: data.content,
+            slug: data.slug,
+            author_id :data.author_id,
+            review_id :data.review_id,
+            feature_image :data.feature_image,
+            parentcategory_id:data.parentcategory_id,
+            subcategory_id :data.subcategory_id,
+            blogdate:data.blogdate,
+            status:data.status,
+            publishdate:data.publishdate
         };
 
         await Axios.put(`http://localhost:5000/api/blog/${data.id}`, updatePost);
@@ -201,7 +202,7 @@ function Blogs() {
         deleteBlogFunction(blog.id);
         setDeleteProductDialog(false);
         setBlog(emptyBlog);
-        toast.current.show({ severity: "success", summary: "Successfully", detail: "Blog Deleted", life: 3000 });
+        toast.current.show({ severity: "error", summary: "Successfully", detail: "Blog Deleted", life: 3000 });
     };
 
     const findIndexById = (id) => {
@@ -230,7 +231,7 @@ function Blogs() {
         deleteBlogFunction(selectedBlogs);
         setDeleteProductsDialog(false);
         setSelectedBlogs(null);
-        toast.current.show({ severity: "success", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
+        toast.current.show({ severity: "error", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
     };
 
     const onInputChange = (e, name, _content, _editor) => {
@@ -267,20 +268,11 @@ function Blogs() {
         );
     };
 
-    const codeBodyTemplate = (rowData) => {
+    const idBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Id</span>
                 {rowData.id}
-            </>
-        );
-    };
-
-    const imageBodyTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                <img src={`assets/demo/images/gallery/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
             </>
         );
     };
@@ -294,32 +286,86 @@ function Blogs() {
         );
     };
 
-    const parentNameBodyTemplate = (rowData) => {
+    const seoBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.parent_category}
+                {rowData.seo_title}
             </>
         );
     };
 
-    const childNameBodyTemplate = (rowData) => {
+    const slugBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.category}
+                {rowData.slug}
             </>
         );
     };
-
-    // const contentTemplate = (rowData) => {
-    //     return (
-    //         <>
-    //             <span className="p-column-title">Name</span>
-    //             {rowData.content}
-    //         </>
-    //     );
-    // };
+    const authoridTemplate = (rowData) => {
+        return (
+            <>
+                <span className="p-column-title">Name</span>
+                {rowData.author_id}
+            </>
+        );
+    };
+    const review_idTemplate = (rowData) => {
+        return (
+            <>
+                <span className="p-column-title">Name</span>
+                {rowData.review_id}
+            </>
+        );
+    };
+    const featureimageTemplate = (rowData) => {
+        return (
+            <>
+                <span className="p-column-title">Name</span>
+                {rowData.feature_image}
+            </>
+        );
+    };
+    const parentcategory_idTemplate = (rowData) => {
+        return (
+            <>
+                <span className="p-column-title">Name</span>
+                {rowData.parentcategory_id}
+            </>
+        );
+    };
+    const subcategory_idTemplate = (rowData) => {
+        return (
+            <>
+                <span className="p-column-title">Name</span>
+                {rowData.subcategory_id}
+            </>
+        );
+    };
+    const blogdateTemplate = (rowData) => {
+        return (
+            <>
+                <span className="p-column-title">Name</span>
+                {rowData.blogdate}
+            </>
+        );
+    };
+    const statusTemplate = (rowData) => {
+        return (
+            <>
+             
+            </>
+        );
+    };
+    const publishdateTemplate = (rowData) => {
+        return (
+            <>
+                <span className="p-column-title">Name</span>
+                {rowData.publishdate}
+            </>
+        );
+    };
 
     const actionBodyTemplate = (rowData) => {
         return (
@@ -387,12 +433,18 @@ function Blogs() {
                         responsiveLayout="scroll"
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
-                        <Column field="id" header="Id" sortable body={codeBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="image" header="Image" sortable body={imageBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="blog_title" header="Title" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="parent_category" header="Parent Category" sortable body={parentNameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="child_category" header="Category" sortable body={childNameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        {/* <Column field="content" header="content" sortable body={contentTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
+                        <Column field="seo_title" header="Seo Title" sortable body={seoBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="slug" header="Slug" sortable body={slugBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="author_id" header="Author_id" sortable body={authoridTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="review_id" header="Review_id" sortable body={review_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="feature_image" header="Feature_image" sortable body={featureimageTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="parentcategory_id" header="Parentcategory_id" sortable body={parentcategory_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="subcategory_id" header="Subcategory_id" sortable body={subcategory_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="blogdate" header="Blogdate" sortable body={blogdateTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="status" header="Status" sortable body={statusTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="publishdate" header="Publishdate" sortable body={publishdateTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
@@ -413,7 +465,7 @@ function Blogs() {
                                     <div className=" p-field mb-5">
                                         <span className="p-float-label">
                                             <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e, "blog_title")} />
-                                            <label htmlFor="blog_title">blog title</label>
+                                            <label htmlFor="blog_title">Blog title</label>
                                         </span>
                                     </div>
                                     <div className=" p-field mb-5">
@@ -424,30 +476,14 @@ function Blogs() {
                                     </div>
                                     <div className=" p-field mb-5">
                                         <span className="p-float-label">
-                                            <InputText type="text" id="blog_slug" value={blog.blog_slug} onChange={(e) => onInputChange(e, "blog_slug")} />
-                                            <label htmlFor="blog_slug">blog slug</label>
+                                            <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e, "blog_slug")} />
+                                            <label htmlFor="blog_slug">Blog slug</label>
                                         </span>
                                     </div>
                                     <div className=" p-field mb-5">
                                         <span className="p-float-label">
-                                            <InputText type="text" id="keywords" value={blog.keywords} onChange={(e) => onInputChange(e, "keywords")} />
-                                            <label htmlFor="keywords">keywords</label>
-                                        </span>
-                                    </div>
-                                    <div className=" p-field mb-5">
-                                        <span className="p-float-label">
-                                            <InputText type="text" id="meta_desc" value={blog.meta_desc} onChange={(e) => onInputChange(e, "meta_desc")} />
-                                            <label htmlFor="meta_desc">meta desc</label>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="card p-fluid">
-                                    <h5 className="mb-5">Author Section</h5>
-                                    <div className=" p-field mb-5">
-                                        <span className="p-float-label">
-                                            <InputText type="text" id="author_name" value={blog.author_name} onChange={(e) => onInputChange(e, "author_name")} />
-                                            <label htmlFor="author_name">author name</label>
+                                            <InputText type="text" id="keywords" value={blog.blogdate} onChange={(e) => onInputChange(e, "keywords")} />
+                                            <label htmlFor="keywords">Blog date</label>
                                         </span>
                                     </div>
                                 </div>
@@ -497,10 +533,6 @@ function Blogs() {
                                         placeholder="Select a category"
                                         display="chip"
                                     />
-                                </div>
-                                <div className="card p-fluid">
-                                    <h5 className="mb-5">Excerpt Section</h5>
-                                    <InputTextarea rows={5} cols={20} value={blog.excerpt} onChange={(e) => onInputChange(e, "excerpt")} />
                                 </div>
                             </div>
                         </form>

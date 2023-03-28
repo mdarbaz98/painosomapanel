@@ -1,13 +1,10 @@
 const router = require("express").Router();
-const {getAllBlog, getBlogById, addBlog, updateBlog, deleteBlog} =require('../controller/blogController');
+const {getAllBlog,addBlog, updateBlog, deleteBlog} =require('../controller/blogController');
 const upload = require('../middleware/imageMulter')
 
 
 //get all categories
 router.get("/", getAllBlog);
-
-//get category by id
-router.get("/:id", getBlogById);
 
 //add category
 router.post("/",upload.single('image') ,addBlog);
