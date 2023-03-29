@@ -21,6 +21,20 @@ const getParentCategory = asyncHandler(async(req,res)=>{
     // res.status(200).json({ message: "Fetched parentcategory" });
 })
 
+
+
+// get sub-category by id
+const getSubCategoryById = asyncHandler (async(req, res) => {
+    const id = req.params.id
+    con.query(`SELECT * FROM categories WHERE parent_category=${id}`, (err, result) => {
+        if (err) console.log(err)
+        res.send(result)
+    })
+    // res.status(200).json({ message: "Fetched category by id" });
+})
+
+
+
 // get category by id
 const getCategoryById = asyncHandler (async(req, res) => {
     const id = req.params.id
@@ -66,7 +80,7 @@ const updateCategory = asyncHandler(async(req, res) => {
         if(err) console.log(err)
          res.send(result)
     })
-    // res.status(200).json({ message: "Category updated" });
+    // res.status(200)     .json({ message: "Category updated" });
 })
 
 module.exports = {
@@ -75,5 +89,6 @@ module.exports = {
     getParentCategory,
     deleteCategory,
     updateCategory,
-    addCategory
+    addCategory,
+    getSubCategoryById
 }

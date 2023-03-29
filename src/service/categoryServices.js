@@ -8,5 +8,9 @@ export class CategoryService {
     getParentCategory() {
       return  axios.get('http://localhost:5000/api/category/parentcategory').then((res) =>   res.data);
     }
+
+    getSubCategory() {
+      return  axios.get('http://localhost:5000/api/category/subcategory').then((res) =>   res.data);
+    }
 }
 

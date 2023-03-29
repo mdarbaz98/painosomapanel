@@ -204,7 +204,7 @@ function Gallery() {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                <img src={`assets/demo/images/gallery/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
+                <img src={`assets/demo/images/gallery/${rowData.imagetitle}`} alt={rowData.image} className="shadow-2" width="100" />
             </>
         );
     };
@@ -305,7 +305,7 @@ function Gallery() {
                                 <div className="p-fluid">
                                     {/* <h5>Vertical</h5> */}
                                     <div className="field">
-                                    <FileUpload auto ref={fileRef} className="mb-5" name="image" customUpload multiple uploadHandler={myUploader}  accept="image/*" maxFileSize={1000000} />
+                                    <FileUpload url="http://localhost:5000/api/image" ref={fileRef} className="mb-5" name="image" customUpload multiple uploadHandler={myUploader}  accept="image/*" maxFileSize={1000000} />
                                     </div>
                                     <div className="field">
                                         <label htmlFor="imageTitle">Title</label>

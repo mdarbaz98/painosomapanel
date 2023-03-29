@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-// import { Editor } from "@tinymce/tinymce-react";
 import { Editor } from 'primereact/editor';
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
@@ -16,7 +15,9 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { ProductService } from "../service/ProductService";
 import { imageService } from "../service/imageService";
+import { Calendar } from 'primereact/calendar';
 import Axios from "axios";
+import { CategoryService } from "../service/categoryServices";
 
 function Blogs() {
     let emptyBlog = {
@@ -27,11 +28,12 @@ function Blogs() {
        author_id :"",
        review_id :"",
        feature_image :"",
-       parentcategory_id:"",
+       parentcategory_id: 0,
        subcategory_id :"",
        blogdate:"",
        status:"",
-       publishdate:""
+       publishdate:"",
+       content:""
     };
 
     const [blogs, setBlogs] = useState([]);
@@ -45,13 +47,11 @@ function Blogs() {
     const [displayBasic, setDisplayBasic] = useState(false);
     const [gallery, setGallery] = useState(null);
     const [images, setImages] = useState([]);
-    const refEditor = useRef();
     const toast = useRef(null);
     const dt = useRef(null);
     const fileRef = useRef(null);
-    const [text1, setText1] = useState('');
-    const [parentCategory, setParentCategory] = useState([{ name: "none", id: "0" }]);
-    const [category, setCategory] = useState(null);
+    const [parentCategory, setParentCategory] = useState([]);
+    const [subCategory, setSubCategory] = useState(null);
 
     async function fetchData() {
         const blogData = new ProductService();
@@ -65,21 +65,28 @@ function Blogs() {
     useEffect(() => {
         fetchData();
         fetchImages();
-        fetchCategory();
+        getParentCategory();
     }, []);
 
-    async function fetchCategory() {
-        const blogCategory = new ProductService();
-
-        const parentCat = await blogCategory.getParentCategory();
-        const category = await blogCategory.getSubCategory();
-
-        const result1 = parentCat.map((data) => ({ name: `${data.category_name}`, id: `${data.id}` }));
-        const result2 = category.map((data) => ({ name: `${data.category_name}`, id: `${data.id}` }));
-
-        setParentCategory([...parentCategory, ...result1]);
-        setCategory(result2);
+    useEffect(() => {
+        getsubCategory();
+    }, [blog.parentcategory_id]);
+    
+    async function getParentCategory() {
+        const blogCategory = new CategoryService();
+        const res = await blogCategory.getParentCategory();
+        const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
+        setParentCategory([...output]);
     }
+    
+    async function getsubCategory() {
+       const res1 = await Axios.get(`http://localhost:5000/api/category/subcategory/${blog.parentcategory_id}`);
+        const output = res1.data.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
+        setSubCategory([...output]);
+    }
+
+
+    console.log(blog.parentcategory_id)
 
     const onImageChange = (e) => {
         let selectedImages = [...images];
@@ -149,7 +156,8 @@ function Blogs() {
             subcategory_id :data.subcategory_id,
             blogdate:data.blogdate,
             status:data.status,
-            publishdate:data.publishdate
+            publishdate:data.publishdate,
+            content:data.content
         };
 
         await Axios.post("http://localhost:5000/api/blog", createPost);
@@ -172,7 +180,8 @@ function Blogs() {
             subcategory_id :data.subcategory_id,
             blogdate:data.blogdate,
             status:data.status,
-            publishdate:data.publishdate
+            publishdate:data.publishdate,
+            content:data.content
         };
 
         await Axios.put(`http://localhost:5000/api/blog/${data.id}`, updatePost);
@@ -236,7 +245,7 @@ function Blogs() {
 
     const onInputChange = (e, name, _content, _editor) => {
         let val;
-        name === "content" ? (val = e || "") : (val = (e.target && e.target.value) || "");
+        name === "content" ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
 
         let _blog = { ...blog };
         _blog[`${name}`] = val;
@@ -454,7 +463,7 @@ function Blogs() {
                             <div className="col-12 md:col-8">
                                 <div className="card p-fluid">
                                     <h5>Content</h5>
-                                    <Editor style={{ height: '320px' }} value={text1} onTextChange={(e) => setText1(e.htmlValue)} />
+                                    <Editor style={{ height: '320px' }} value={blog.content} onTextChange={(e) => onInputChange(e,"content")} />
                                     {/* <Editor style={{ height: "320px" }} value={blog.content} onTextChange={(e) => onInputChange(e, "content")} /> */}
                                 </div>
                             </div>
@@ -464,25 +473,26 @@ function Blogs() {
                                     <h5 className="mb-5">Blog Section</h5>
                                     <div className=" p-field mb-5">
                                         <span className="p-float-label">
-                                            <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e, "blog_title")} />
+                                            <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e, "blog_title")} style={{ fontSize: "12px" }}/>
                                             <label htmlFor="blog_title">Blog title</label>
                                         </span>
                                     </div>
                                     <div className=" p-field mb-5">
                                         <span className="p-float-label">
-                                            <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => onInputChange(e, "seo_title")} />
+                                            <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => onInputChange(e, "seo_title")} style={{ fontSize: "12px" }}/>
                                             <label htmlFor="seo_title">SEO title</label>
                                         </span>
                                     </div>
                                     <div className=" p-field mb-5">
                                         <span className="p-float-label">
-                                            <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e, "blog_slug")} />
+                                            <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e, "slug")} style={{ fontSize: "12px" }}/>
                                             <label htmlFor="blog_slug">Blog slug</label>
                                         </span>
                                     </div>
                                     <div className=" p-field mb-5">
                                         <span className="p-float-label">
-                                            <InputText type="text" id="keywords" value={blog.blogdate} onChange={(e) => onInputChange(e, "keywords")} />
+                                        <Calendar id="basic" value={blog.blogdate} onChange={(e) => onInputChange(e,"blogdate")} />
+                                            {/* <InputText type="text" id="keywords" value={blog.blogdate} onChange={(e) => onInputChange(e, "blogdate")} /> */}
                                             <label htmlFor="keywords">Blog date</label>
                                         </span>
                                     </div>
@@ -511,25 +521,27 @@ function Blogs() {
                                     <h5 className="mb-5">Category Section</h5>
                                     {/* <Dropdown value={parentCategory} options={parentCategory} onChange={onCityChange} optionLabel="name" placeholder="Select a City" /> */}
                                     {/* <TreeSelect className="mb-5" value={blog.category} options={nodes} onChange={(e) => onInputChange(e, "category")} selectionMode="multiple" metaKeySelection={false} placeholder="Select Item"></TreeSelect> */}
+
                                     <Dropdown
                                         options={parentCategory}
-                                        value={blog.parent_category}
+                                        value={blog.parentcategory_id}
                                         onChange={(e) => {
-                                            onInputChange(e, "parent_category");
+                                            onInputChange(e, "parentcategory_id");
                                         }}
                                         optionLabel="name"
-                                        optionValue="id"
                                         className="mb-4"
                                         placeholder="Select parent category"
                                     ></Dropdown>
+
+
+                                    
                                     <MultiSelect
-                                        value={typeof blog.category === "string" ? JSON.parse(blog.category) : blog.category}
-                                        options={category}
+                                        value={blog.subcategory_id}
+                                        options={subCategory}
                                         onChange={(e) => {
-                                            onInputChange(e, "category");
+                                            onInputChange(e, "subcategory_id");
                                         }}
                                         optionLabel="name"
-                                        optionValue="id"
                                         placeholder="Select a category"
                                         display="chip"
                                     />
@@ -559,7 +571,7 @@ function Blogs() {
                     {/* image  gallery dialog  */}
                     <Dialog header="Gallery" visible={displayBasic} style={{ width: "1200px" }} modal footer={basicDialogFooter} onHide={() => setDisplayBasic(false)}>
                         <div className="grid">
-                            {gallery?.map((item, index) => {
+                            {gallery ? gallery?.map((item, index) => {
                                 return (
                                     <div className="col" key={index}>
                                         <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={onImageChange} checked={images.includes(`${item.image}`)}></Checkbox>
@@ -568,7 +580,7 @@ function Blogs() {
                                         </label>
                                     </div>
                                 );
-                            })}
+                            }) : <p>No images </p>}
                         </div>
                     </Dialog>
                 </div>

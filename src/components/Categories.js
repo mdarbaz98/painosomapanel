@@ -47,7 +47,6 @@ function Categories() {
 
 
     useEffect(() => {
-        console.log('run')
         getAllCategories();
         getParentCategory();
     }, [category, categoryList.length]);
@@ -62,11 +61,9 @@ function Categories() {
     async function getParentCategory() {
         const blogCategory = new CategoryService();
         const res = await blogCategory.getParentCategory()
-
         const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
         setparentcategory([{ name: "none", value: "0" }, ...output]);
     }
-
     const openNew = () => {
         setCategory(emptyCategory);
         setSubmitted(false);
@@ -129,11 +126,9 @@ function Categories() {
     };
     // SAMPLE
     const categoryStatus = (rowData) => {
-        console.log(rowData)
         let _category = { ...rowData };
         _category["status"] = rowData.status === 0 ? 1 : 0;
         setCategory(_category);
-        console.log(_category)
         updateCategoryFunction(_category);
         getAllCategories();
     }
@@ -358,9 +353,9 @@ function Categories() {
                                     {submitted && !category.parent_category && <small className="p-invalid">Parent Category Name is required.</small>}
                                 </div>
                                 <div className="field">
-                                    <label htmlFor="description">Category Description</label>
+                                    <label htmlFor="description">Seo Description</label>
                                     <InputTextarea id="description" value={category.cat_desc} onChange={(e) => onInputChange(e, "cat_desc")} className={classNames({ "p-invalid": submitted && !category.cat_desc })} required rows={3} cols={20} />
-                                    {submitted && !category.cat_desc && <small className="p-invalid">Category description is required.</small>}
+                                    {submitted && !category.cat_desc && <small className="p-invalid">Seo description is required.</small>}
                                 </div>
                             </div>
                             <div className="col-6">
@@ -370,10 +365,10 @@ function Categories() {
                                     {submitted && !category.cat_slug && <small className="p-invalid">Category Slug is required.</small>}
                                 </div>
                                 <div className="field">
-                                    <label htmlFor="categoryTitle">Category Title</label>
+                                    <label htmlFor="categoryTitle">Seo Title</label>
                                     {/* <Dropdown id="categoryTitle" options={categories} value={parentCategory} onChange={(e) => onInputChange(e,'categoryTitle')} optionLabel="name"></Dropdown> */}
                                     <InputText id="categoryTitle" value={category.cat_title} onChange={(e) => onInputChange(e, "cat_title")} required className={classNames({ "p-invalid": submitted && !category.cat_title })} />
-                                    {submitted && !category.cat_title && <small className="p-invalid">Category Title is required.</small>}
+                                    {submitted && !category.cat_title && <small className="p-invalid">Seo Title is required.</small>}
                                 </div>
                             </div>
                         </div>
