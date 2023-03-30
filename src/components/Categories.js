@@ -190,7 +190,7 @@ function Categories() {
         _category[`${name}`] = val;
         setCategory(_category);
     };
-
+console.log(category)
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>

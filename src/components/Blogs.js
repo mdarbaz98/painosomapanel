@@ -18,6 +18,7 @@ import { imageService } from "../service/imageService";
 import { Calendar } from 'primereact/calendar';
 import Axios from "axios";
 import { CategoryService } from "../service/categoryServices";
+import classNames from "classnames";
 
 function Blogs() {
     let emptyBlog = {
@@ -28,7 +29,7 @@ function Blogs() {
        author_id :"",
        review_id :"",
        feature_image :"",
-       parentcategory_id: 0,
+       parentcategory_id: null,
        subcategory_id :"",
        blogdate:"",
        status:"",
@@ -50,7 +51,7 @@ function Blogs() {
     const toast = useRef(null);
     const dt = useRef(null);
     const fileRef = useRef(null);
-    const [parentCategory, setParentCategory] = useState([]);
+    const [parentCategory, setParentCategory] = useState([null]);
     const [subCategory, setSubCategory] = useState(null);
 
     async function fetchData() {
@@ -190,7 +191,7 @@ function Blogs() {
     };
 
     const editProduct = (blog) => {
-        console.log(blog);
+        console.log(blog)
         setBlog({ ...blog });
         setProductDialog(true);
     };
@@ -243,7 +244,7 @@ function Blogs() {
         toast.current.show({ severity: "error", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
     };
 
-    const onInputChange = (e, name, _content, _editor) => {
+    const onInputChange = (e, name) => {
         let val;
         name === "content" ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
 
@@ -251,7 +252,7 @@ function Blogs() {
         _blog[`${name}`] = val;
         setBlog(_blog);
     };
-
+    console.log(blog)
     const onUpload = () => {
         toast.current.show({ severity: "info", summary: "Successfully", detail: "File Added", life: 3000 });
         fetchImages();
@@ -291,24 +292,6 @@ function Blogs() {
             <>
                 <span className="p-column-title">Name</span>
                 {rowData.blog_title}
-            </>
-        );
-    };
-
-    const seoBodyTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.seo_title}
-            </>
-        );
-    };
-
-    const slugBodyTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.slug}
             </>
         );
     };
@@ -352,14 +335,6 @@ function Blogs() {
             </>
         );
     };
-    const blogdateTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.blogdate}
-            </>
-        );
-    };
     const statusTemplate = (rowData) => {
         return (
             <>
@@ -367,15 +342,6 @@ function Blogs() {
             </>
         );
     };
-    const publishdateTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.publishdate}
-            </>
-        );
-    };
-
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
@@ -444,16 +410,12 @@ function Blogs() {
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="blog_title" header="Title" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="seo_title" header="Seo Title" sortable body={seoBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="slug" header="Slug" sortable body={slugBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="author_id" header="Author_id" sortable body={authoridTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="review_id" header="Review_id" sortable body={review_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="feature_image" header="Feature_image" sortable body={featureimageTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="parentcategory_id" header="Parentcategory_id" sortable body={parentcategory_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="subcategory_id" header="Subcategory_id" sortable body={subcategory_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="blogdate" header="Blogdate" sortable body={blogdateTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="status" header="Status" sortable body={statusTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="publishdate" header="Publishdate" sortable body={publishdateTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
@@ -522,25 +484,19 @@ function Blogs() {
                                     {/* <Dropdown value={parentCategory} options={parentCategory} onChange={onCityChange} optionLabel="name" placeholder="Select a City" /> */}
                                     {/* <TreeSelect className="mb-5" value={blog.category} options={nodes} onChange={(e) => onInputChange(e, "category")} selectionMode="multiple" metaKeySelection={false} placeholder="Select Item"></TreeSelect> */}
 
-                                    <Dropdown
-                                        options={parentCategory}
-                                        value={blog.parentcategory_id}
-                                        onChange={(e) => {
-                                            onInputChange(e, "parentcategory_id");
-                                        }}
-                                        optionLabel="name"
-                                        className="mb-4"
-                                        placeholder="Select parent category"
-                                    ></Dropdown>
-
-
-                                    
+                                    <Dropdown 
+                                    options={parentCategory} 
+                                    value={blog.parentcategory_id} 
+                                    onChange={(e) => onInputChange(e, "parentcategory_id")} 
+                                    className={classNames({ "p-invalid": submitted && !blog.parentcategory_id })}
+                                    placeholder="Select parent category" 
+                                    optionLabel="name">
+                                    </Dropdown>
+  
                                     <MultiSelect
-                                        value={blog.subcategory_id}
                                         options={subCategory}
-                                        onChange={(e) => {
-                                            onInputChange(e, "subcategory_id");
-                                        }}
+                                        value={blog.subcategory_id}
+                                        onChange={(e) => onInputChange(e, "subcategory_id")}
                                         optionLabel="name"
                                         placeholder="Select a category"
                                         display="chip"
