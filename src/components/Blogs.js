@@ -19,6 +19,7 @@ import { Calendar } from 'primereact/calendar';
 import Axios from "axios";
 import { CategoryService } from "../service/categoryServices";
 import classNames from "classnames";
+import { Accordion, AccordionTab } from 'primereact/accordion';
 
 function Blogs() {
     let emptyBlog = {
@@ -425,74 +426,69 @@ function Blogs() {
                             <div className="col-12 md:col-8">
                                 <div className="card p-fluid">
                                     <h5>Content</h5>
-                                    <Editor style={{ height: '320px' }} value={blog.content} onTextChange={(e) => onInputChange(e,"content")} />
-                                    {/* <Editor style={{ height: "320px" }} value={blog.content} onTextChange={(e) => onInputChange(e, "content")} /> */}
+                                    <Editor style={{ height: '320px' }} value={blog.content} onTextChange={(e) => onInputChange(e, "content")} />
                                 </div>
                             </div>
 
                             <div className="col-12 md:col-4">
-                                <div className="card p-fluid">
-                                    <h5 className="mb-5">Blog Section</h5>
-                                    <div className=" p-field mb-5">
-                                        <span className="p-float-label">
-                                            <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e, "blog_title")} style={{ fontSize: "12px" }}/>
-                                            <label htmlFor="blog_title">Blog title</label>
-                                        </span>
-                                    </div>
-                                    <div className=" p-field mb-5">
-                                        <span className="p-float-label">
-                                            <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => onInputChange(e, "seo_title")} style={{ fontSize: "12px" }}/>
-                                            <label htmlFor="seo_title">SEO title</label>
-                                        </span>
-                                    </div>
-                                    <div className=" p-field mb-5">
-                                        <span className="p-float-label">
-                                            <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e, "slug")} style={{ fontSize: "12px" }}/>
-                                            <label htmlFor="blog_slug">Blog slug</label>
-                                        </span>
-                                    </div>
-                                    <div className=" p-field mb-5">
-                                        <span className="p-float-label">
-                                        <Calendar id="basic" value={blog.blogdate} onChange={(e) => onInputChange(e,"blogdate")} />
-                                            {/* <InputText type="text" id="keywords" value={blog.blogdate} onChange={(e) => onInputChange(e, "blogdate")} /> */}
-                                            <label htmlFor="keywords">Blog date</label>
-                                        </span>
-                                    </div>
-                                </div>
+                                {/* titlesection  */}
+                                <Accordion>
+                                    <AccordionTab header="Blog Section">
+                                        <div className=" p-field mb-5">
+                                            <span className="p-float-label">
+                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e, "blog_title")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="blog_title">Blog title</label>
+                                            </span>
+                                        </div>
+                                        <div className=" p-field mb-5">
+                                            <span className="p-float-label">
+                                                <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => onInputChange(e, "seo_title")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="seo_title">SEO title</label>
+                                            </span>
+                                        </div>
+                                        <div className=" p-field mb-5">
+                                            <span className="p-float-label">
+                                                <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e, "slug")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="blog_slug">Blog slug</label>
+                                            </span>
+                                        </div>
+                                    </AccordionTab>
+                                </Accordion>
+                                {/* titlesection */}
+                               {/* imagesection */}
+                               <Accordion>
+                                    <AccordionTab header="Image Section">
+                                        <TabView>
+                                            <TabPanel header="upload">
+                                                <FileUpload auto ref={fileRef} url="http://localhost:5000/api/image" className="mb-5" name="image" onUpload={onUpload} accept="image/*" maxFileSize={1000000} />
+                                            </TabPanel>
+                                            <TabPanel header="Gallery">
+                                                <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
+                                                {images?.map((item, ind) => {
+                                                    return (
+                                                        <div className="col" key={ind}>
+                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
+                                                        </div>
+                                                    );
+                                                })}
+                                            </TabPanel>
+                                        </TabView>
+                                    </AccordionTab>
+                                </Accordion>
+                                {/* imagesection */}
 
-                                <div className="card p-fluid">
-                                    <h5 className="mb-5">Image Section</h5>
-
-                                    <TabView>
-                                        <TabPanel header="upload">
-                                            <FileUpload auto ref={fileRef} url="http://localhost:5000/api/image" className="mb-5" name="image" onUpload={onUpload} accept="image/*" maxFileSize={1000000} />
-                                        </TabPanel>
-                                        <TabPanel header="Gallery">
-                                            <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
-                                            {images?.map((item, ind) => {
-                                                return (
-                                                    <div className="col" key={ind}>
-                                                        <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
-                                                    </div>
-                                                );
-                                            })}
-                                        </TabPanel>
-                                    </TabView>
-                                </div>
-                                <div className="card p-fluid">
-                                    <h5 className="mb-5">Category Section</h5>
-                                    {/* <Dropdown value={parentCategory} options={parentCategory} onChange={onCityChange} optionLabel="name" placeholder="Select a City" /> */}
-                                    {/* <TreeSelect className="mb-5" value={blog.category} options={nodes} onChange={(e) => onInputChange(e, "category")} selectionMode="multiple" metaKeySelection={false} placeholder="Select Item"></TreeSelect> */}
-
-                                    <Dropdown 
-                                    options={parentCategory} 
-                                    value={blog.parentcategory_id} 
-                                    onChange={(e) => onInputChange(e, "parentcategory_id")} 
-                                    className={classNames({ "p-invalid": submitted && !blog.parentcategory_id })}
-                                    placeholder="Select parent category" 
-                                    optionLabel="name">
+                                 {/* categorydropdwon */}
+                                <Accordion>
+                                    <AccordionTab header="Category Section">
+                                    <Dropdown
+                                        options={parentCategory}
+                                        value={blog.parentcategory_id}
+                                        onChange={(e) => onInputChange(e, "parentcategory_id")}
+                                        className={classNames({ "p-invalid": submitted && !blog.parentcategory_id })}
+                                        placeholder="Select parent category"
+                                        optionLabel="name">
                                     </Dropdown>
-  
+
                                     <MultiSelect
                                         options={subCategory}
                                         value={blog.subcategory_id}
@@ -501,7 +497,38 @@ function Blogs() {
                                         placeholder="Select a category"
                                         display="chip"
                                     />
-                                </div>
+                                    </AccordionTab>
+                                </Accordion>
+                                {/* categorydropdwon */}
+                                {/* authordropdown */}
+                                <Accordion>
+                                    <AccordionTab header="Author Section">
+                                    <Dropdown
+                                        options={parentCategory}
+                                        value={blog.parentcategory_id}
+                                        onChange={(e) => onInputChange(e, "parentcategory_id")}
+                                        className={classNames({ "p-invalid": submitted && !blog.parentcategory_id })}
+                                        placeholder="Author id"
+                                        optionLabel="name">
+                                    </Dropdown>
+
+                                    <MultiSelect
+                                        options={subCategory}
+                                        value={blog.subcategory_id}
+                                        onChange={(e) => onInputChange(e, "subcategory_id")}
+                                        optionLabel="name"
+                                        placeholder="Review id"
+                                        display="chip"
+                                    />
+                                    <div className=" p-field mb-5">
+                                            <span className="p-float-label">
+                                                <Calendar id="basic" value={blog.blogdate} onChange={(e) => onInputChange(e, "blogdate")} />
+                                                <label htmlFor="keywords">Blog date</label>
+                                            </span>
+                                        </div>
+                                    </AccordionTab>
+                                </Accordion>
+                                {/* authordropdown */}
                             </div>
                         </form>
                     </Dialog>
