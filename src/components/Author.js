@@ -2,46 +2,49 @@ import React, { useState, useEffect, useRef } from "react";
 import { Editor } from 'primereact/editor';
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
-import { MultiSelect } from "primereact/multiselect";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import { FileUpload } from "primereact/fileupload";
 import { Toolbar } from "primereact/toolbar";
-import { InputTextarea } from "primereact/inputtextarea";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { apiService } from "../service/apiServices";
 import { imageService } from "../service/imageService";
-import { Calendar } from 'primereact/calendar';
 import Axios from "axios";
-import classNames from "classnames";
+import { apiService } from "../service/apiServices";
 import { Accordion, AccordionTab } from 'primereact/accordion';
 
-function Blogs() {
-    let emptyBlog = {
-       id: "",
-       blog_title: "",
-       seo_title: "",
-       slug: "",
-       author_id :"",
-       review_id :"",
-       feature_image :"",
-       parentcategory_id: null,
-       subcategory_id :"",
-       blogdate:"",
-       status:"",
-       publishdate:"",
-       content:""
+function Author() {
+    let emptyAuthor = {
+        id:"" ,
+        name: "",
+        image: "",
+        reviewed_by: "",
+        written_by: "",
+        position: "",
+        slug: "",
+        degree: "",
+        seo_title: "",
+        seo_description: "",
+        linkedin: "",
+        highlight: "",
+        experience: "",
+        education: "",
+        about_soma: ""
     };
+
+    const option = [
+        { name: 'Author', value: 'Author' },
+        { name: 'Reviewer', value: 'Reviewer' }
+    ];
 
     const [blogs, setBlogs] = useState([]);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
-    const [blog, setBlog] = useState(emptyBlog);
+    const [blog, setBlog] = useState(emptyAuthor);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
@@ -51,12 +54,12 @@ function Blogs() {
     const toast = useRef(null);
     const dt = useRef(null);
     const fileRef = useRef(null);
-    const [parentCategory, setParentCategory] = useState([null]);
-    const [subCategory, setSubCategory] = useState(null);
+    const [selectedCity1, setSelectedCity1] = useState(null);
+
 
     async function fetchData() {
         const blogData = new apiService();
-        blogData.getBlog().then((data) => setBlogs(data));
+        blogData.getAuthor().then((data) => setBlogs(data));
     }
     async function fetchImages() {
         const galleryImages = new imageService();
@@ -66,26 +69,11 @@ function Blogs() {
     useEffect(() => {
         fetchData();
         fetchImages();
-        getParentCategory();
     }, []);
 
     useEffect(() => {
-        getsubCategory();
     }, [blog.parentcategory_id]);
     
-    async function getParentCategory() {
-        const blogCategory = new apiService();
-        const res = await blogCategory.getParentCategory();
-        const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
-        setParentCategory([...output]);
-    }
-    
-    async function getsubCategory() {
-       const res1 = await Axios.get(`http://localhost:5000/api/category/subcategory/${blog.parentcategory_id}`);
-        const output = res1.data.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
-        setSubCategory([...output]);
-    }
-
 
     console.log(blog.parentcategory_id)
 
@@ -98,7 +86,7 @@ function Blogs() {
     };
 
     const openNew = () => {
-        setBlog(emptyBlog);
+        setBlog(emptyAuthor);
         setSubmitted(false);
         setProductDialog(true);
     };
@@ -129,63 +117,67 @@ function Blogs() {
                 const index = findIndexById(blog.id);
 
                 _blogs[index] = _blog;
-                updateBlogFunction(_blog);
+                updateAuthorFunction(_blog);
                 toast.current.show({ severity: "success", summary: "Successfully", detail: "blog Updated", life: 3000 });
             } else {
                 //   _blog.id = createId();
-                addBlogFunction(_blog);
+                addAuthorFunction(_blog);
                 // _blogs.push(_blog);
                 toast.current.show({ severity: "success", summary: "Successfully", detail: "blog Created", life: 3000 });
             }
 
             setBlogs(_blogs);
             setProductDialog(false);
-            setBlog(emptyBlog);
+            setBlog(emptyAuthor);
         }
     };
 
-    const addBlogFunction = async (data) => {
+    const addAuthorFunction = async (data) => {
         var createPost = {
-            id: data.id,
-            blog_title: data.blog_title,
-            seo_title: data.seo_title,
+            id:data.id ,
+            name: data.name,
+            image: data.image,
+            reviewed_by: data.reviewed_by,
+            written_by: data.written_by,
+            position: data.position,
             slug: data.slug,
-            author_id :data.author_id,
-            review_id :data.review_id,
-            feature_image :data.feature_image,
-            parentcategory_id:data.parentcategory_id,
-            subcategory_id :data.subcategory_id,
-            blogdate:data.blogdate,
-            status:data.status,
-            publishdate:data.publishdate,
-            content:data.content
+            degree: data.degree,
+            seo_title: data.seo_title,
+            seo_description: data.seo_description,
+            linkedin: data.linkedin,
+            highlight: data.highlight,
+            experience: data.experience,
+            education: data.education,
+            about_soma: data.about_soma
         };
 
-        await Axios.post("http://localhost:5000/api/blog", createPost);
+        await Axios.post("http://localhost:5000/api/author", createPost);
         setImages([]);
         fetchData();
     };
 
-    const updateBlogFunction = async (data) => {
+    const updateAuthorFunction = async (data) => {
         const newImg = images.length > 0 ? images.toString() : data.image;
 
         var updatePost = {
-            id: data.id,
-            blog_title: data.blog_title,
-            seo_title: data.seo_title,
+            id:data.id ,
+            name: data.name,
+            image: data.image,
+            reviewed_by: data.reviewed_by,
+            written_by: data.written_by,
+            position: data.position,
             slug: data.slug,
-            author_id :data.author_id,
-            review_id :data.review_id,
-            feature_image :data.feature_image,
-            parentcategory_id:data.parentcategory_id,
-            subcategory_id :data.subcategory_id,
-            blogdate:data.blogdate,
-            status:data.status,
-            publishdate:data.publishdate,
-            content:data.content
+            degree: data.degree,
+            seo_title: data.seo_title,
+            seo_description: data.seo_description,
+            linkedin: data.linkedin,
+            highlight: data.highlight,
+            experience: data.experience,
+            education: data.education,
+            about_soma: data.about_soma
         };
 
-        await Axios.put(`http://localhost:5000/api/blog/${data.id}`, updatePost);
+        await Axios.put(`http://localhost:5000/api/author/${data.id}`, updatePost);
         setImages([]);
         fetchData();
     };
@@ -204,14 +196,14 @@ function Blogs() {
 
     const deleteBlogFunction = async (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        await Axios.delete(`http://localhost:5000/api/blog/${selectedIds}`).then();
+        await Axios.delete(`http://localhost:5000/api/author/${selectedIds}`).then();
         fetchData();
     };
 
     const deleteProduct = () => {
         deleteBlogFunction(blog.id);
         setDeleteProductDialog(false);
-        setBlog(emptyBlog);
+        setBlog(emptyAuthor);
         toast.current.show({ severity: "error", summary: "Successfully", detail: "Blog Deleted", life: 3000 });
     };
 
@@ -291,47 +283,39 @@ function Blogs() {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.blog_title}
+                {rowData.name}
             </>
         );
     };
-    const authoridTemplate = (rowData) => {
+    const imageTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.author_id}
+                {rowData.image}
             </>
         );
     };
-    const review_idTemplate = (rowData) => {
+    const review_byTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.review_id}
+                {rowData.reviewedby}
             </>
         );
     };
-    const featureimageTemplate = (rowData) => {
+    const written_byTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.feature_image}
+                {rowData.writtenby}
             </>
         );
     };
-    const parentcategory_idTemplate = (rowData) => {
+    const positionTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                {rowData.parentcategory_id}
-            </>
-        );
-    };
-    const subcategory_idTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.subcategory_id}
+                {rowData.position}
             </>
         );
     };
@@ -353,7 +337,7 @@ function Blogs() {
 
     const header = (
         <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-            <h5 className="m-0">Manage Blogs</h5>
+            <h5 className="m-0">Manage Authors</h5>
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
@@ -409,18 +393,16 @@ function Blogs() {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="blog_title" header="Title" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="author_id" header="Author_id" sortable body={authoridTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="review_id" header="Review_id" sortable body={review_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="feature_image" header="Feature_image" sortable body={featureimageTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="parentcategory_id" header="Parentcategory_id" sortable body={parentcategory_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="subcategory_id" header="Subcategory_id" sortable body={subcategory_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="image" header="Image" sortable body={imageTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="reviewedby" header="Review_by" sortable body={review_byTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="writtenby" header="Written_by" sortable body={written_byTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="position" header="Position" sortable body={positionTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="status" header="Status" sortable body={statusTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "1200px" }} header="Manage blog" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        {blog.feature_img && <img src={`assets/demo/images/blogs/${blog.feature_img}`} alt={blog.feature_img} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />}
+                    <Dialog visible={productDialog} style={{ width: "1200px" }} header="Manage authors" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                         <form className="grid p-fluid">
                             <div className="col-12 md:col-8">
                                 <div className="card p-fluid">
@@ -430,13 +412,13 @@ function Blogs() {
                             </div>
 
                             <div className="col-12 md:col-4">
-                                {/* titlesection  */}
+                                {/* seosection  */}
                                 <Accordion>
-                                    <AccordionTab header="Blog Section">
+                                    <AccordionTab header="Seo Section">
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e, "blog_title")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="blog_title">Blog title</label>
+                                                <label htmlFor="blog_title">Author name</label>
                                             </span>
                                         </div>
                                         <div className=" p-field mb-5">
@@ -448,12 +430,25 @@ function Blogs() {
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e, "slug")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="blog_slug">Blog slug</label>
+                                                <label htmlFor="blog_slug">Author slug</label>
                                             </span>
                                         </div>
+                                        <div className=" p-field mb-5">
+                                            <span className="p-float-label">
+                                                <InputText type="text" id="seo_description" value={blog.seo_description} onChange={(e) => onInputChange(e, "seo_description")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="seo_description">Author Description</label>
+                                            </span>
+                                        </div>
+                                        <Dropdown 
+                                        value={blog.position} 
+                                        onChange={(e) => onInputChange(e,"position")} 
+                                        placeholder="Select a position" 
+                                        options={option}
+                                        optionLabel="name"
+                                        />
                                     </AccordionTab>
                                 </Accordion>
-                                {/* titlesection */}
+                                {/* seosection */}
                                {/* imagesection */}
                                <Accordion>
                                     <AccordionTab header="Image Section">
@@ -475,54 +470,14 @@ function Blogs() {
                                     </AccordionTab>
                                 </Accordion>
                                 {/* imagesection */}
-
-                                 {/* categorydropdwon */}
-                                <Accordion>
-                                    <AccordionTab header="Category Section">
-                                    <Dropdown
-                                        options={parentCategory}
-                                        value={blog.parentcategory_id}
-                                        onChange={(e) => onInputChange(e, "parentcategory_id")}
-                                        className={classNames({ "p-invalid": submitted && !blog.parentcategory_id })}
-                                        placeholder="Select parent category"
-                                        optionLabel="name">
-                                    </Dropdown>
-
-                                    <MultiSelect
-                                        options={subCategory}
-                                        value={blog.subcategory_id}
-                                        onChange={(e) => onInputChange(e, "subcategory_id")}
-                                        optionLabel="name"
-                                        placeholder="Select a category"
-                                        display="chip"
-                                    />
-                                    </AccordionTab>
-                                </Accordion>
-                                {/* categorydropdwon */}
+                                
                                 {/* authordropdown */}
                                 <Accordion>
-                                    <AccordionTab header="Author Section">
-                                    <Dropdown
-                                        options={parentCategory}
-                                        value={blog.parentcategory_id}
-                                        onChange={(e) => onInputChange(e, "parentcategory_id")}
-                                        className={classNames({ "p-invalid": submitted && !blog.parentcategory_id })}
-                                        placeholder="Author id"
-                                        optionLabel="name">
-                                    </Dropdown>
-
-                                    <MultiSelect
-                                        options={subCategory}
-                                        value={blog.subcategory_id}
-                                        onChange={(e) => onInputChange(e, "subcategory_id")}
-                                        optionLabel="name"
-                                        placeholder="Review id"
-                                        display="chip"
-                                    />
+                                    <AccordionTab header="Social icons">
                                     <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <Calendar id="basic" value={blog.blogdate} onChange={(e) => onInputChange(e, "blogdate")} />
-                                                <label htmlFor="keywords">Blog date</label>
+                                                <InputText type="text" id="Linkedin" value={blog.linkedin} onChange={(e) => onInputChange(e, "linkedin")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="Linkedin">Linkedin</label>
                                             </span>
                                         </div>
                                     </AccordionTab>
@@ -575,4 +530,4 @@ const comparisonFn = function (prevProps, nextProps) {
     return prevProps.location.pathname === nextProps.location.pathname;
 };
 
-export default React.memo(Blogs, comparisonFn);
+export default React.memo(Author, comparisonFn);

@@ -50,6 +50,7 @@ import Blogs from './components/Blogs';
 import Categories from './components/Categories';
 import Cta from './components/Cta';
 import Gallery from './components/Gallery';
+import Author from './components/Author';
 
 const App = () => {
     const [layoutMode, setLayoutMode] = useState('static');
@@ -182,6 +183,9 @@ const App = () => {
                         {
                             label: 'Gallery', icon: 'pi pi-images', to: '/gallery'
                         },
+                        {
+                            label: 'Author', icon: 'pi pi-user', to: '/author'
+                        },
             ]
         },
 
@@ -296,6 +300,7 @@ const App = () => {
                     <Route path="/blog" component={Blogs} />
                     <Route path="/cta" component={Cta} />
                     <Route path="/gallery" component={Gallery} />
+                    <Route path="/author" component={Author} />
                 </div>
 
                 <AppFooter layoutColorMode={layoutColorMode} />

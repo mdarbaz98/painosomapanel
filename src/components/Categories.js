@@ -10,7 +10,7 @@ import { Toolbar } from "primereact/toolbar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { CategoryService } from "../service/categoryServices";
+import { apiService } from "../service/apiServices";
 import { Dropdown } from "primereact/dropdown";
 import Axios from "axios";
 
@@ -54,12 +54,12 @@ function Categories() {
     // all the categories 
     const getAllCategories = () => {
         // fetching all categories list
-        const blogCategory = new CategoryService();
+        const blogCategory = new apiService();
         blogCategory.getCategory().then((data) => setCategoryList(data));
     }
 
     async function getParentCategory() {
-        const blogCategory = new CategoryService();
+        const blogCategory = new apiService();
         const res = await blogCategory.getParentCategory()
         const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
         setparentcategory([{ name: "none", value: "0" }, ...output]);
