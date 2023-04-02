@@ -18,6 +18,8 @@ export class apiService {
     getAuthor() {
       return  axios.get('http://localhost:5000/api/author').then((res) =>   res.data);
     }
-    get
+    getImages() {
+        return axios.get("http://localhost:5000/api/image").then((res) => res.data);
+      }
 }
 

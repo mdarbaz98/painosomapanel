@@ -39,6 +39,8 @@ function Gallery() {
         getImages.getImages().then((data) => setImages(data));
     }
 
+    console.log(images)
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -199,12 +201,12 @@ function Gallery() {
         );
     };
 
-    
+
     const imageBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
-                <img src={`assets/demo/images/gallery/${rowData.imagetitle}`} alt={rowData.image} className="shadow-2" width="100" />
+                <img src={`assets/demo/images/gallery/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
             </>
         );
     };
@@ -306,14 +308,6 @@ function Gallery() {
                                     {/* <h5>Vertical</h5> */}
                                     <div className="field">
                                     <FileUpload url="http://localhost:5000/api/image" ref={fileRef} className="mb-5" name="image" customUpload multiple uploadHandler={myUploader}  accept="image/*" maxFileSize={1000000} />
-                                    </div>
-                                    <div className="field">
-                                        <label htmlFor="imageTitle">Title</label>
-                                        <InputText id="imageTitle" type="text" value={image.title} onChange={(e) => onInputChange(e, "title")} />
-                                    </div>
-                                    <div className="field">
-                                        <label htmlFor="altTitle">Alt Title</label>
-                                        <InputText id="altTitle" type="text" value={image.alt_title} onChange={(e) => onInputChange(e, "alt_title")} />
                                     </div>
                                 </div>
                             </div>

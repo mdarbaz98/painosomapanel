@@ -28,7 +28,7 @@ function Categories() {
         cat_slug: "",
         cat_title: "",
         cat_desc: "",
-        parent_category: null,
+        parent_category: 0,
         status: 0,
     };
 
@@ -46,17 +46,21 @@ function Categories() {
     const dt = useRef(null);
 
 
+
+
     useEffect(() => {
         getAllCategories();
         getParentCategory();
-    }, [category, categoryList.length]);
+        console.log('l')
+    }, [categoryList.length]);
 
-    // all the categories 
+    // all the categories
     const getAllCategories = () => {
         // fetching all categories list
         const blogCategory = new apiService();
         blogCategory.getCategory().then((data) => setCategoryList(data));
     }
+
 
     async function getParentCategory() {
         const blogCategory = new apiService();
@@ -190,7 +194,7 @@ function Categories() {
         _category[`${name}`] = val;
         setCategory(_category);
     };
-console.log(category)
+
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>

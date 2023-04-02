@@ -54,36 +54,12 @@ function Author() {
     const toast = useRef(null);
     const dt = useRef(null);
     const fileRef = useRef(null);
-    const [selectedCity1, setSelectedCity1] = useState(null);
 
 
     async function fetchData() {
         const blogData = new apiService();
         blogData.getAuthor().then((data) => setBlogs(data));
     }
-    async function fetchImages() {
-        const galleryImages = new imageService();
-        galleryImages.getImage().then((data) => setGallery(data));
-    }
-
-    useEffect(() => {
-        fetchData();
-        fetchImages();
-    }, []);
-
-    useEffect(() => {
-    }, [blog.parentcategory_id]);
-    
-
-    console.log(blog.parentcategory_id)
-
-    const onImageChange = (e) => {
-        let selectedImages = [...images];
-        if (e.checked) selectedImages.push(e.value);
-        else selectedImages.splice(selectedImages.indexOf(e.value), 1);
-
-        setImages(selectedImages);
-    };
 
     const openNew = () => {
         setBlog(emptyAuthor);
@@ -244,11 +220,7 @@ function Author() {
         _blog[`${name}`] = val;
         setBlog(_blog);
     };
-    console.log(blog)
-    const onUpload = () => {
-        toast.current.show({ severity: "info", summary: "Successfully", detail: "File Added", life: 3000 });
-        fetchImages();
-    };
+
 
     const leftToolbarTemplate = () => {
         return (
@@ -322,7 +294,7 @@ function Author() {
     const statusTemplate = (rowData) => {
         return (
             <>
-             
+
             </>
         );
     };
@@ -439,38 +411,17 @@ function Author() {
                                                 <label htmlFor="seo_description">Author Description</label>
                                             </span>
                                         </div>
-                                        <Dropdown 
-                                        value={blog.position} 
-                                        onChange={(e) => onInputChange(e,"position")} 
-                                        placeholder="Select a position" 
+                                        <Dropdown
+                                        value={blog.position}
+                                        onChange={(e) => onInputChange(e,"position")}
+                                        placeholder="Select a position"
                                         options={option}
                                         optionLabel="name"
                                         />
                                     </AccordionTab>
                                 </Accordion>
                                 {/* seosection */}
-                               {/* imagesection */}
-                               <Accordion>
-                                    <AccordionTab header="Image Section">
-                                        <TabView>
-                                            <TabPanel header="upload">
-                                                <FileUpload auto ref={fileRef} url="http://localhost:5000/api/image" className="mb-5" name="image" onUpload={onUpload} accept="image/*" maxFileSize={1000000} />
-                                            </TabPanel>
-                                            <TabPanel header="Gallery">
-                                                <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
-                                                {images?.map((item, ind) => {
-                                                    return (
-                                                        <div className="col" key={ind}>
-                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
-                                                        </div>
-                                                    );
-                                                })}
-                                            </TabPanel>
-                                        </TabView>
-                                    </AccordionTab>
-                                </Accordion>
-                                {/* imagesection */}
-                                
+
                                 {/* authordropdown */}
                                 <Accordion>
                                     <AccordionTab header="Social icons">
@@ -502,22 +453,6 @@ function Author() {
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
                             {blog && <span>Are you sure you want to delete the selected blogs?</span>}
-                        </div>
-                    </Dialog>
-
-                    {/* image  gallery dialog  */}
-                    <Dialog header="Gallery" visible={displayBasic} style={{ width: "1200px" }} modal footer={basicDialogFooter} onHide={() => setDisplayBasic(false)}>
-                        <div className="grid">
-                            {gallery ? gallery?.map((item, index) => {
-                                return (
-                                    <div className="col" key={index}>
-                                        <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={onImageChange} checked={images.includes(`${item.image}`)}></Checkbox>
-                                        <label htmlFor={`cb3${index}`} className="p-checkbox-label">
-                                            <img src={`assets/demo/images/gallery/${item.image}`} alt={item.alt_title} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
-                                        </label>
-                                    </div>
-                                );
-                            }) : <p>No images </p>}
                         </div>
                     </Dialog>
                 </div>

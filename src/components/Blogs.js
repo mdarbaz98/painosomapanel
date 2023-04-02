@@ -41,53 +41,54 @@ function Blogs() {
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
+    const [galleryDialog, setGalleryDialog] = useState(false);
     const [blog, setBlog] = useState(emptyBlog);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
-    const [displayBasic, setDisplayBasic] = useState(false);
     const [gallery, setGallery] = useState(null);
     const [images, setImages] = useState([]);
     const toast = useRef(null);
     const dt = useRef(null);
     const fileRef = useRef(null);
     const [parentCategory, setParentCategory] = useState([null]);
-    const [subCategory, setSubCategory] = useState(null);
+    const [subCategory, setSubCategory] = useState([{name: "none",value: "0"}]);
 
     async function fetchData() {
         const blogData = new apiService();
         blogData.getBlog().then((data) => setBlogs(data));
     }
     async function fetchImages() {
-        const galleryImages = new imageService();
-        galleryImages.getImage().then((data) => setGallery(data));
+        const galleryImages = new apiService();
+        galleryImages.getImages().then((data) => setGallery(data));
     }
 
-    useEffect(() => {
-        fetchData();
-        fetchImages();
-        getParentCategory();
-    }, []);
+    // useEffect(() => {
+
+    // }, []);
 
     useEffect(() => {
+        console.log('h')
         getsubCategory();
     }, [blog.parentcategory_id]);
-    
+
     async function getParentCategory() {
         const blogCategory = new apiService();
         const res = await blogCategory.getParentCategory();
         const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
         setParentCategory([...output]);
     }
-    
+
     async function getsubCategory() {
        const res1 = await Axios.get(`http://localhost:5000/api/category/subcategory/${blog.parentcategory_id}`);
         const output = res1.data.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
         setSubCategory([...output]);
     }
 
+    fetchData();
+    fetchImages();
+    getParentCategory();
 
-    console.log(blog.parentcategory_id)
 
     const onImageChange = (e) => {
         let selectedImages = [...images];
@@ -104,7 +105,7 @@ function Blogs() {
     };
 
     const openImageGallery = () => {
-        setDisplayBasic(true);
+        setGalleryDialog(true);
     };
 
     const hideDialog = () => {
@@ -118,6 +119,10 @@ function Blogs() {
 
     const hideDeleteProductsDialog = () => {
         setDeleteProductsDialog(false);
+    };
+
+    const hideGalleryDialog = () => {
+        setGalleryDialog(false);
     };
 
     const saveProduct = async () => {
@@ -338,7 +343,7 @@ function Blogs() {
     const statusTemplate = (rowData) => {
         return (
             <>
-             
+
             </>
         );
     };
@@ -380,7 +385,6 @@ function Blogs() {
         </>
     );
 
-    const basicDialogFooter = <Button type="button" label="Dismiss" onClick={() => setDisplayBasic(false)} icon="pi pi-check" className="p-button-secondary" />;
 
     return (
         <div className="grid crud-demo">
@@ -433,19 +437,19 @@ function Blogs() {
                                 {/* titlesection  */}
                                 <Accordion>
                                     <AccordionTab header="Blog Section">
-                                        <div className=" p-field mb-5">
+                                        <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
                                                 <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e, "blog_title")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_title">Blog title</label>
                                             </span>
                                         </div>
-                                        <div className=" p-field mb-5">
+                                        <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
                                                 <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => onInputChange(e, "seo_title")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="seo_title">SEO title</label>
                                             </span>
                                         </div>
-                                        <div className=" p-field mb-5">
+                                        <div className=" p-field pt-3">
                                             <span className="p-float-label">
                                                 <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e, "slug")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_slug">Blog slug</label>
@@ -463,13 +467,15 @@ function Blogs() {
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
+                                                <div className="grid">
                                                 {images?.map((item, ind) => {
                                                     return (
                                                         <div className="col" key={ind}>
-                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
+                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} style={{width:"100%"}} className="my-3 mx-auto block shadow-2" />
                                                         </div>
                                                     );
                                                 })}
+                                                </div>
                                             </TabPanel>
                                         </TabView>
                                     </AccordionTab>
@@ -483,7 +489,7 @@ function Blogs() {
                                         options={parentCategory}
                                         value={blog.parentcategory_id}
                                         onChange={(e) => onInputChange(e, "parentcategory_id")}
-                                        className={classNames({ "p-invalid": submitted && !blog.parentcategory_id })}
+                                        className={classNames({ "p-invalid": submitted && !blog.parentcategory_id },"mb-5")}
                                         placeholder="Select parent category"
                                         optionLabel="name">
                                     </Dropdown>
@@ -550,21 +556,23 @@ function Blogs() {
                         </div>
                     </Dialog>
 
-                    {/* image  gallery dialog  */}
-                    <Dialog header="Gallery" visible={displayBasic} style={{ width: "1200px" }} modal footer={basicDialogFooter} onHide={() => setDisplayBasic(false)}>
-                        <div className="grid">
-                            {gallery ? gallery?.map((item, index) => {
+
+                    <Dialog visible={galleryDialog} style={{ width: "1200px" }} header="Gallery" modal  onHide={hideGalleryDialog}>
+                    <div className="grid">
+                            {gallery && gallery ? gallery?.map((item, index) => {
                                 return (
-                                    <div className="col" key={index}>
+                                    <div className="col-12 md:col-2" key={index}>
                                         <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={onImageChange} checked={images.includes(`${item.image}`)}></Checkbox>
                                         <label htmlFor={`cb3${index}`} className="p-checkbox-label">
-                                            <img src={`assets/demo/images/gallery/${item.image}`} alt={item.alt_title} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
+                                            <img src={`assets/demo/images/gallery/${item.image}`} alt={item.alt_title} style={{width: "100%",height: "200px",objectFit: "cover",cursor: "pointer"}}  className="mt-0 mx-auto mb-5 block shadow-2" />
                                         </label>
                                     </div>
                                 );
                             }) : <p>No images </p>}
                         </div>
                     </Dialog>
+
+                    {/* image  gallery dialog  */}
                 </div>
             </div>
         </div>

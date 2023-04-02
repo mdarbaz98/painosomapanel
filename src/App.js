@@ -53,7 +53,7 @@ import Gallery from './components/Gallery';
 import Author from './components/Author';
 
 const App = () => {
-    const [layoutMode, setLayoutMode] = useState('static');
+    const [layoutMode, setLayoutMode] = useState('overlay');
     const [layoutColorMode, setLayoutColorMode] = useState('light')
     const [inputStyle, setInputStyle] = useState('outlined');
     const [ripple, setRipple] = useState(true);
