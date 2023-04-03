@@ -11,7 +11,6 @@ import { Toolbar } from "primereact/toolbar";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { imageService } from "../service/imageService";
 import Axios from "axios";
 import { apiService } from "../service/apiServices";
 import { Accordion, AccordionTab } from 'primereact/accordion';
@@ -21,8 +20,6 @@ function Author() {
         id:"" ,
         name: "",
         image: "",
-        reviewed_by: "",
-        written_by: "",
         position: "",
         slug: "",
         degree: "",
@@ -58,8 +55,30 @@ function Author() {
 
     async function fetchData() {
         const blogData = new apiService();
-        blogData.getAuthor().then((data) => setBlogs(data));
+        blogData.getAuthor().then((data) => {
+            console.log(data)
+            setBlogs(data)});
     }
+    async function fetchImages() {
+        const galleryImages = new apiService();
+        galleryImages.getImages().then((data) => setGallery(data));
+    }
+
+    useEffect(() => {
+        fetchData();
+        fetchImages();
+    }, []);
+
+    useEffect(() => {
+    }, [blog.parentcategory_id]);
+    
+    const onImageChange = (e) => {
+        let selectedImages = [...images];
+        if (e.checked) selectedImages.push(e.value);
+        else selectedImages.splice(selectedImages.indexOf(e.value), 1);
+
+        setImages(selectedImages);
+    };
 
     const openNew = () => {
         setBlog(emptyAuthor);
@@ -86,7 +105,7 @@ function Author() {
 
     const saveProduct = async () => {
         setSubmitted(true);
-        if (blog.blog_title.trim()) {
+        if (blog.name.trim()) {
             let _blogs = [...blogs];
             let _blog = { ...blog };
             if (blog.id) {
@@ -113,8 +132,6 @@ function Author() {
             id:data.id ,
             name: data.name,
             image: data.image,
-            reviewed_by: data.reviewed_by,
-            written_by: data.written_by,
             position: data.position,
             slug: data.slug,
             degree: data.degree,
@@ -133,14 +150,11 @@ function Author() {
     };
 
     const updateAuthorFunction = async (data) => {
-        const newImg = images.length > 0 ? images.toString() : data.image;
 
         var updatePost = {
             id:data.id ,
             name: data.name,
             image: data.image,
-            reviewed_by: data.reviewed_by,
-            written_by: data.written_by,
             position: data.position,
             slug: data.slug,
             degree: data.degree,
@@ -220,7 +234,10 @@ function Author() {
         _blog[`${name}`] = val;
         setBlog(_blog);
     };
-
+    const onUpload = () => {
+        toast.current.show({ severity: "info", summary: "Successfully", detail: "File Added", life: 3000 });
+        fetchImages();
+    };
 
     const leftToolbarTemplate = () => {
         return (
@@ -245,7 +262,6 @@ function Author() {
     const idBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Id</span>
                 {rowData.id}
             </>
         );
@@ -254,7 +270,6 @@ function Author() {
     const nameBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.name}
             </>
         );
@@ -262,31 +277,13 @@ function Author() {
     const imageTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.image}
-            </>
-        );
-    };
-    const review_byTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.reviewedby}
-            </>
-        );
-    };
-    const written_byTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.writtenby}
             </>
         );
     };
     const positionTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.position}
             </>
         );
@@ -294,7 +291,7 @@ function Author() {
     const statusTemplate = (rowData) => {
         return (
             <>
-
+             
             </>
         );
     };
@@ -367,8 +364,6 @@ function Author() {
                         <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="image" header="Image" sortable body={imageTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="reviewedby" header="Review_by" sortable body={review_byTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="writtenby" header="Written_by" sortable body={written_byTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="position" header="Position" sortable body={positionTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="status" header="Status" sortable body={statusTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
@@ -389,7 +384,7 @@ function Author() {
                                     <AccordionTab header="Seo Section">
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e, "blog_title")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="name" value={blog.name} onChange={(e) => onInputChange(e, "name")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_title">Author name</label>
                                             </span>
                                         </div>
@@ -401,8 +396,8 @@ function Author() {
                                         </div>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e, "slug")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="blog_slug">Author slug</label>
+                                                <InputText type="text" id="slug" value={blog.slug} onChange={(e) => onInputChange(e, "slug")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="slug">Author slug</label>
                                             </span>
                                         </div>
                                         <div className=" p-field mb-5">
@@ -411,17 +406,38 @@ function Author() {
                                                 <label htmlFor="seo_description">Author Description</label>
                                             </span>
                                         </div>
-                                        <Dropdown
-                                        value={blog.position}
-                                        onChange={(e) => onInputChange(e,"position")}
-                                        placeholder="Select a position"
+                                        <Dropdown 
+                                        value={blog.position} 
+                                        onChange={(e) => onInputChange(e,"position")} 
+                                        placeholder="Select a position" 
                                         options={option}
                                         optionLabel="name"
                                         />
                                     </AccordionTab>
                                 </Accordion>
                                 {/* seosection */}
-
+                               {/* imagesection */}
+                               <Accordion>
+                                    <AccordionTab header="Image Section">
+                                        <TabView>
+                                            <TabPanel header="upload">
+                                                <FileUpload auto ref={fileRef} url="http://localhost:5000/api/image" className="mb-5" name="image" onUpload={onUpload} accept="image/*" maxFileSize={1000000} />
+                                            </TabPanel>
+                                            <TabPanel header="Gallery">
+                                                <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
+                                                {images?.map((item, ind) => {
+                                                    return (
+                                                        <div className="col" key={ind}>
+                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
+                                                        </div>
+                                                    );
+                                                })}
+                                            </TabPanel>
+                                        </TabView>
+                                    </AccordionTab>
+                                </Accordion>
+                                {/* imagesection */}
+                                
                                 {/* authordropdown */}
                                 <Accordion>
                                     <AccordionTab header="Social icons">
@@ -443,7 +459,7 @@ function Author() {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
                             {blog && (
                                 <span>
-                                    Are you sure you want to delete <b>{blog.blog_title}</b>?
+                                    Are you sure you want to delete <b>{blog.name}</b>?
                                 </span>
                             )}
                         </div>
@@ -453,6 +469,22 @@ function Author() {
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
                             {blog && <span>Are you sure you want to delete the selected blogs?</span>}
+                        </div>
+                    </Dialog>
+
+                    {/* image  gallery dialog  */}
+                    <Dialog header="Gallery" visible={displayBasic} style={{ width: "1200px" }} modal footer={basicDialogFooter} onHide={() => setDisplayBasic(false)}>
+                        <div className="grid">
+                            {gallery ? gallery?.map((item, index) => {
+                                return (
+                                    <div className="col" key={index}>
+                                        <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={onImageChange} checked={images.includes(`${item.image}`)}></Checkbox>
+                                        <label htmlFor={`cb3${index}`} className="p-checkbox-label">
+                                            <img src={`assets/demo/images/gallery/${item.image}`} alt={item.alt_title} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
+                                        </label>
+                                    </div>
+                                );
+                            }) : <p>No images </p>}
                         </div>
                     </Dialog>
                 </div>

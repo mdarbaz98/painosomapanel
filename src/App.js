@@ -49,7 +49,7 @@ import AddBlog from './components/AddBlog';
 import Blogs from './components/Blogs';
 import Categories from './components/Categories';
 import Cta from './components/Cta';
-import Gallery from './components/Gallery';
+import Gallery from './components/Image';
 import Author from './components/Author';
 
 const App = () => {
