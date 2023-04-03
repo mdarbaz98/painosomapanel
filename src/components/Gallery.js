@@ -7,7 +7,7 @@ import { FileUpload } from "primereact/fileupload";
 import { Toolbar } from "primereact/toolbar";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { ImagesServices } from "../service/GalleryServices";
+import { apiService } from "../service/apiServices";
 import Axios from "axios";
 
 function Gallery() {
@@ -18,28 +18,23 @@ function Gallery() {
         title: "",
         alt_title: "",
     };
-
-    // const [blogs, setBlogs] = useState("");
+//multiple
     const [images, setImages] = useState("");
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
+//single
     const [image, setImage] = useState(emptyImage);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
-    const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
 
-    const [file, setFile] = useState([]);
     const toast = useRef(null);
     const dt = useRef(null);
-    const fileRef = useRef(null);
 
     const fetchData = () => {
-        const getImages = new ImagesServices();
-        getImages.getImages().then((data) => setImages(data));
+        const getImages = new apiService();
+        getImages.getImages().then((data) => {console.log(data);setImages(data)});
     }
-
-    console.log(images)
 
     useEffect(() => {
         fetchData();
@@ -48,12 +43,10 @@ function Gallery() {
 
     const openNew = () => {
         setImage(emptyImage);
-        setSubmitted(false);
         setProductDialog(true);
     };
 
     const hideDialog = () => {
-        setSubmitted(false);
         setProductDialog(false);
     };
 
@@ -65,54 +58,6 @@ function Gallery() {
         setDeleteProductsDialog(false);
     };
 
-    const saveProduct = async () => {
-        setSubmitted(true);
-            let _images = [...images];
-            let _image = { ...image };
-            if (image.id) {
-                const index = findIndexById(image.id);
-
-                _images[index] = _image;
-                updateImageFunction(_image);
-                toast.current.show({ severity: "warn", summary: "Successfully", detail: "Image Updated", life: 3000 });
-            } else {
-                //   _blog.id = createId();
-                addImageFunction(_image);
-                _images.push(_image);
-                toast.current.show({ severity: "success", summary: "Successfully", detail: "Image Added", life: 3000 });
-                fileRef.current.clear();
-            }
-
-            setImages(_images);
-            setProductDialog(false);
-            setImage(emptyImage);
-    };
-
-    const addImageFunction = async (data) => {
-        const formData = new FormData();
-        formData.append("title", data.title);
-        formData.append("alt_title", data.alt_title);
-        formData.append("image", file);
-        await Axios.post("http://localhost:5000/api/image", formData);
-            fetchData();
-    };
-
-    const updateImageFunction = async (data) => {
-        const fileImg = file ? file : data.image;
-        console.log(fileImg);
-        const formData = new FormData();
-        formData.append("title", data.title);
-        formData.append("alt_title", data.alt_title);
-        formData.append("image", fileImg);
-        await Axios.put(`http://localhost:5000/api/image/${data.id}`, formData)
-        fetchData();
-        setFile(null)
-    };
-
-    const editProduct = (image) => {
-        setImage({ ...image });
-        setProductDialog(true);
-    };
 
     const confirmDeleteProduct = (image) => {
         setImage(image);
@@ -132,21 +77,6 @@ function Gallery() {
         setImage(emptyImage);
     };
 
-    const findIndexById = (id) => {
-        let index = -1;
-        for (let i = 0; i < images.length; i++) {
-            if (images[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    };
-
-    const exportCSV = () => {
-        dt.current.exportCSV();
-    };
 
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
@@ -160,17 +90,21 @@ function Gallery() {
         setSelectedBlogs(null);
     };
 
-    const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || "";
-        let _image = { ...image };
-        _image[`${name}`] = val;
-        setImage(_image);
-    };
 
-    const myUploader = (event) => {
-        toast.current.show({ severity: "info", summary: "Successfully", detail: "File Added", life: 3000 });
-        setFile(event.files[0]);
-    };
+    const imageUpload = async (event) => {
+        try{
+        const formData = new FormData();
+        formData.append("image",event.files[0])
+        formData.append("title",event.files[0].name)
+        const res = await Axios.post('http://localhost:5000/api/image',formData);
+        fetchData();
+        setProductDialog(false)
+        toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
+        }catch(err){
+        toast.current.show({ severity: "danger", summary: "Error", detail: `${err}`, life: 3000 });
+        }
+    }
+
 
     const leftToolbarTemplate = () => {
         return (
@@ -179,15 +113,6 @@ function Gallery() {
                     <Button label="New" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
                     <Button label="Delete" icon="pi pi-trash" className="p-button-danger" onClick={confirmDeleteSelected} disabled={!selectedBlogs || !selectedBlogs.length} />
                 </div>
-            </React.Fragment>
-        );
-    };
-
-    const rightToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                {/* <FileUpload mode="basic" accept="image/*" maxFileSize={1000000} label="Import" chooseLabel="Import" className="mr-2 inline-block" /> */}
-                <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
             </React.Fragment>
         );
     };
@@ -205,7 +130,6 @@ function Gallery() {
     const imageBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 <img src={`assets/demo/images/gallery/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
             </>
         );
@@ -214,7 +138,6 @@ function Gallery() {
     const nameBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.title}
             </>
         );
@@ -223,7 +146,6 @@ function Gallery() {
     const parentNameBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
                 {rowData.alt_title}
             </>
         );
@@ -232,8 +154,7 @@ function Gallery() {
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning mt-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger mt-2" onClick={() => confirmDeleteProduct(rowData)} />
             </div>
         );
     };
@@ -251,7 +172,6 @@ function Gallery() {
     const productDialogFooter = (
         <>
             <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
         </>
     );
     const deleteProductDialogFooter = (
@@ -273,7 +193,7 @@ function Gallery() {
                 <div className="card">
                     <h5>Gallery</h5>
                     <Toast ref={toast} />
-                    <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+                    <Toolbar className="mb-4" left={leftToolbarTemplate} ></Toolbar>
 
                     <DataTable
                         ref={dt}
@@ -307,7 +227,7 @@ function Gallery() {
                                 <div className="p-fluid">
                                     {/* <h5>Vertical</h5> */}
                                     <div className="field">
-                                    <FileUpload url="http://localhost:5000/api/image" ref={fileRef} className="mb-5" name="image" customUpload multiple uploadHandler={myUploader}  accept="image/*" maxFileSize={1000000} />
+                                    <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image" customUpload uploadHandler={imageUpload}  accept="image/*" maxFileSize={1000000} />
                                     </div>
                                 </div>
                             </div>
@@ -328,7 +248,7 @@ function Gallery() {
                     <Dialog visible={deleteProductsDialog} style={{ width: "450px" }} header="Confirm" modal footer={deleteProductsDialogFooter} onHide={hideDeleteProductsDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
-                            {image && <span>Are you sure you want to delete the selected CTA's?</span>}
+                            {image && <span>Are you sure you want to delete the selected Images?</span>}
                         </div>
                     </Dialog>
                 </div>

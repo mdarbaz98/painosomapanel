@@ -70,7 +70,10 @@ function Blogs() {
     useEffect(() => {
         console.log('h')
         getsubCategory();
-    }, [blog.parentcategory_id]);
+        fetchData();
+        fetchImages();
+        getParentCategory();    
+    }, []);
 
     async function getParentCategory() {
         const blogCategory = new apiService();
@@ -84,11 +87,6 @@ function Blogs() {
         const output = res1.data.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
         setSubCategory([...output]);
     }
-
-    fetchData();
-    fetchImages();
-    getParentCategory();
-
 
     const onImageChange = (e) => {
         let selectedImages = [...images];
@@ -468,7 +466,7 @@ function Blogs() {
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
                                                 <div className="grid">
-                                                {images?.map((item, ind) => {
+                                                {images && images?.map((item, ind) => {
                                                     return (
                                                         <div className="col" key={ind}>
                                                             <img src={`assets/demo/images/gallery/${item}`} alt={item} style={{width:"100%"}} className="my-3 mx-auto block shadow-2" />

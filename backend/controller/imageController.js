@@ -11,12 +11,12 @@ const getAllImage = (req, resp) => {
 };
 
 const addImage = (req, resp) => {
-    const image = req.file ? req.file.filename : req.body.image;
-    var name = image.split('.')[0]
+    const image = req.body.title;
+    var name = req.body.title.split('.')[0]
     con.query('INSERT INTO image (`image`, `title`, `alt_title`) values(?,?,?)',[image,name,name],(err,result) => {
         if(err) console.log(err);
     })
-    resp.status(200).send(image);
+    resp.status(200).json("successfully upload");
 };
 
 const updateImage = (req, resp) => {
