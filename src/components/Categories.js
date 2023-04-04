@@ -94,7 +94,7 @@ function Categories() {
             let _category = { ...category };
             if (category.id) {
                 const index = findIndexById(category.id);
-
+                console.log(index)
                 _categories[index] = _category;
                 updateCategoryFunction(_category);
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Updated", life: 3000 });
@@ -128,13 +128,15 @@ function Categories() {
         setCategory({ ...category });
         setProductDialog(true);
     };
+
     // SAMPLE
     const categoryStatus = (rowData) => {
-        let _category = { ...rowData };
+        let _categories = [...categoryList];
+        let _category = {...rowData};  
         _category["status"] = rowData.status === 0 ? 1 : 0;
-        setCategory(_category);
+        _categories[rowData.id-1] = _category
+        setCategoryList(_categories);
         updateCategoryFunction(_category);
-        getAllCategories();
     }
     const confirmDeleteProduct = (category) => {
         setCategory(category);
