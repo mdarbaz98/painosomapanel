@@ -46,12 +46,18 @@ function Categories() {
     const dt = useRef(null);
 
 
-
+    const categoryStatus = (rowData) => {
+        let _category = { ...rowData };
+        console.log(_category);
+        _category["status"] = rowData.status === 0 ? 1 : 0;
+        setCategory(_category);
+        updateCategoryFunction(_category);
+        getAllCategories();
+    }
 
     useEffect(() => {
         getAllCategories();
         getParentCategory();
-        console.log('l')
     }, [categoryList.length]);
 
     // all the categories
@@ -129,13 +135,7 @@ function Categories() {
         setProductDialog(true);
     };
     // SAMPLE
-    const categoryStatus = (rowData) => {
-        let _category = { ...rowData };
-        _category["status"] = rowData.status === 0 ? 1 : 0;
-        setCategory(_category);
-        updateCategoryFunction(_category);
-        getAllCategories();
-    }
+    
     const confirmDeleteProduct = (category) => {
         setCategory(category);
         setDeleteProductDialog(true);

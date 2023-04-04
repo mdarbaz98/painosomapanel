@@ -4,7 +4,6 @@ import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
-import { Checkbox } from "primereact/checkbox";
 import { Button } from "primereact/button";
 import { FileUpload } from "primereact/fileupload";
 import { Toolbar } from "primereact/toolbar";
@@ -14,10 +13,11 @@ import { InputText } from "primereact/inputtext";
 import Axios from "axios";
 import { apiService } from "../service/apiServices";
 import { Accordion, AccordionTab } from 'primereact/accordion';
+import { Avatar } from 'primereact/avatar';
 
 function Author() {
     let emptyAuthor = {
-        id:"" ,
+        id: "",
         name: "",
         image: "",
         position: "",
@@ -46,44 +46,42 @@ function Author() {
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
     const [displayBasic, setDisplayBasic] = useState(false);
-    const [gallery, setGallery] = useState(null);
+    const [file, setFile] = useState(null);
     const [images, setImages] = useState([]);
     const toast = useRef(null);
     const dt = useRef(null);
-    const fileRef = useRef(null);
+
+
+    console.log(blogs)
 
 
     async function fetchData() {
         const blogData = new apiService();
         blogData.getAuthor().then((data) => {
-            console.log(data)
-            setBlogs(data)});
-    }
-    async function fetchImages() {
-        const galleryImages = new apiService();
-        galleryImages.getImages().then((data) => setGallery(data));
+            setBlogs(data)
+        });
     }
 
     useEffect(() => {
         fetchData();
-        fetchImages();
     }, []);
 
     useEffect(() => {
     }, [blog.parentcategory_id]);
-    
-    const onImageChange = (e) => {
-        let selectedImages = [...images];
-        if (e.checked) selectedImages.push(e.value);
-        else selectedImages.splice(selectedImages.indexOf(e.value), 1);
 
-        setImages(selectedImages);
-    };
+    // const onImageChange = (e) => {
+    //     let selectedImages = [...images];
+    //     if (e.checked) selectedImages.push(e.value);
+    //     else selectedImages.splice(selectedImages.indexOf(e.value), 1);
+
+    //     setImages(selectedImages);
+    // };
 
     const openNew = () => {
         setBlog(emptyAuthor);
         setSubmitted(false);
         setProductDialog(true);
+        setFile(null)
     };
 
     const openImageGallery = () => {
@@ -112,12 +110,10 @@ function Author() {
                 const index = findIndexById(blog.id);
 
                 _blogs[index] = _blog;
-                updateAuthorFunction(_blog);
+                addUpdate(_blog);
                 toast.current.show({ severity: "success", summary: "Successfully", detail: "blog Updated", life: 3000 });
             } else {
-                //   _blog.id = createId();
-                addAuthorFunction(_blog);
-                // _blogs.push(_blog);
+                addUpdate(_blog);
                 toast.current.show({ severity: "success", summary: "Successfully", detail: "blog Created", life: 3000 });
             }
 
@@ -127,61 +123,44 @@ function Author() {
         }
     };
 
-    const addAuthorFunction = async (data) => {
-        var createPost = {
-            id:data.id ,
-            name: data.name,
-            image: data.image,
-            position: data.position,
-            slug: data.slug,
-            degree: data.degree,
-            seo_title: data.seo_title,
-            seo_description: data.seo_description,
-            linkedin: data.linkedin,
-            highlight: data.highlight,
-            experience: data.experience,
-            education: data.education,
-            about_soma: data.about_soma
-        };
+    console.log(blog)
 
-        await Axios.post("http://localhost:5000/api/author", createPost);
-        setImages([]);
-        fetchData();
-    };
+    const addUpdate = async (data) => {
+        const formData = new FormData();
+        formData.append("image", file);
+        formData.append("name", data.name);
+        formData.append("position", data.position);
+        formData.append("slug", data.slug);
+        formData.append("degree", data.degree);
+        formData.append("seo_title", data.seo_title);
+        formData.append("seo_description", data.seo_description);
+        formData.append("linkedin", data.linkedin);
+        formData.append("highlight", data.highlight);
+        formData.append("experience", data.experience);
+        formData.append("education", data.education);
+        formData.append("about_soma", data.about_soma);
 
-    const updateAuthorFunction = async (data) => {
-
-        var updatePost = {
-            id:data.id ,
-            name: data.name,
-            image: data.image,
-            position: data.position,
-            slug: data.slug,
-            degree: data.degree,
-            seo_title: data.seo_title,
-            seo_description: data.seo_description,
-            linkedin: data.linkedin,
-            highlight: data.highlight,
-            experience: data.experience,
-            education: data.education,
-            about_soma: data.about_soma
-        };
-
-        await Axios.put(`http://localhost:5000/api/author/${data.id}`, updatePost);
-        setImages([]);
+        if (blog.id) {
+            await Axios.put(`http://localhost:5000/api/author/${data.id}`, formData);
+        } else {
+            await Axios.post("http://localhost:5000/api/author", formData);
+        }
+        setFile(null);
         fetchData();
     };
 
     const editProduct = (blog) => {
-        console.log(blog)
         setBlog({ ...blog });
         setProductDialog(true);
     };
 
+    // const authorStatus = (rowData) =>{
+    //     let 
+    // }
+
     const confirmDeleteProduct = (blog) => {
         setBlog(blog);
         setDeleteProductDialog(true);
-        // deleteBlogFunction(blog.id);
     };
 
     const deleteBlogFunction = async (data) => {
@@ -228,17 +207,28 @@ function Author() {
 
     const onInputChange = (e, name) => {
         let val;
-        name === "content" ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
+        
+        (name === "highlight" || name === "experience" || name === "about_soma" || name === "education") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
 
         let _blog = { ...blog };
         _blog[`${name}`] = val;
         setBlog(_blog);
-    };
-    const onUpload = () => {
-        toast.current.show({ severity: "info", summary: "Successfully", detail: "File Added", life: 3000 });
-        fetchImages();
-    };
+    }
 
+    const imageUpload = async (event) => {
+
+        // try{
+        // const formData = new FormData();
+        // formData.append("image",event.files[0]);
+        setFile(event.files[0])
+        // const res = await Axios.post('http://localhost:5000/api/image',formData);
+        // fetchData();
+        // setProductDialog(false)
+        toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 })
+        // }catch(err){
+        // toast.current.show({ severity: "danger", summary: "Error", detail: `${err}`, life: 3000 });
+        // }
+    }
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
@@ -277,7 +267,7 @@ function Author() {
     const imageTemplate = (rowData) => {
         return (
             <>
-                {rowData.image}
+                <img src={`assets/demo/images/gallery/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
             </>
         );
     };
@@ -291,7 +281,9 @@ function Author() {
     const statusTemplate = (rowData) => {
         return (
             <>
-             
+                {/* <div className="actions">
+                    <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0 ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => authorStatus(rowData)} />
+                </div> */}
             </>
         );
     };
@@ -370,14 +362,12 @@ function Author() {
                     </DataTable>
 
                     <Dialog visible={productDialog} style={{ width: "1200px" }} header="Manage authors" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        <form className="grid p-fluid">
-                            <div className="col-12 md:col-8">
-                                <div className="card p-fluid">
-                                    <h5>Content</h5>
-                                    <Editor style={{ height: '320px' }} value={blog.content} onTextChange={(e) => onInputChange(e, "content")} />
-                                </div>
-                            </div>
-
+                        <div>
+                            {blog &&
+                                <img src={`assets/demo/images/gallery/${blog.image}`} alt={blog.image} className="shadow-2" width="100" />
+                            }
+                        </div>
+                        <form className="grid py-5 p-fluid">
                             <div className="col-12 md:col-4">
                                 {/* seosection  */}
                                 <Accordion>
@@ -406,42 +396,41 @@ function Author() {
                                                 <label htmlFor="seo_description">Author Description</label>
                                             </span>
                                         </div>
-                                        <Dropdown 
-                                        value={blog.position} 
-                                        onChange={(e) => onInputChange(e,"position")} 
-                                        placeholder="Select a position" 
-                                        options={option}
-                                        optionLabel="name"
+                                        <div className=" p-field mb-5">
+                                            <span className="p-float-label">
+                                                <InputText type="text" id="degree" value={blog.degree} onChange={(e) => onInputChange(e, "degree")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="degree">Author Degree</label>
+                                            </span>
+                                        </div>
+                                        <Dropdown
+                                            value={blog.position}
+                                            onChange={(e) => onInputChange(e, "position")}
+                                            placeholder="Select a position"
+                                            options={option}
+                                            optionLabel="name"
                                         />
                                     </AccordionTab>
                                 </Accordion>
                                 {/* seosection */}
-                               {/* imagesection */}
-                               <Accordion>
+                            </div>
+                            <div className="col-12 md:col-4">
+                                {/* imagesection */}
+                                <Accordion>
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto ref={fileRef} url="http://localhost:5000/api/image" className="mb-5" name="image" onUpload={onUpload} accept="image/*" maxFileSize={1000000} />
-                                            </TabPanel>
-                                            <TabPanel header="Gallery">
-                                                <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
-                                                {images?.map((item, ind) => {
-                                                    return (
-                                                        <div className="col" key={ind}>
-                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
-                                                        </div>
-                                                    );
-                                                })}
+                                                <FileUpload auto url="http://localhost:5000/api/author" className="mb-5" name="image" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                         </TabView>
                                     </AccordionTab>
                                 </Accordion>
                                 {/* imagesection */}
-                                
+                            </div>
+                            <div className="col-12 md:col-4">
                                 {/* authordropdown */}
                                 <Accordion>
                                     <AccordionTab header="Social icons">
-                                    <div className=" p-field mb-5">
+                                        <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <InputText type="text" id="Linkedin" value={blog.linkedin} onChange={(e) => onInputChange(e, "linkedin")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="Linkedin">Linkedin</label>
@@ -451,6 +440,31 @@ function Author() {
                                 </Accordion>
                                 {/* authordropdown */}
                             </div>
+                            <div className="col-12 md:col-6">
+                                <div className="card p-fluid">
+                                    <h5>Highlight</h5>
+                                    <Editor style={{ height: '320px' }} value={blog.highlight} onTextChange={(e) => onInputChange(e, "highlight")} />
+                                </div>
+                            </div>
+                            <div className="col-12 md:col-6">
+                                <div className="card p-fluid">
+                                    <h5>Experience</h5>
+                                    <Editor style={{ height: '320px' }} value={blog.experience} onTextChange={(e) => onInputChange(e, "experience")} />
+                                </div>
+                            </div>
+                            <div className="col-12 md:col-6">
+                                <div className="card p-fluid">
+                                    <h5>Education</h5>
+                                    <Editor style={{ height: '320px' }} value={blog.education} onTextChange={(e) => onInputChange(e, "education")} />
+                                </div>
+                            </div>
+                            <div className="col-12 md:col-6">
+                                <div className="card p-fluid">
+                                    <h5>About soma</h5>
+                                    <Editor style={{ height: '320px' }} value={blog.about_soma} onTextChange={(e) => onInputChange(e, "about_soma")} />
+                                </div>
+                            </div>
+
                         </form>
                     </Dialog>
 
@@ -469,22 +483,6 @@ function Author() {
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
                             {blog && <span>Are you sure you want to delete the selected blogs?</span>}
-                        </div>
-                    </Dialog>
-
-                    {/* image  gallery dialog  */}
-                    <Dialog header="Gallery" visible={displayBasic} style={{ width: "1200px" }} modal footer={basicDialogFooter} onHide={() => setDisplayBasic(false)}>
-                        <div className="grid">
-                            {gallery ? gallery?.map((item, index) => {
-                                return (
-                                    <div className="col" key={index}>
-                                        <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={onImageChange} checked={images.includes(`${item.image}`)}></Checkbox>
-                                        <label htmlFor={`cb3${index}`} className="p-checkbox-label">
-                                            <img src={`assets/demo/images/gallery/${item.image}`} alt={item.alt_title} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
-                                        </label>
-                                    </div>
-                                );
-                            }) : <p>No images </p>}
                         </div>
                     </Dialog>
                 </div>

@@ -221,7 +221,6 @@ function Gallery() {
                     </DataTable>
 
                     <Dialog visible={productDialog} style={{ width: "600px" }} header="IMAGE Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        {image.title && <img src={`assets/demo/images/gallery/${image.image}`} alt={image.image} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />}
                         <div className="grid">
                             <div className="col-12">
                                 <div className="p-fluid">
