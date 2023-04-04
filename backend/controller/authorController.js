@@ -25,13 +25,14 @@ const addAuthor = asyncHandler(async (req, res) => {
         highlight, 
         experience, 
         education,
-         about_soma
+         about_soma,
+         status
     } = req.body;
 
     const imageName = req.file.filename;
 
-    const q = "INSERT INTO author (name, image, position, slug, degree, seo_title, seo_description, linkedin, highlight, experience, education, about_soma) value (?,?,?,?,?,?,?,?,?,?,?,?)"
-    const values = [name, imageName, position, slug, degree, seo_title, seo_description, linkedin, highlight, experience, education, about_soma]
+    const q = "INSERT INTO author (name, image, position, slug, degree, seo_title, seo_description, linkedin, highlight, experience, education, about_soma,status) value (?,?,?,?,?,?,?,?,?,?,?,?,?)"
+    const values = [name, imageName, position, slug, degree, seo_title, seo_description, linkedin, highlight, experience, education, about_soma,status]
     try {
         con.query(q,values,(err, result) => {
                 if (err) console.log(err);
@@ -46,12 +47,13 @@ const addAuthor = asyncHandler(async (req, res) => {
 // update
 
 const updateAuthor = asyncHandler(async (req, res) => {
-    const { name, image, position, slug, degree, seo_title, seo_description, linkedin, highlight, experience, education, about_soma } = req.body;
+    const { name, position, slug, degree, seo_title, seo_description, linkedin, highlight, experience, education, about_soma,status } = req.body;
     const id = req.params.id;
-    const imageName = req.file.filename;
+
+    const imageName = req.file ? req.file.filename : req.body.image;
     con.query(
-        "UPDATE `author` SET  name=?,imageName=?, image=?, reviewed_by=?, written_by=?, position=?, slug=?, degree=?, seo_title=?, seo_description=?, linkedin=?, highlight=?, experience=?, education=?, about_soma=? WHERE id IN (?)",
-        [name, image,imageName, position, slug, degree, seo_title, seo_description, linkedin, highlight, experience, education, about_soma, id],
+        "UPDATE `author` SET  name=?, image=?, position=?, slug=?, degree=?, seo_title=?, seo_description=?, linkedin=?, highlight=?, experience=?, education=?, about_soma=? , status=? WHERE id IN (?)",
+        [name,imageName, position, slug, degree, seo_title, seo_description, linkedin, highlight, experience, education, about_soma,status, id],
         (err, result) => {
             if (err) console.log(err);
             //  res.send(result)

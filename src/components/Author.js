@@ -13,7 +13,6 @@ import { InputText } from "primereact/inputtext";
 import Axios from "axios";
 import { apiService } from "../service/apiServices";
 import { Accordion, AccordionTab } from 'primereact/accordion';
-import { Avatar } from 'primereact/avatar';
 
 function Author() {
     let emptyAuthor = {
@@ -29,9 +28,9 @@ function Author() {
         highlight: "",
         experience: "",
         education: "",
-        about_soma: ""
+        about_soma: "",
+        status: 0
     };
-
     const option = [
         { name: 'Author', value: 'Author' },
         { name: 'Reviewer', value: 'Reviewer' }
@@ -47,12 +46,9 @@ function Author() {
     const [globalFilter, setGlobalFilter] = useState(null);
     const [displayBasic, setDisplayBasic] = useState(false);
     const [file, setFile] = useState(null);
-    const [images, setImages] = useState([]);
     const toast = useRef(null);
     const dt = useRef(null);
 
-
-    console.log(blogs)
 
 
     async function fetchData() {
@@ -69,23 +65,12 @@ function Author() {
     useEffect(() => {
     }, [blog.parentcategory_id]);
 
-    // const onImageChange = (e) => {
-    //     let selectedImages = [...images];
-    //     if (e.checked) selectedImages.push(e.value);
-    //     else selectedImages.splice(selectedImages.indexOf(e.value), 1);
-
-    //     setImages(selectedImages);
-    // };
 
     const openNew = () => {
         setBlog(emptyAuthor);
         setSubmitted(false);
         setProductDialog(true);
         setFile(null)
-    };
-
-    const openImageGallery = () => {
-        setDisplayBasic(true);
     };
 
     const hideDialog = () => {
@@ -123,11 +108,10 @@ function Author() {
         }
     };
 
-    console.log(blog)
 
     const addUpdate = async (data) => {
         const formData = new FormData();
-        formData.append("image", file);
+        formData.append("image", file ? file : data.image);
         formData.append("name", data.name);
         formData.append("position", data.position);
         formData.append("slug", data.slug);
@@ -139,11 +123,12 @@ function Author() {
         formData.append("experience", data.experience);
         formData.append("education", data.education);
         formData.append("about_soma", data.about_soma);
-
+        formData.append("status", data.status);
+        console.log(blog.id)
         if (blog.id) {
-            await Axios.put(`http://localhost:5000/api/author/${data.id}`, formData);
+            // await Axios.put(`http://localhost:5000/api/author/${data.id}`, formData);
         } else {
-            await Axios.post("http://localhost:5000/api/author", formData);
+            // await Axios.post("http://localhost:5000/api/author", formData);
         }
         setFile(null);
         fetchData();
@@ -154,9 +139,29 @@ function Author() {
         setProductDialog(true);
     };
 
-    // const authorStatus = (rowData) =>{
-    //     let 
-    // }
+    const updateStatus = async (rowData) => {
+        await Axios.put(`http://localhost:5000/api/author/${rowData.id}`, rowData);
+        fetchData();
+    }
+
+    const authorStatus = (rowData) => {
+        const index = findIndexById(rowData.id);
+        let _auhtorList = [...blogs];
+        let _author = { ...rowData };
+        _author["status"] = rowData.status === 0 ? 1 : 0;
+        _auhtorList[index] = _author
+        setBlogs(_auhtorList);
+        updateStatus(_author)
+
+        // let _auhtorList = [...blogs]
+        // let _authorstatus = {...rowData}
+        // _authorstatus["status"] = rowData.status === 0 ? 1 : 0;
+        // _auhtorList[rowData.id-1] = _authorstatus
+        // setBlogs(_auhtorList);
+        // console.log(_auhtorList)
+        // console.log(_auhtorList);
+        // addUpdate(_authorstatus)
+    }
 
     const confirmDeleteProduct = (blog) => {
         setBlog(blog);
@@ -207,7 +212,7 @@ function Author() {
 
     const onInputChange = (e, name) => {
         let val;
-        
+
         (name === "highlight" || name === "experience" || name === "about_soma" || name === "education") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
 
         let _blog = { ...blog };
@@ -216,18 +221,9 @@ function Author() {
     }
 
     const imageUpload = async (event) => {
-
-        // try{
-        // const formData = new FormData();
-        // formData.append("image",event.files[0]);
         setFile(event.files[0])
-        // const res = await Axios.post('http://localhost:5000/api/image',formData);
-        // fetchData();
-        // setProductDialog(false)
         toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 })
-        // }catch(err){
-        // toast.current.show({ severity: "danger", summary: "Error", detail: `${err}`, life: 3000 });
-        // }
+
     }
     const leftToolbarTemplate = () => {
         return (
@@ -281,9 +277,9 @@ function Author() {
     const statusTemplate = (rowData) => {
         return (
             <>
-                {/* <div className="actions">
+                <div className="actions">
                     <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0 ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => authorStatus(rowData)} />
-                </div> */}
+                </div>
             </>
         );
     };

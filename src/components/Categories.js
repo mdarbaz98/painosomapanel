@@ -127,10 +127,17 @@ function Categories() {
 
     // SAMPLE
     const categoryStatus = (rowData) => {
+        const index = findIndexById(rowData.id);
         let _categories = [...categoryList];
         let _category = {...rowData};  
         _category["status"] = rowData.status === 0 ? 1 : 0;
-        _categories[rowData.id-1] = _category
+        _categories[index
+        
+        
+        
+        
+        
+        ] = _category
         setCategoryList(_categories);
         updateCategoryFunction(_category);
     }
