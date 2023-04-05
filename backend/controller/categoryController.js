@@ -45,7 +45,7 @@ const getCategoryById = asyncHandler(async (req, res) => {
 
 const addCategory = asyncHandler(async (req, res) => {
     const { cat_name, cat_slug, cat_title, cat_desc, parent_category, parentcategory_name, status } = req.body;
-    console.log(req.body);
+
     con.query("INSERT INTO `categories`( `cat_name`, `cat_slug`, `cat_title`, `cat_desc`, `parent_category`, `parentcategory_name`, `status`) VALUES (?,?,?,?,?,?,?)", [cat_name, cat_slug, cat_title, cat_desc, parent_category, parentcategory_name, status], (err, result) => {
         if (err) console.log(err);
         console.log(result)
@@ -69,13 +69,24 @@ const deleteCategory = asyncHandler(async (req, res) => {
 // category update
 
 const updateCategory = asyncHandler(async (req, res) => {
-    const { cat_name, cat_slug, cat_title, cat_desc, parent_category, status } = req.body;
+    const { cat_name, cat_slug, cat_title, cat_desc, parent_category, parentcategory_name, status } = req.body;
     const id = req.params.id;
-    con.query("UPDATE `categories` SET cat_name=? ,cat_slug=? ,cat_title=? ,cat_desc=? ,parent_category=? ,status=? WHERE id IN (?)", [cat_name, cat_slug, cat_title, cat_desc, parent_category, status, id], (err, result) => {
+    con.query("UPDATE `categories` SET cat_name=? ,cat_slug=? ,cat_title=? ,cat_desc=? ,parent_category=?,parentcategory_name=? ,status=? WHERE id IN (?)", [cat_name, cat_slug, cat_title, cat_desc, parent_category, parentcategory_name, status, id], (err, result) => {
         if (err) console.log(err);
         res.send(result);
     });
     // res.status(200)     .json({ message: "Category updated" });
+});
+
+// updateCategoryStatus
+const updateCategoryStatus = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const status = req.body.status
+    con.query(`UPDATE categories SET status=${status} WHERE id=?`, [id], (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    });
+    // res.status(200).json({ message: "Category deleted" });
 });
 
 module.exports = {
@@ -86,4 +97,5 @@ module.exports = {
     updateCategory,
     addCategory,
     getSubCategoryById,
+    updateCategoryStatus,
 };

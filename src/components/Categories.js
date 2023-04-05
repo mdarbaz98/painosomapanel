@@ -51,7 +51,7 @@ function Categories() {
     useEffect(() => {
         getAllCategories();
         getParentCategory();
-    }, [categoryList.length]);
+    }, [categoryList.length,parentcategoryName]);
 
     // all the categories
     const getAllCategories = () => {
@@ -86,6 +86,8 @@ function Categories() {
         setDeleteProductsDialog(false);
     };
 
+    console.log(categoryList)
+
     const saveProduct = async () => {
         setSubmitted(true);
 
@@ -112,18 +114,18 @@ function Categories() {
 
             setCategoryList(_categories);
             setProductDialog(false);
+            setparentcategoryName('');
         }
     };
 
     const addCategoryFunction = (data,name) => {
-        console.log(name)
         Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status, parentcategory_name: name})
             .then()
             .catch((err) => console.log(err));
     };
 
-    const updateCategoryFunction = (data) => {
-        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
+    const updateCategoryFunction = (data,name) => {
+        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status ,parentcategory_name: name})
             .then()
             .catch((err) => {
                 console.log(err);
@@ -135,21 +137,19 @@ function Categories() {
         setProductDialog(true);
     };
 
+    const updateStatus = async (rowData) => {
+        await Axios.put(`http://localhost:5000/api/category/status/${rowData.id}`, rowData);
+    }
+
     // SAMPLE
     const categoryStatus = (rowData) => {
         const index = findIndexById(rowData.id);
         let _categories = [...categoryList];
         let _category = {...rowData};  
         _category["status"] = rowData.status === 0 ? 1 : 0;
-        _categories[index
-        
-        
-        
-        
-        
-        ] = _category
+        _categories[index] = _category
         setCategoryList(_categories);
-        updateCategoryFunction(_category);
+        updateStatus(_category);
     }
     const confirmDeleteProduct = (category) => {
         setCategory(category);
@@ -266,13 +266,7 @@ function Categories() {
             </>
         );
     };
-    const parent_categoryBodyTemplate = (rowData) => {
-        return (
-            <>
-                {rowData.parent_category}
-            </>
-        );
-    };
+
     const parent_categoryNameBodyTemplate = (rowData) => {
         return (
             <>
@@ -359,7 +353,6 @@ function Categories() {
                         <Column field="cat_slug" header="Slug" sortable body={slugBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="cat_title" header="Title" sortable body={titleBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="cat_desc" header="Description" sortable body={categoryDescBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="parent_category" header="Parent Category" sortable body={parent_categoryBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="parent_category" header="Parent Category Name" sortable body={parent_categoryNameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="status" header="Status" sortable body={statusBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>

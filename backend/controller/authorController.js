@@ -74,9 +74,21 @@ const deleteAuthor = asyncHandler(async (req, res) => {
     // res.status(200).json({ message: "Category deleted" });
 });
 
+// updateAuthorStatus
+const updateAuthorStatus = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const status = req.body.status
+    con.query(`UPDATE author SET status=${status} WHERE id=?`, [id], (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    });
+    // res.status(200).json({ message: "Category deleted" });
+});
+
 module.exports = {
     getAllAuthor,
     addAuthor,
     updateAuthor,
     deleteAuthor,
+    updateAuthorStatus
 };

@@ -1,4 +1,4 @@
-const {getAllCategory,getParentCategory, getCategoryById, addCategory, updateCategory, deleteCategory,getSubCategoryById}  = require("../controller/categoryController");
+const {getAllCategory,getParentCategory, getCategoryById, addCategory, updateCategory,updateCategoryStatus, deleteCategory,getSubCategoryById}  = require("../controller/categoryController");
 const router = require("express").Router();
 
 //get all categories
@@ -19,6 +19,9 @@ router.post("/", addCategory);
 
 //update category
 router.put("/:id", updateCategory);
+
+//update category status
+router.put("/status/:id", updateCategoryStatus);
 
 //delete category
 router.delete("/:id",deleteCategory);
