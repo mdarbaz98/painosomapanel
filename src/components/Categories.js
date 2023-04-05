@@ -21,6 +21,7 @@ function Categories() {
     //     [{ name: "none", value: "0" }];
 
     const [parentcategory, setparentcategory] = useState(null);
+    const [parentcategoryName, setparentcategoryName] = useState(null);
 
     let emptyCategory = {
         id: "",
@@ -83,20 +84,26 @@ function Categories() {
         setDeleteProductsDialog(false);
     };
 
-    const saveProduct = () => {
+    const saveProduct = async () => {
         setSubmitted(true);
+
+        const res = await Axios.get(`http://localhost:5000/api/category/${category.parent_category}`);
+        
+        const getName = res.data[0].cat_name
+
+        setparentcategoryName(getName)
+
         if (category.cat_name.trim()) {
             let _categories = [...categoryList];
             let _category = { ...category };
             if (category.id) {
                 const index = findIndexById(category.id);
-                console.log(index)
                 _categories[index] = _category;
-                updateCategoryFunction(_category);
+                updateCategoryFunction(_category,getName);
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Updated", life: 3000 });
             } else {
                 // _category.id = createId();
-                addCategoryFunction(_category);
+                addCategoryFunction(_category,getName);
                 _categories.push(_category);
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Created", life: 3000 });
             }
@@ -106,8 +113,9 @@ function Categories() {
         }
     };
 
-    const addCategoryFunction = (data) => {
-        Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
+    const addCategoryFunction = (data,name) => {
+        console.log(name)
+        Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status, parentcategory_name: name})
             .then()
             .catch((err) => console.log(err));
     };
@@ -263,6 +271,13 @@ function Categories() {
             </>
         );
     };
+    const parent_categoryNameBodyTemplate = (rowData) => {
+        return (
+            <>
+                {rowData.parentcategory_name}
+            </>
+        );
+    };
     const statusBodyTemplate = (rowData) => {
         return (
             <>
@@ -343,6 +358,7 @@ function Categories() {
                         <Column field="cat_title" header="Title" sortable body={titleBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="cat_desc" header="Description" sortable body={categoryDescBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="parent_category" header="Parent Category" sortable body={parent_categoryBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="parent_category" header="Parent Category Name" sortable body={parent_categoryNameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="status" header="Status" sortable body={statusBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>

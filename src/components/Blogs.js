@@ -386,7 +386,7 @@ function Blogs() {
         <div className="grid crud-demo">
             <div className="col-12">
                 <div className="card">
-                    <h5>blog Page</h5>
+                    <h5>Blog Page</h5>
                     <Toast ref={toast} />
                     <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 

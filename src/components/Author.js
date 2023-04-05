@@ -126,9 +126,9 @@ function Author() {
         formData.append("status", data.status);
         console.log(blog.id)
         if (blog.id) {
-            // await Axios.put(`http://localhost:5000/api/author/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/author/${data.id}`, formData);
         } else {
-            // await Axios.post("http://localhost:5000/api/author", formData);
+            await Axios.post("http://localhost:5000/api/author", formData);
         }
         setFile(null);
         fetchData();
@@ -152,15 +152,6 @@ function Author() {
         _auhtorList[index] = _author
         setBlogs(_auhtorList);
         updateStatus(_author)
-
-        // let _auhtorList = [...blogs]
-        // let _authorstatus = {...rowData}
-        // _authorstatus["status"] = rowData.status === 0 ? 1 : 0;
-        // _auhtorList[rowData.id-1] = _authorstatus
-        // setBlogs(_auhtorList);
-        // console.log(_auhtorList)
-        // console.log(_auhtorList);
-        // addUpdate(_authorstatus)
     }
 
     const confirmDeleteProduct = (blog) => {
@@ -327,7 +318,7 @@ function Author() {
         <div className="grid crud-demo">
             <div className="col-12">
                 <div className="card">
-                    <h5>blog Page</h5>
+                    <h5>Author Page</h5>
                     <Toast ref={toast} />
                     <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
