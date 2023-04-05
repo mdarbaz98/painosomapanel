@@ -20,8 +20,7 @@ function Categories() {
     // let initialValue =
     //     [{ name: "none", value: "0" }];
 
-    const [parentcategory, setparentcategory] = useState(null);
-    const [parentcategoryName, setparentcategoryName] = useState(null);
+
 
     let emptyCategory = {
         id: "",
@@ -30,6 +29,7 @@ function Categories() {
         cat_title: "",
         cat_desc: "",
         parent_category: 0,
+        parentcategory_name: '',
         status: 0,
     };
 
@@ -43,6 +43,8 @@ function Categories() {
     const [selectedProducts, setSelectedProducts] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
+    const [parentcategory, setparentcategory] = useState(null);
+    const [parentcategoryName, setparentcategoryName] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
 
@@ -88,8 +90,8 @@ function Categories() {
         setSubmitted(true);
 
         const res = await Axios.get(`http://localhost:5000/api/category/${category.parent_category}`);
-        
-        const getName = res.data[0].cat_name
+
+        const getName = res.data.length > 0 ? res.data[0].cat_name : 'none'
 
         setparentcategoryName(getName)
 

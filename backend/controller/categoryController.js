@@ -48,6 +48,7 @@ const addCategory = asyncHandler(async (req, res) => {
     console.log(req.body);
     con.query("INSERT INTO `categories`( `cat_name`, `cat_slug`, `cat_title`, `cat_desc`, `parent_category`, `parentcategory_name`, `status`) VALUES (?,?,?,?,?,?,?)", [cat_name, cat_slug, cat_title, cat_desc, parent_category, parentcategory_name, status], (err, result) => {
         if (err) console.log(err);
+        console.log(result)
         res.send(result);
     });
 });
