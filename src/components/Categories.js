@@ -151,6 +151,7 @@ function Categories() {
         setCategoryList(_categories);
         updateStatus(_category);
     }
+    
     const confirmDeleteProduct = (category) => {
         setCategory(category);
         setDeleteProductDialog(true);
