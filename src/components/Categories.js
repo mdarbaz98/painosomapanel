@@ -29,7 +29,7 @@ function Categories() {
         cat_title: "",
         cat_desc: "",
         parent_category: 0,
-        parentcategory_name: '',
+        // parentcategory_name: '',
         status: 0,
     };
 
@@ -64,8 +64,8 @@ function Categories() {
     async function getParentCategory() {
         const blogCategory = new apiService();
         const res = await blogCategory.getParentCategory()
-        const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
-        setparentcategory([{ name: "none", value: "0" }, ...output]);
+        const output = res.map((data) => ({ name: data.cat_name, value: `${data.cat_name}` }))
+        setparentcategory([{ name: "none", value: "none" }, ...output]);
     }
     const openNew = () => {
         setCategory(emptyCategory);
@@ -91,11 +91,11 @@ function Categories() {
     const saveProduct = async () => {
         setSubmitted(true);
 
-        const res = await Axios.get(`http://localhost:5000/api/category/${category.parent_category}`);
+        // const res = await Axios.get(`http://localhost:5000/api/category/${category.parent_category}`);
 
-        const getName = res.data.length > 0 ? res.data[0].cat_name : 'none'
+        // const getName = res.data.length > 0 ? res.data[0].cat_name : 'none'
 
-        setparentcategoryName(getName)
+        // setparentcategoryName(getName)
 
         if (category.cat_name.trim()) {
             let _categories = [...categoryList];
@@ -103,11 +103,11 @@ function Categories() {
             if (category.id) {
                 const index = findIndexById(category.id);
                 _categories[index] = _category;
-                updateCategoryFunction(_category,getName);
+                updateCategoryFunction(_category);
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Updated", life: 3000 });
             } else {
                 // _category.id = createId();
-                addCategoryFunction(_category,getName);
+                addCategoryFunction(_category);
                 _categories.push(_category);
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Created", life: 3000 });
             }
@@ -118,14 +118,14 @@ function Categories() {
         }
     };
 
-    const addCategoryFunction = (data,name) => {
-        Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status, parentcategory_name: name})
+    const addCategoryFunction = (data) => {
+        Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status})
             .then()
             .catch((err) => console.log(err));
     };
 
-    const updateCategoryFunction = (data,name) => {
-        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status ,parentcategory_name: name})
+    const updateCategoryFunction = (data) => {
+        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status})
             .then()
             .catch((err) => {
                 console.log(err);
@@ -268,13 +268,21 @@ function Categories() {
         );
     };
 
-    const parent_categoryNameBodyTemplate = (rowData) => {
+    const parent_categoryBodyTemplate = (rowData) => {
         return (
             <>
-                {rowData.parentcategory_name}
+                {rowData.parent_category}
             </>
         );
     };
+
+    // const parent_categoryNameBodyTemplate = (rowData) => {
+    //     return (
+    //         <>
+    //             {rowData.parentcategory_name}
+    //         </>
+    //     );
+    // };
     const statusBodyTemplate = (rowData) => {
         return (
             <>
@@ -354,7 +362,7 @@ function Categories() {
                         <Column field="cat_slug" header="Slug" sortable body={slugBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="cat_title" header="Title" sortable body={titleBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="cat_desc" header="Description" sortable body={categoryDescBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="parent_category" header="Parent Category Name" sortable body={parent_categoryNameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="parent_category " header="Parent Category" sortable body={parent_categoryBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="status" header="Status" sortable body={statusBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>

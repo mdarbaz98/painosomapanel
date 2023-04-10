@@ -20,19 +20,19 @@ import { Accordion, AccordionTab } from 'primereact/accordion';
 
 function Blogs() {
     let emptyBlog = {
-       id: "",
-       blog_title: "",
-       seo_title: "",
-       slug: "",
-       author :"",
-       review:"",
-       feature_image :"",
-       parentcategory: null,
-       subcategory :"",
-       blogdate:"",
-       status:0,
-       publishdate:"",
-       content:""
+        id: "",
+        blog_title: "",
+        seo_title: "",
+        slug: "",
+        author: "",
+        review: "",
+        feature_image: "",
+        parentcategory: null,
+        subcategory: "",
+        blogdate: "",
+        status: 0,
+        publishdate: "",
+        content: ""
     };
 
     const [blogs, setBlogs] = useState([]);
@@ -49,35 +49,55 @@ function Blogs() {
     const toast = useRef(null);
     const dt = useRef(null);
     const [parentCategory, setParentCategory] = useState([null]);
-    const [subCategory, setSubCategory] = useState([{name: "none",value: "0"}]);
+    const [subCategory, setSubCategory] = useState([{ name: "none", value: "none" }]);
+    const [authoroptions, setAuthorOptions] = useState([{ name: "none", value: "none" }]);
     const [file, setFile] = useState(null);
+
 
     async function fetchData() {
         const blogData = new apiService();
-        blogData.getBlog().then((data) => setBlogs(data));
+        blogData.getBlog().then((data) => {
+            let _blogLists = [...data];
+            var newResult = _blogLists.map((item) => {
+                let _blog = { ...item };
+                _blog['parentcategory'] = item.parentcategory.split(",")
+                return _blog
+            })
+            setBlogs(newResult)
+        })
     }
     async function fetchImages() {
         const galleryImages = new apiService();
         galleryImages.getImages().then((data) => setGallery(data));
     }
 
+    console.log(blogs)
+
     useEffect(() => {
         getsubCategory();
         fetchData();
         fetchImages();
-        getParentCategory();    
+        getParentCategory();
+        getAuthor();
     }, []);
 
+    async function getAuthor() {
+        const apiData = new apiService();
+        const Authordata = await apiData.getAuthor();
+        const result = Authordata.map((data) => ({ name: data.name, value: `${data.name}` }))
+        setAuthorOptions([...result])
+    }
     async function getParentCategory() {
         const blogCategory = new apiService();
         const res = await blogCategory.getParentCategory();
-        const output = res.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
+        const output = res.map((data) => ({ name: data.cat_name, value: `${data.cat_name}` }))
         setParentCategory([...output]);
     }
 
     async function getsubCategory() {
-       const res1 = await Axios.get(`http://localhost:5000/api/category/subcategory/${blog.parentcategory}`);
-        const output = res1.data.map((data) => ({ name: data.cat_name, value: `${data.id}` }))
+        const blogSubCategory = new apiService();
+        const res = await blogSubCategory.getSubCategory();
+        const output = res.map((data) => ({ name: data.cat_name, value: `${data.cat_name}` }))
         setSubCategory([...output]);
     }
 
@@ -138,77 +158,29 @@ function Blogs() {
         }
     };
 
-    // const addBlogFunction = async (data) => {
-    //     var createPost = {
-    //         id: data.id,
-    //         blog_title: data.blog_title,
-    //         seo_title: data.seo_title,
-    //         slug: data.slug,
-    //         author :data.author,
-    //         review :data.review,
-    //         feature_image :data.feature_image,
-    //         parentcategory:data.parentcategory,
-    //         subcategory :data.subcategory,
-    //         blogdate:data.blogdate,
-    //         status:data.status,
-    //         publishdate:data.publishdate,
-    //         content:data.content
-    //     };
 
-    //     await Axios.post("http://localhost:5000/api/blog", createPost);
-    //     setImages([]);
-    //     fetchData();
-    //     setFile(null)
-    // };
-
-
-    // const updateBlogFunction = async (data) => {
-    //     const newImg = images.length > 0 ? images.toString() : data.image;
-
-    //     var updatePost = {
-    //         id: data.id,
-    //         blog_title: data.blog_title,
-    //         seo_title: data.seo_title,
-    //         slug: data.slug,
-    //         author :data.author,
-    //         review :data.review,
-    //         feature_image :data.feature_image,
-    //         parentcategory:data.parentcategory,
-    //         subcategory :data.subcategory,
-    //         blogdate:data.blogdate,
-    //         status:data.status,
-    //         publishdate:data.publishdate,
-    //         content:data.content
-    //     };
-
-    //     await Axios.put(`http://localhost:5000/api/blog/${data.id}`, updatePost);
-    //     setImages([]);
-    //     fetchData();
-    // };
-
-    
     const addupdateBlogFunction = async (data) => {
         const formData = new FormData();
-            formData.append("blog_title",data.blog_title)
-            formData.append("seo_title", data.seo_title)
-            formData.append("slug",data.slug)
-            formData.append("author" ,data.author)
-            formData.append("review" ,data.review)
-            formData.append("feature_image" ,file ? file :data.feature_image)
-            formData.append("parentcategory",data.parentcategory)
-            formData.append("subcategory" ,data.subcategory)
-            formData.append("blogdate",data.blogdate)
-            formData.append("status",data.status)
-            formData.append("publishdate",data.publishdate)
-            formData.append("content",data.content)
+        formData.append("blog_title", data.blog_title)
+        formData.append("seo_title", data.seo_title)
+        formData.append("slug", data.slug)
+        formData.append("author", data.author)
+        formData.append("review", data.review)
+        formData.append("image", file ? file : data.feature_image)
+        formData.append("parentcategory", data.parentcategory)
+        formData.append("subcategory", data.subcategory)
+        formData.append("blogdate", data.blogdate)
+        formData.append("status", data.status)
+        formData.append("publishdate", data.publishdate)
+        formData.append("content", data.content)
 
 
-            if(blog.id){
-                await Axios.put(`http://localhost:5000/api/blog/${data.id}`, formData);
-            }
-            else{
-                await Axios.post("http://localhost:5000/api/blog", formData);
-            }
+        if (blog.id) {
+            await Axios.put(`http://localhost:5000/api/blog/${data.id}`, formData);
+        }
+        else {
+            await Axios.post("http://localhost:5000/api/blog", formData);
+        }
         setImages([]);
         fetchData();
         setFile(null)
@@ -230,7 +202,7 @@ function Blogs() {
     const blogStatus = (rowData) => {
         const index = findIndexById(rowData.id);
         let _blogList = [...blogs];
-        let _blog = {...rowData};  
+        let _blog = { ...rowData };
         _blog["status"] = rowData.status === 0 ? 1 : 0;
         _blogList[index] = _blog;
         setBlogs(_blogList)
@@ -370,7 +342,7 @@ function Blogs() {
     const statusTemplate = (rowData) => {
         return (
             <>
-                 <div className="actions">
+                <div className="actions">
                     <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0 ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => blogStatus(rowData)} />
                 </div>
             </>
@@ -453,7 +425,7 @@ function Blogs() {
                     </DataTable>
 
                     <Dialog visible={productDialog} style={{ width: "1200px" }} header="Manage blog" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        {blog.feature_image && <img src={`assets/demo/images/blogs/${blog.feature_image}`} alt={blog.feature_image} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />}
+                        {blog && <img src={`assets/demo/images/gallery/${blog.feature_image}`} alt={blog.feature_image} width="100" className="shadow-2" />}
                         <form className="grid p-fluid">
                             <div className="col-12 md:col-8">
                                 <div className="card p-fluid">
@@ -487,75 +459,64 @@ function Blogs() {
                                     </AccordionTab>
                                 </Accordion>
                                 {/* titlesection */}
-                               {/* imagesection */}
-                               <Accordion>
+                                {/* imagesection */}
+                                <Accordion>
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto  url="http://localhost:5000/api/blog" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://localhost:5000/api/blog" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
-                                            {/* <TabPanel header="Gallery">
-                                                <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
-                                                <div className="grid">
-                                                {images && images?.map((item, ind) => {
-                                                    return (
-                                                        <div className="col" key={ind}>
-                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} style={{width:"100%"}} className="my-3 mx-auto block shadow-2" />
-                                                        </div>
-                                                    );
-                                                })}
-                                                </div>
-                                            </TabPanel> */}
                                         </TabView>
                                     </AccordionTab>
                                 </Accordion>
                                 {/* imagesection */}
 
-                                 {/* categorydropdwon */}
+                                {/* categorydropdwon */}
                                 <Accordion>
                                     <AccordionTab header="Category Section">
-                                    <Dropdown
-                                        options={parentCategory}
-                                        value={blog.parentcategory}
-                                        onChange={(e) => onInputChange(e, "parentcategory")}
-                                        className={classNames({ "p-invalid": submitted && !blog.parentcategory },"mb-5")}
-                                        placeholder="Select parent category"
-                                        optionLabel="name">
-                                    </Dropdown>
-
-                                    <MultiSelect
-                                        options={subCategory}
-                                        value={blog.subcategory}
-                                        onChange={(e) => onInputChange(e, "subcategory")}
-                                        optionLabel="name"
-                                        placeholder="Select a category"
-                                        display="chip"
-                                    />
+                                        <MultiSelect
+                                            options={parentCategory}
+                                            className="mb-5"
+                                            value={blog.parentcategory}
+                                            onChange={(e) => onInputChange(e, "parentcategory")}
+                                            optionLabel="name"
+                                            placeholder="Select a parent category"
+                                            display="chip"
+                                        />
+                                        <MultiSelect
+                                            options={subCategory}
+                                            value={blog.subcategory}
+                                            onChange={(e) => onInputChange(e, "subcategory")}
+                                            optionLabel="name"
+                                            placeholder="Select a category"
+                                            display="chip"
+                                        />
                                     </AccordionTab>
                                 </Accordion>
                                 {/* categorydropdwon */}
                                 {/* authordropdown */}
                                 <Accordion>
                                     <AccordionTab header="Author Section">
-                                    <Dropdown
-                                        options={parentCategory}
-                                        value={blog.parentcategory}
-                                        onChange={(e) => onInputChange(e, "parentcategory")}
-                                        className={classNames({ "p-invalid": submitted && !blog.parentcategory },"mb-5")}
-                                        placeholder="Author Name"
-                                        optionLabel="name">
-                                    </Dropdown>
+                                        <Dropdown
+                                            options={authoroptions}
+                                            value={blog.author}
+                                            onChange={(e) => onInputChange(e, "author")}
+                                            className={classNames({ "p-invalid": submitted && !blog.author }, "mb-5")}
+                                            placeholder="Author Name"
+                                            optionLabel="name">
+                                        </Dropdown>
 
-                                    <MultiSelect
-                                        options={subCategory}
-                                        value={blog.subcategory}
-                                        onChange={(e) => onInputChange(e, "subcategory")}
-                                        optionLabel="name"
-                                        placeholder="Review Name"
-                                        display="chip"
-                                        className="mb-5"
-                                    />
-                                    <div className=" p-field mb-5">
+                                        <Dropdown
+                                            options={authoroptions}
+                                            value={blog.review}
+                                            onChange={(e) => onInputChange(e, "review")}
+                                            className={classNames({ "p-invalid": submitted && !blog.review }, "mb-5")}
+                                            placeholder="Reviewer Name"
+                                            optionLabel="name">
+                                        </Dropdown>
+
+
+                                        <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <Calendar id="basic" value={blog.blogdate} onChange={(e) => onInputChange(e, "blogdate")} />
                                                 <label htmlFor="keywords">Blog date</label>
@@ -587,14 +548,14 @@ function Blogs() {
                     </Dialog>
 
 
-                    <Dialog visible={galleryDialog} style={{ width: "1200px" }} header="Gallery" modal  onHide={hideGalleryDialog}>
-                    <div className="grid">
+                    <Dialog visible={galleryDialog} style={{ width: "1200px" }} header="Gallery" modal onHide={hideGalleryDialog}>
+                        <div className="grid">
                             {gallery && gallery ? gallery?.map((item, index) => {
                                 return (
                                     <div className="col-12 md:col-2" key={index}>
                                         <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={onImageChange} checked={images.includes(`${item.image}`)}></Checkbox>
                                         <label htmlFor={`cb3${index}`} className="p-checkbox-label">
-                                            <img src={`assets/demo/images/gallery/${item.image}`} alt={item.alt_title} style={{width: "100%",height: "200px",objectFit: "cover",cursor: "pointer"}}  className="mt-0 mx-auto mb-5 block shadow-2" />
+                                            <img src={`assets/demo/images/gallery/${item.image}`} alt={item.alt_title} style={{ width: "100%", height: "200px", objectFit: "cover", cursor: "pointer" }} className="mt-0 mx-auto mb-5 block shadow-2" />
                                         </label>
                                     </div>
                                 );

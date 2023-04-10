@@ -14,7 +14,7 @@ const getAllCategory = asyncHandler(async (req, res) => {
 // get parentcategory
 
 const getParentCategory = asyncHandler(async (req, res) => {
-    con.query(`SELECT * FROM categories WHERE parent_category = 0`, (err, result) => {
+    con.query(`SELECT * FROM categories WHERE parent_category = 'none'`, (err, result) => {
         if (err) console.log(err);
         res.send(result);
     });
@@ -22,9 +22,8 @@ const getParentCategory = asyncHandler(async (req, res) => {
 });
 
 // get sub-category by id
-const getSubCategoryById = asyncHandler(async (req, res) => {
-    const id = req.params.id;
-    con.query(`SELECT * FROM categories WHERE parent_category=${id}`, (err, result) => {
+const getSubCategory = asyncHandler(async (req, res) => {
+    con.query(`SELECT * FROM categories WHERE parent_category != 'none'`, (err, result) => {
         if (err) console.log(err);
         res.send(result);
     });
@@ -96,6 +95,6 @@ module.exports = {
     deleteCategory,
     updateCategory,
     addCategory,
-    getSubCategoryById,
+    getSubCategory,
     updateCategoryStatus,
 };
