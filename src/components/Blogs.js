@@ -56,22 +56,12 @@ function Blogs() {
 
     async function fetchData() {
         const blogData = new apiService();
-        blogData.getBlog().then((data) => {
-            let _blogLists = [...data];
-            var newResult = _blogLists.map((item) => {
-                let _blog = { ...item };
-                _blog['parentcategory'] = item.parentcategory.split(",")
-                return _blog
-            })
-            setBlogs(newResult)
-        })
+        blogData.getBlog().then((data) => setBlogs(data))
     }
     async function fetchImages() {
         const galleryImages = new apiService();
         galleryImages.getImages().then((data) => setGallery(data));
     }
-
-    console.log(blogs)
 
     useEffect(() => {
         getsubCategory();
@@ -187,8 +177,27 @@ function Blogs() {
     };
 
     const editProduct = (blog) => {
-        console.log(blog)
-        setBlog({ ...blog });
+        // let _blogLists = [...blog];
+
+                let _blog = { ...blog };
+                if(_blog.parentcategory.includes(',')){
+                    var parentCategoryArray = _blog.parentcategory.split(",")
+                }else{
+                    var parentCategoryArray = []
+                    parentCategoryArray.push(_blog.parentcategory)
+                    
+                }
+                if(_blog.subcategory.includes(',')){
+                    var subCategoryArray = _blog.subcategory.split(",")
+                }else{
+                    var subCategoryArray = []
+                    subCategoryArray.push(_blog.subcategory)
+                    
+                }
+                _blog['parentcategory'] = parentCategoryArray
+                _blog['subcategory'] = subCategoryArray
+
+        setBlog(_blog);
         setProductDialog(true);
     };
 

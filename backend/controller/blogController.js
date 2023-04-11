@@ -15,6 +15,7 @@ const getAllBlog = (req, res) => {
 //Add blog
 const addBlog = asyncHandler(async (req, res) => {
     const { blog_title, seo_title, slug, author, review, parentcategory, subcategory,content, blogdate, status, publishdate } = req.body;
+
     const feature_image = req.file ? req.file.filename : req.body.image
     con.query(
         "INSERT INTO blog ( blog_title, seo_title, slug, author, review, feature_image, parentcategory, subcategory,content, blogdate, status, publishdate) value (?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -27,8 +28,10 @@ const addBlog = asyncHandler(async (req, res) => {
 });
 
 const updateBlog = asyncHandler(async (req, res) => {
-    const { blog_title, seo_title, slug, author, review, feature_image, parentcategory, subcategory,content, blogdate, status, publishdate } = req.body;
+    const { blog_title, seo_title, slug, author, review, parentcategory, subcategory,content, blogdate, status, publishdate } = req.body;
     const id = req.params.id;
+    const feature_image = req.file ? req.file.filename : req.body.image
+    console.log(feature_image)
     con.query('UPDATE `blog` SET  blog_title=?, seo_title=?, slug=?, author=?, review=?, feature_image=?, parentcategory=?, subcategory=?,content=?, blogdate=?, status=?, publishdate=? WHERE id IN (?)',
         [blog_title, seo_title, slug, author, review, feature_image, parentcategory, subcategory,content, blogdate, status, publishdate, id], (err, result) => {
             if (err) console.log(err)
