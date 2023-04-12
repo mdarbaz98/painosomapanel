@@ -368,7 +368,6 @@ function Categories() {
                     </DataTable>
 
                     <Dialog visible={productDialog} style={{ width: "650px" }} header="Update Category" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        {/* {product.image && <img src={`assets/demo/images/product/${product.image}`} alt={product.image} width="150" className="mt-0 mx-auto mb-5 block shadow-2" />} */}
                         <div className="grid">
                             <div className="col-6">
                                 <div className="field">
