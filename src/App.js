@@ -48,7 +48,7 @@ import AddCategory from './components/AddCategory';
 import AddBlog from './components/AddBlog';
 import Blogs from './components/Blogs';
 import Categories from './components/Categories';
-import Cta from './components/Cta';
+import products from './components/products';
 import Gallery from './components/Image';
 import Author from './components/Author';
 
@@ -178,7 +178,7 @@ const App = () => {
                             label: 'Blogs', icon: 'pi pi-book', to: '/blog'
                         },
                         {
-                            label: 'CTA', icon: 'pi pi-box', to: '/cta'
+                            label: 'products', icon: 'pi pi-box', to: '/products'
                         },
                         {
                             label: 'Gallery', icon: 'pi pi-images', to: '/gallery'
@@ -298,7 +298,7 @@ const App = () => {
                     <Route path="/category" component={Categories} />
                     <Route path="/addblog" component={AddBlog} />
                     <Route path="/blog" component={Blogs} />
-                    <Route path="/cta" component={Cta} />
+                    <Route path="/products" component={products} />
                     <Route path="/gallery" component={Gallery} />
                     <Route path="/author" component={Author} />
                 </div>

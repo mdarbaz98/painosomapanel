@@ -7,16 +7,27 @@ import { Toolbar } from "primereact/toolbar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
-import { CtaServices } from "../service/CtaServices";
+import { apiService } from "../service/apiServices";
+import { Editor } from "primereact/editor";
 import Axios from "axios";
 
 function Blogs() {
-    let emptyCta = {
+    let emptyproducts = {
         id: "",
-        title: "",
-        link: "",
-        description: "",
-        images: "",
+        image: "",
+        name: "",
+        product_price: "",
+        product_slug: "",
+        strength:"",
+        other_company:"",
+        other_price:"",
+        aboutheader:"",
+        abouteditor:"", 
+        newsheader:"", 
+        newseditor:"",
+        advanceheader:"",
+        advanceeditor:"",
+        status:0,
     };
 
     // const [blogs, setBlogs] = useState("");
@@ -24,7 +35,7 @@ function Blogs() {
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
-    const [cta, setCta] = useState(emptyCta);
+    const [cta, setCta] = useState(emptyproducts);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
@@ -37,12 +48,12 @@ function Blogs() {
     const [state, setState] = useState(null);
 
     useEffect(() => {
-        const getCta = new CtaServices();
+        const getCta = new apiService();
         getCta.getCta().then((data) => setAllCta(data));
         setState(null);
     }, [state]);
     const openNew = () => {
-        setCta(emptyCta);
+        setCta(emptyproducts);
         setSubmitted(false);
         setProductDialog(true);
     };
@@ -69,11 +80,11 @@ function Blogs() {
                 const index = findIndexById(cta.id);
 
                 _allCta[index] = _cta;
-                updateBlogFunction(_cta);
+                addupdateproductFunction(_cta);
                 toast.current.show({ severity: "warn", summary: "Successfully", detail: "blog Updated", life: 3000 });
             } else {
                 //   _blog.id = createId();
-                addBlogFunction(_cta);
+                addupdateproductFunction(_cta);
                 _allCta.push(_cta);
                 toast.current.show({ severity: "success", summary: "Successfully", detail: "blog Created", life: 3000 });
                 fileRef.current.clear();
@@ -81,49 +92,34 @@ function Blogs() {
 
             setAllCta(_allCta);
             setProductDialog(false);
-            setCta(emptyCta);
+            setCta(emptyproducts);
         }
     };
 
-    const addBlogFunction = async (data) => {
+    const addupdateproductFunction = async (data) => {
         const formData = new FormData();
-        formData.append("blogTitle", data.blog_title);
-        formData.append("seo_title", data.seo_title);
-        formData.append("blog_slug", data.blog_slug);
-        formData.append("keywords", data.keywords);
-        formData.append("meta_desc", data.meta_desc);
-        formData.append("author_name", data.author_name);
-        formData.append("image", file);
-        formData.append("alt_title", data.alt_title);
-        formData.append("img_title", data.img_title);
-        formData.append("category", data.category);
-        formData.append("excerpt", data.excerpt);
-        await Axios.post("http://localhost:5000/api/cta", formData)
-            .then()
-            .catch((err) => console.log(err));
+        formData.append("image", file ? file : data.image);
+        formData.append("name", data.name);
+        formData.append("product_price", data.product_price);
+        formData.append("product_slug", data.product_slug);
+        formData.append("strength", data.strength);
+        formData.append("other_company", data.other_company);
+        formData.append("other_price", data.other_price);
+        formData.append("aboutheader", data.aboutheader);
+        formData.append("abouteditor", data.abouteditor);
+        formData.append("newsheader", data.newsheader);
+        formData.append("newseditor", data.newseditor);
+        formData.append("advanceheader", data.advanceheader);
+        formData.append("advanceeditor", data.advanceeditor);
+        formData.append("status", data.status);
+
+        if (cta.id) {
+            await Axios.put(`http://localhost:5000/api/ct/${data.id}`, formData);
+        } else {
+            await Axios.post("http://localhost:5000/api/ct", formData);
+        }
         // setState(formData)
-    };
-
-    const updateBlogFunction = async (data) => {
-        const fileImg = file ? file : data.feature_img;
-
-        const formData = new FormData();
-        formData.append("blogTitle", data.blog_title);
-        formData.append("seo_title", data.seo_title);
-        formData.append("blog_slug", data.blog_slug);
-        formData.append("keywords", data.keywords);
-        formData.append("meta_desc", data.meta_desc);
-        formData.append("author_name", data.author_name);
-        formData.append("image", fileImg);
-        formData.append("alt_title", data.alt_title);
-        formData.append("img_title", data.img_title);
-        formData.append("category", data.category);
-        formData.append("excerpt", data.excerpt);
-        await Axios.put(`http://localhost:5000/api/cta/${data.id}`, formData)
-            .then()
-            .catch((err) => console.log(err));
-
-        setState(formData);
+        setState([])
     };
 
     const editProduct = (cta) => {
@@ -150,7 +146,7 @@ function Blogs() {
         let _allCta = allCta.filter((val) => val.id !== cta.id);
         setAllCta(_allCta);
         setDeleteProductDialog(false);
-        setCta(emptyCta);
+        setCta(emptyproducts);
         toast.current.show({ severity: "error", summary: "Successfully", detail: "CTA Deleted", life: 3000 });
     };
 
@@ -257,7 +253,7 @@ function Blogs() {
 
     const header = (
         <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-            <h5 className="m-0">Manage Blogs</h5>
+            <h5 className="m-0">Manage Products</h5>
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
@@ -288,7 +284,7 @@ function Blogs() {
         <div className="grid">
             <div className="col-12">
                 <div className="card">
-                    <h5>CTA Page</h5>
+                    <h5>Product Page</h5>
                     <Toast ref={toast} />
                     <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
