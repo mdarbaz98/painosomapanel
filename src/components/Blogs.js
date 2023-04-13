@@ -37,6 +37,19 @@ function Blogs() {
         content: "",
     };
 
+    const statusOptions = [{name : 'Publish', value : 'publish'},
+    {name : 'Draft', value : 'draft'},
+    {name : 'Trash', value : 'trash'}]
+
+    const [filters2, setFilters2] = useState({
+        'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
+        'name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'country.name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'representative': { value: null, matchMode: FilterMatchMode.IN },
+        'status': { value: null, matchMode: FilterMatchMode.EQUALS },
+        'verified': { value: null, matchMode: FilterMatchMode.EQUALS }
+    });
+
     const [blogs, setBlogs] = useState([]);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -265,6 +278,13 @@ function Blogs() {
         _blog[`${name}`] = val;
         setBlog(_blog);
     };
+
+
+    const statusItemTemplate = (option) => {
+        return <span className={`status-badge status-${option.name}`}>{option.name}</span>;
+    }
+
+
     const onUpload = async (event) => {
         setFile(event.files[0]);
         toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 });
@@ -350,9 +370,10 @@ function Blogs() {
     const statusTemplate = (rowData) => {
         return (
             <>
-                <div className="actions">
+            {rowData.status}
+                {/* <div className="actions">
                     <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0 ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => blogStatus(rowData)} />
-                </div>
+                </div> */}
             </>
         );
     };
@@ -494,6 +515,12 @@ function Blogs() {
 
                                         <Dropdown options={authoroptions} value={blog.review} onChange={(e) => onInputChange(e, "review")} className={classNames({ "p-invalid": submitted && !blog.review }, "mb-5")} placeholder="Reviewer Name" optionLabel="name"></Dropdown>
 
+                                        
+                                    </AccordionTab>
+                                </Accordion>
+                                <Accordion>
+                                    <AccordionTab header="publish Section">
+                                        <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={blog.status} onChange={(e) => onInputChange(e, "status")} className={classNames({ "p-invalid": submitted && !blog.status }, "mb-5")} placeholder="Select status" optionLabel="name"></Dropdown>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <Calendar id="date" value={blog.blogdate} onChange={(e) => onInputChange(e, "blogdate")} />
