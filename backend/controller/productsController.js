@@ -14,12 +14,12 @@ const getAllproduct = (req, res) => {
 
 //Add blog
 const addproduct = asyncHandler(async (req, res) => {
-    const {image, product_name, product_price, product_slug, strength, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status} = req.body;
+    const {image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status} = req.body;
 
     // const feature_image = req.file ? req.file.filename : req.body.image
     con.query(
-        "INSERT INTO products (image, product_name, product_price, product_slug, strength, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status) value (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        [image, product_name, product_price, product_slug, strength, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status],
+        "INSERT INTO products (image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status) value (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        [image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status],
         (err, result) => {
             if (err) console.log(err);
         }
@@ -28,12 +28,12 @@ const addproduct = asyncHandler(async (req, res) => {
 });
 
 const updateproduct = asyncHandler(async (req, res) => {
-    const {image, product_name, product_price, product_slug, strength, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status} = req.body;
+    const {image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status} = req.body;
     const id = req.params.id;
     const feature_image = req.file ? req.file.filename : req.body.image
     console.log(feature_image)
-    con.query('UPDATE `products` SET  image=?, product_name=?, product_price=?, product_slug=?, strength=?, othercompany=?, otherprice=?, aboutheader=?, abouteditor=?, newsheader=?, newseditor=?, advanceheader=?, advanceeditor=?, status=? WHERE id IN (?)',
-        [image, product_name, product_price, product_slug, strength, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status, id], (err, result) => {
+    con.query('UPDATE `products` SET  image=?, product_name=?, product_price=?, product_slug=?, strength=?,parentcategory=?,subcategory=? , othercompany=?, otherprice=?, aboutheader=?, abouteditor=?, newsheader=?, newseditor=?, advanceheader=?, advanceeditor=?, status=? WHERE id IN (?)',
+        [image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status, id], (err, result) => {
             if (err) console.log(err)
             //  res.send(result)
         })

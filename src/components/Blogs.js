@@ -367,7 +367,8 @@ function Blogs() {
     const statusTemplate = (rowData) => {
         return (
             <>
-            {rowData.status}
+             <span className={`status-badge status-${rowData.status} px-4 py-2 border-round`}>{rowData.status}</span>
+            {/* {rowData.status} */}
                 {/* <div className="actions">
                     <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0 ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => blogStatus(rowData)} />
                 </div> */}

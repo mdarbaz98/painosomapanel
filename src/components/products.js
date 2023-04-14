@@ -10,28 +10,43 @@ import { InputText } from "primereact/inputtext";
 import { apiService } from "../service/apiServices";
 import { Editor } from "primereact/editor";
 import Axios from "axios";
+import { Accordion, AccordionTab } from "primereact/accordion";
+import { MultiSelect } from "primereact/multiselect";
+import { TabView, TabPanel } from "primereact/tabview";
+import { FileUpload } from "primereact/fileupload";
+import { Calendar } from "primereact/calendar";
+import { Dropdown } from "primereact/dropdown";
+import classNames from "classnames";
 
-function Blogs() {
+
+function Products() {
     let emptyproducts = {
         id: "",
         image: "",
-        name: "",
+        product_name: "",
         product_price: "",
         product_slug: "",
-        strength:"",
-        other_company:"",
-        other_price:"",
-        aboutheader:"",
-        abouteditor:"", 
-        newsheader:"", 
-        newseditor:"",
-        advanceheader:"",
-        advanceeditor:"",
-        status:0,
+        strength: "",
+        parentcategory: null,
+        subcategory: "",
+        other_company: "",
+        other_price: "",
+        aboutheader: "",
+        abouteditor: "",
+        newsheader: "",
+        newseditor: "",
+        advanceheader: "",
+        advanceeditor: "",
+        status: 0,
     };
 
+    const statusOptions = [{ name: 'Publish', value: 'publish' },
+    { name: 'Draft', value: 'draft' },
+    { name: 'Trash', value: 'trash' }]
+
+
     // const [blogs, setBlogs] = useState("");
-    const [allCta, setAllCta] = useState("");
+    const [allProducts, setAllProducts] = useState("");
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
@@ -48,8 +63,8 @@ function Blogs() {
     const [state, setState] = useState(null);
 
     useEffect(() => {
-        const getCta = new apiService();
-        getCta.getCta().then((data) => setAllCta(data));
+        const getProducts = new apiService();
+        getProducts.getProducts().then((data) => setAllProducts(data));
         setState(null);
     }, [state]);
     const openNew = () => {
@@ -70,27 +85,33 @@ function Blogs() {
     const hideDeleteProductsDialog = () => {
         setDeleteProductsDialog(false);
     };
+    const onUpload = async (event) => {
+        setFile(event.files[0]);
+        toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 });
+    };
+    const statusItemTemplate = (option) => {
+        return <span className={`status-badge status-${option.name}`}>{option.name}</span>;
+    }
 
     const saveProduct = async () => {
         setSubmitted(true);
-        if (cta.title.trim()) {
-            let _allCta = [...allCta];
+        if (cta.product_name.trim()) {
+            let _allProducts = [...allProducts];
             let _cta = { ...cta };
             if (cta.id) {
                 const index = findIndexById(cta.id);
 
-                _allCta[index] = _cta;
+                _allProducts[index] = _cta;
                 addupdateproductFunction(_cta);
-                toast.current.show({ severity: "warn", summary: "Successfully", detail: "blog Updated", life: 3000 });
+                toast.current.show({ severity: "warn", summary: "Successfully", detail: "Product Updated", life: 3000 });
             } else {
-                //   _blog.id = createId();
                 addupdateproductFunction(_cta);
-                _allCta.push(_cta);
-                toast.current.show({ severity: "success", summary: "Successfully", detail: "blog Created", life: 3000 });
+                _allProducts.push(_cta);
+                toast.current.show({ severity: "success", summary: "Successfully", detail: "Product Created", life: 3000 });
                 fileRef.current.clear();
             }
 
-            setAllCta(_allCta);
+            setAllProducts(_allProducts);
             setProductDialog(false);
             setCta(emptyproducts);
         }
@@ -99,7 +120,7 @@ function Blogs() {
     const addupdateproductFunction = async (data) => {
         const formData = new FormData();
         formData.append("image", file ? file : data.image);
-        formData.append("name", data.name);
+        formData.append("product_name", data.product_name);
         formData.append("product_price", data.product_price);
         formData.append("product_slug", data.product_slug);
         formData.append("strength", data.strength);
@@ -114,9 +135,9 @@ function Blogs() {
         formData.append("status", data.status);
 
         if (cta.id) {
-            await Axios.put(`http://localhost:5000/api/ct/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/products/${data.id}`, formData);
         } else {
-            await Axios.post("http://localhost:5000/api/ct", formData);
+            await Axios.post("http://localhost:5000/api/products", formData);
         }
         // setState(formData)
         setState([])
@@ -135,7 +156,7 @@ function Blogs() {
 
     const deleteBlogFunction = (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        Axios.delete(`http://localhost:5000/api/cta/${selectedIds}`)
+        Axios.delete(`http://localhost:5000/api/products/${selectedIds}`)
             .then()
             .catch((err) => {
                 console.log(err);
@@ -143,8 +164,8 @@ function Blogs() {
     };
 
     const deleteProduct = () => {
-        let _allCta = allCta.filter((val) => val.id !== cta.id);
-        setAllCta(_allCta);
+        let _allProducts = allProducts.filter((val) => val.id !== cta.id);
+        setAllProducts(_allProducts);
         setDeleteProductDialog(false);
         setCta(emptyproducts);
         toast.current.show({ severity: "error", summary: "Successfully", detail: "CTA Deleted", life: 3000 });
@@ -152,8 +173,8 @@ function Blogs() {
 
     const findIndexById = (id) => {
         let index = -1;
-        for (let i = 0; i < allCta.length; i++) {
-            if (allCta[i].id === id) {
+        for (let i = 0; i < allProducts.length; i++) {
+            if (allProducts[i].id === id) {
                 index = i;
                 break;
             }
@@ -171,8 +192,8 @@ function Blogs() {
     };
 
     const deleteSelectedProducts = () => {
-        let _allCta = allCta.filter((val) => !selectedBlogs.includes(val));
-        setAllCta(_allCta);
+        let _allProducts = allProducts.filter((val) => !selectedBlogs.includes(val));
+        setAllProducts(_allProducts);
         deleteBlogFunction(selectedBlogs);
         setDeleteProductsDialog(false);
         setSelectedBlogs(null);
@@ -185,7 +206,7 @@ function Blogs() {
         _cta[`${name}`] = val;
         setCta(_cta);
     };
-    
+
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
@@ -209,17 +230,15 @@ function Blogs() {
     const codeBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Id</span>
                 {rowData.id}
             </>
         );
     };
 
-    const nameBodyTemplate = (rowData) => {
+    const product_nameBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
-                {rowData.title}
+                {rowData.product_name}
             </>
         );
     };
@@ -227,17 +246,22 @@ function Blogs() {
     const imageBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
-                <img src={`assets/demo/images/blogs/${rowData.feature_img}`} alt={rowData.feature_img} className="shadow-2" width="100" />
+                <img src={`assets/demo/images/blogs/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
             </>
         );
     };
 
-    const parentNameBodyTemplate = (rowData) => {
+    const statusBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
-                {rowData.link}
+                {rowData.status}
+            </>
+        );
+    };
+    const dateBodyTemplate = (rowData) => {
+        return (
+            <>
+                {rowData.date}
             </>
         );
     };
@@ -290,7 +314,7 @@ function Blogs() {
 
                     <DataTable
                         ref={dt}
-                        value={allCta}
+                        value={allProducts}
                         selection={selectedBlogs}
                         onSelectionChange={(e) => setSelectedBlogs(e.value)}
                         dataKey="id"
@@ -301,37 +325,124 @@ function Blogs() {
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
                         globalFilter={globalFilter}
-                        emptyMessage="No blogs found."
+                        emptyMessage="No products found."
                         header={header}
                         responsiveLayout="scroll"
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         <Column field="id" header="Id" sortable body={codeBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="title" header="Title" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="images" header="Images" sortable body={imageBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="link" header="Link" sortable body={parentNameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="product_name" header="Name" sortable body={product_nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="images" header="images" sortable body={imageBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="status" header="status" sortable body={statusBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="date" header="date" sortable body={dateBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "450px" }} header="CTA Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "1200px" }} header="Products Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                         {/* {blog.feature_img && <img src={`assets/demo/images/blogs/${blog.feature_img}`} alt={blog.feature_img} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />} */}
-                        <div className="grid">
-                            <div className="col-12">
-                                <div className="p-fluid">
-                                    {/* <h5>Vertical</h5> */}
-                                    <div className="field">
-                                        <label htmlFor="ctaTitle">Title</label>
-                                        <InputText id="ctaTitle" type="text" value={cta.title} onChange={(e) => onInputChange(e, "title")} />
-                                    </div>
-                                    <div className="field">
-                                        <label htmlFor="ctaLink">CTA link</label>
-                                        <InputText id="ctaLink" type="text" value={cta.link} onChange={(e) => onInputChange(e, "link")} />
-                                    </div>
-                                    <div className="field">
-                                        <label htmlFor="description">Description</label>
-                                        <InputTextarea id="description" value={cta.description} onChange={(e) => onInputChange(e, "description")} required rows={3} cols={20} />
-                                    </div>
-                                </div>
+                        <div className="grid py-5 p-fluid">
+                            <div className="col-12 md:col-4">
+                                {/* productsection  */}
+                                <Accordion>
+                                    <AccordionTab header="Product Section">
+                                        <div className=" p-field mb-5">
+                                            <span className="p-float-label mb-5 mt-2">
+                                                <InputText type="text" id="name" value={cta.product_name} onChange={(e) => onInputChange(e, "product_name")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="product_name">product name</label>
+                                            </span>
+                                            <span className="p-float-label mb-5 mt-4">
+                                                <InputText type="text"  value={cta.product_price} onChange={(e) => onInputChange(e, "product_price")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="product_price">product price</label>
+                                            </span>
+                                            <span className="p-float-label mb-5 mt-4">
+                                                <InputText type="text" ivalue={cta.product_slug} onChange={(e) => onInputChange(e, "product_slug")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="product_slug">product slug</label>
+                                            </span>
+                                            <span className="p-float-label mb-5 mt-4">
+                                                <InputText type="text"  value={cta.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="strength">product strength</label>
+                                            </span>
+                                            {/* <MultiSelect options={parentCategory} className="mb-5" value={cta.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" /> */}
+                                            {/* <MultiSelect options={subCategory} value={cta.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" /> */}
+                                        </div>
+                                    </AccordionTab>
+                                </Accordion>
+                                {/* productsection */}
+                            </div>
+                            {/* imagesection */}
+                            <div className="col-12 md:col-4">
+                                <Accordion>
+                                    <AccordionTab header="Image Section">
+                                        <TabView>
+                                            <TabPanel header="upload">
+                                                <FileUpload auto url="http://localhost:5000/api/products" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
+                                            </TabPanel>
+                                        </TabView>
+                                    </AccordionTab>
+                                </Accordion>
+                            </div>
+                            {/* imagesection */}
+                            {/* status */}
+                            <div className="col-12 md:col-4">
+                                <Accordion>
+                                    <AccordionTab header="publish Section">
+                                        <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={cta.status} onChange={(e) => onInputChange(e, "status")} className={classNames({ "p-invalid": submitted && !cta.status }, "mb-5")} placeholder="Select status" optionLabel="name"></Dropdown>
+                                        <div className=" p-field mb-5">
+                                            <span className="p-float-label mb-5 mt-2">
+                                                <Calendar id="date" value={cta.date} onChange={(e) => onInputChange(e, "date")} />
+                                                <label htmlFor="date">Product date</label>
+                                            </span>
+                                            <span className="p-float-label mb-5 mt-2">
+                                                <InputText type="text"  value={cta.other_company} onChange={(e) => onInputChange(e, "other_company")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="other_company">Compant name</label>
+                                            </span>
+                                            <span className="p-float-label mb-5 mt-2">
+                                                <InputText type="text"  value={cta.other_price} onChange={(e) => onInputChange(e, "other_price")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="other_price">Company price</label>
+                                            </span>
+                                        </div>
+                                    </AccordionTab>
+                                </Accordion>
+                            </div>
+                            {/* status */}
+                            <div className="col-12 md:col-4">
+                                <Accordion>
+                                    <AccordionTab header="About Section">
+                                        <span className="p-float-label mb-5 mt-2">
+                                            <InputText type="text" value={cta.aboutheader} onChange={(e) => onInputChange(e, "aboutheader")} style={{ fontSize: "12px" }} />
+                                            <label htmlFor="aboutheader">About</label>
+                                        </span>
+                                        <div className="card p-fluid">
+                                            <Editor style={{ height: '320px' }} value={cta.abouteditor} onTextChange={(e) => onInputChange(e, "abouteditor")} />
+                                        </div>
+                                    </AccordionTab>
+                                </Accordion>
+                            </div>
+                            <div className="col-12 md:col-4">
+                                <Accordion>
+                                    <AccordionTab header="News Section">
+                                        <span className="p-float-label mb-5 mt-2">
+                                            <InputText type="text"  value={cta.newsheader} onChange={(e) => onInputChange(e, "newsheader")} style={{ fontSize: "12px" }} />
+                                            <label htmlFor="newsheader">News</label>
+                                        </span>
+                                        <div className="card p-fluid">
+                                            <Editor style={{ height: '320px' }} value={cta.newseditor} onTextChange={(e) => onInputChange(e, "newseditor")} />
+                                        </div>
+                                    </AccordionTab>
+                                </Accordion>
+                            </div>
+                            <div className="col-12 md:col-4">
+                                <Accordion>
+                                    <AccordionTab header="Advance Section">
+                                        <span className="p-float-label mb-5 mt-2">
+                                            <InputText type="text" id="advanceheader" value={cta.advanceheader} onChange={(e) => onInputChange(e, "advanceheader")} style={{ fontSize: "12px" }} />
+                                            <label htmlFor="advanceheader">Advance</label>
+                                        </span>
+                                        <div className="card p-fluid">
+                                            <Editor style={{ height: '320px' }} value={cta.advanceeditor} onTextChange={(e) => onInputChange(e, "advanceeditor")} />
+                                        </div>
+                                    </AccordionTab>
+                                </Accordion>
                             </div>
                         </div>
                     </Dialog>
@@ -341,7 +452,7 @@ function Blogs() {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
                             {cta && (
                                 <span>
-                                    Are you sure you want to delete <b>{cta.title}</b>?
+                                    Are you sure you want to delete <b>{cta.product_name}</b>?
                                 </span>
                             )}
                         </div>
@@ -363,4 +474,4 @@ const comparisonFn = function (prevProps, nextProps) {
     return prevProps.location.pathname === nextProps.location.pathname;
 };
 
-export default React.memo(Blogs, comparisonFn);
+export default React.memo(Products, comparisonFn);
