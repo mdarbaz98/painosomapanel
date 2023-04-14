@@ -29,8 +29,8 @@ function Products() {
         strength: "",
         parentcategory: null,
         subcategory: "",
-        other_company: "",
-        other_price: "",
+        othercompany: "",
+        otherprice: "",
         aboutheader: "",
         abouteditor: "",
         newsheader: "",
@@ -38,7 +38,10 @@ function Products() {
         advanceheader: "",
         advanceeditor: "",
         status: 0,
+        date:""
     };
+
+
 
     const statusOptions = [{ name: 'Publish', value: 'publish' },
     { name: 'Draft', value: 'draft' },
@@ -50,7 +53,7 @@ function Products() {
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
-    const [cta, setCta] = useState(emptyproducts);
+    const [product, setproduct] = useState(emptyproducts);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
@@ -60,15 +63,17 @@ function Products() {
     const dt = useRef(null);
     const fileRef = useRef(null);
 
+    console.log(product)
+
     const [state, setState] = useState(null);
 
     useEffect(() => {
         const getProducts = new apiService();
-        getProducts.getProducts().then((data) => setAllProducts(data));
+        getProducts.getProducts().then((data) => {setAllProducts(data) ;console.log(data)});
         setState(null);
     }, [state]);
     const openNew = () => {
-        setCta(emptyproducts);
+        setproduct(emptyproducts);
         setSubmitted(false);
         setProductDialog(true);
     };
@@ -95,25 +100,25 @@ function Products() {
 
     const saveProduct = async () => {
         setSubmitted(true);
-        if (cta.product_name.trim()) {
+        if (product.product_name.trim()) {
             let _allProducts = [...allProducts];
-            let _cta = { ...cta };
-            if (cta.id) {
-                const index = findIndexById(cta.id);
+            let _product = { ...product };
+            if (product.id) {
+                const index = findIndexById(product.id);
 
-                _allProducts[index] = _cta;
-                addupdateproductFunction(_cta);
+                _allProducts[index] = _product;
+                addupdateproductFunction(_product);
                 toast.current.show({ severity: "warn", summary: "Successfully", detail: "Product Updated", life: 3000 });
             } else {
-                addupdateproductFunction(_cta);
-                _allProducts.push(_cta);
+                addupdateproductFunction(_product);
+                _allProducts.push(_product);
                 toast.current.show({ severity: "success", summary: "Successfully", detail: "Product Created", life: 3000 });
-                fileRef.current.clear();
+                // fileRef.current.clear();
             }
 
             setAllProducts(_allProducts);
             setProductDialog(false);
-            setCta(emptyproducts);
+            setproduct(emptyproducts);
         }
     };
 
@@ -124,8 +129,8 @@ function Products() {
         formData.append("product_price", data.product_price);
         formData.append("product_slug", data.product_slug);
         formData.append("strength", data.strength);
-        formData.append("other_company", data.other_company);
-        formData.append("other_price", data.other_price);
+        formData.append("othercompany", data.othercompany);
+        formData.append("otherprice", data.otherprice);
         formData.append("aboutheader", data.aboutheader);
         formData.append("abouteditor", data.abouteditor);
         formData.append("newsheader", data.newsheader);
@@ -133,8 +138,9 @@ function Products() {
         formData.append("advanceheader", data.advanceheader);
         formData.append("advanceeditor", data.advanceeditor);
         formData.append("status", data.status);
+        formData.append("date", data.date);
 
-        if (cta.id) {
+        if (product.id) {
             await Axios.put(`http://localhost:5000/api/products/${data.id}`, formData);
         } else {
             await Axios.post("http://localhost:5000/api/products", formData);
@@ -143,15 +149,18 @@ function Products() {
         setState([])
     };
 
-    const editProduct = (cta) => {
-        setCta({ ...cta });
+    const editProduct = (product) => {
+        let _product = { ...product };
+        setproduct({ ...product });
         setProductDialog(true);
+        _product["date"] =  new Date(product.date);
+        setproduct(_product);
     };
 
-    const confirmDeleteProduct = (cta) => {
-        setCta(cta);
+    const confirmDeleteProduct = (product) => {
+        setproduct(product);
         setDeleteProductDialog(true);
-        deleteBlogFunction(cta.id);
+        deleteBlogFunction(product.id);
     };
 
     const deleteBlogFunction = (data) => {
@@ -164,11 +173,11 @@ function Products() {
     };
 
     const deleteProduct = () => {
-        let _allProducts = allProducts.filter((val) => val.id !== cta.id);
+        let _allProducts = allProducts.filter((val) => val.id !== product.id);
         setAllProducts(_allProducts);
         setDeleteProductDialog(false);
-        setCta(emptyproducts);
-        toast.current.show({ severity: "error", summary: "Successfully", detail: "CTA Deleted", life: 3000 });
+        setproduct(emptyproducts);
+        toast.current.show({ severity: "error", summary: "Successfully", detail: "product Deleted", life: 3000 });
     };
 
     const findIndexById = (id) => {
@@ -202,9 +211,9 @@ function Products() {
 
     const onInputChange = (e, name) => {
         const val = (e.target && e.target.value) || "";
-        let _cta = { ...cta };
-        _cta[`${name}`] = val;
-        setCta(_cta);
+        let _product = { ...product };
+        _product[`${name}`] = val;
+        setproduct(_product);
     };
 
     const leftToolbarTemplate = () => {
@@ -259,9 +268,10 @@ function Products() {
         );
     };
     const dateBodyTemplate = (rowData) => {
+        var productDate = new Date(rowData.date).toLocaleDateString()
         return (
             <>
-                {rowData.date}
+                {productDate}
             </>
         );
     };
@@ -347,23 +357,23 @@ function Products() {
                                     <AccordionTab header="Product Section">
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text" id="name" value={cta.product_name} onChange={(e) => onInputChange(e, "product_name")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="name" value={product.product_name} onChange={(e) => onInputChange(e, "product_name")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="product_name">product name</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
-                                                <InputText type="text"  value={cta.product_price} onChange={(e) => onInputChange(e, "product_price")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text"  value={product.product_price} onChange={(e) => onInputChange(e, "product_price")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="product_price">product price</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
-                                                <InputText type="text" ivalue={cta.product_slug} onChange={(e) => onInputChange(e, "product_slug")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" value={product.product_slug} onChange={(e) => onInputChange(e, "product_slug")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="product_slug">product slug</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
-                                                <InputText type="text"  value={cta.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text"  value={product.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="strength">product strength</label>
                                             </span>
-                                            {/* <MultiSelect options={parentCategory} className="mb-5" value={cta.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" /> */}
-                                            {/* <MultiSelect options={subCategory} value={cta.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" /> */}
+                                            {/* <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" /> */}
+                                            {/* <MultiSelect options={subCategory} value={product.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" /> */}
                                         </div>
                                     </AccordionTab>
                                 </Accordion>
@@ -386,19 +396,19 @@ function Products() {
                             <div className="col-12 md:col-4">
                                 <Accordion>
                                     <AccordionTab header="publish Section">
-                                        <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={cta.status} onChange={(e) => onInputChange(e, "status")} className={classNames({ "p-invalid": submitted && !cta.status }, "mb-5")} placeholder="Select status" optionLabel="name"></Dropdown>
+                                        <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={product.status} onChange={(e) => onInputChange(e, "status")} className={classNames({ "p-invalid": submitted && !product.status }, "mb-5")} placeholder="Select status" optionLabel="name"></Dropdown>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label mb-5 mt-2">
-                                                <Calendar id="date" value={cta.date} onChange={(e) => onInputChange(e, "date")} />
+                                                <Calendar id="date" value={product.date} onChange={(e) => onInputChange(e, "date")} />
                                                 <label htmlFor="date">Product date</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text"  value={cta.other_company} onChange={(e) => onInputChange(e, "other_company")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="other_company">Compant name</label>
+                                                <InputText type="text"  value={product.othercompany} onChange={(e) => onInputChange(e, "othercompany")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="othercompany">Company name</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text"  value={cta.other_price} onChange={(e) => onInputChange(e, "other_price")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="other_price">Company price</label>
+                                                <InputText type="text"  value={product.otherprice} onChange={(e) => onInputChange(e, "otherprice")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="otherprice">Company price</label>
                                             </span>
                                         </div>
                                     </AccordionTab>
@@ -409,11 +419,11 @@ function Products() {
                                 <Accordion>
                                     <AccordionTab header="About Section">
                                         <span className="p-float-label mb-5 mt-2">
-                                            <InputText type="text" value={cta.aboutheader} onChange={(e) => onInputChange(e, "aboutheader")} style={{ fontSize: "12px" }} />
+                                            <InputText type="text" value={product.aboutheader} onChange={(e) => onInputChange(e, "aboutheader")} style={{ fontSize: "12px" }} />
                                             <label htmlFor="aboutheader">About</label>
                                         </span>
                                         <div className="card p-fluid">
-                                            <Editor style={{ height: '320px' }} value={cta.abouteditor} onTextChange={(e) => onInputChange(e, "abouteditor")} />
+                                            <Editor style={{ height: '320px' }} value={product.abouteditor} onTextChange={(e) => onInputChange(e, "abouteditor")} />
                                         </div>
                                     </AccordionTab>
                                 </Accordion>
@@ -422,11 +432,11 @@ function Products() {
                                 <Accordion>
                                     <AccordionTab header="News Section">
                                         <span className="p-float-label mb-5 mt-2">
-                                            <InputText type="text"  value={cta.newsheader} onChange={(e) => onInputChange(e, "newsheader")} style={{ fontSize: "12px" }} />
+                                            <InputText type="text"  value={product.newsheader} onChange={(e) => onInputChange(e, "newsheader")} style={{ fontSize: "12px" }} />
                                             <label htmlFor="newsheader">News</label>
                                         </span>
                                         <div className="card p-fluid">
-                                            <Editor style={{ height: '320px' }} value={cta.newseditor} onTextChange={(e) => onInputChange(e, "newseditor")} />
+                                            <Editor style={{ height: '320px' }} value={product.newseditor} onTextChange={(e) => onInputChange(e, "newseditor")} />
                                         </div>
                                     </AccordionTab>
                                 </Accordion>
@@ -435,11 +445,11 @@ function Products() {
                                 <Accordion>
                                     <AccordionTab header="Advance Section">
                                         <span className="p-float-label mb-5 mt-2">
-                                            <InputText type="text" id="advanceheader" value={cta.advanceheader} onChange={(e) => onInputChange(e, "advanceheader")} style={{ fontSize: "12px" }} />
+                                            <InputText type="text" id="advanceheader" value={product.advanceheader} onChange={(e) => onInputChange(e, "advanceheader")} style={{ fontSize: "12px" }} />
                                             <label htmlFor="advanceheader">Advance</label>
                                         </span>
                                         <div className="card p-fluid">
-                                            <Editor style={{ height: '320px' }} value={cta.advanceeditor} onTextChange={(e) => onInputChange(e, "advanceeditor")} />
+                                            <Editor style={{ height: '320px' }} value={product.advanceeditor} onTextChange={(e) => onInputChange(e, "advanceeditor")} />
                                         </div>
                                     </AccordionTab>
                                 </Accordion>
@@ -450,9 +460,9 @@ function Products() {
                     <Dialog visible={deleteProductDialog} style={{ width: "450px" }} header="Confirm" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
-                            {cta && (
+                            {product && (
                                 <span>
-                                    Are you sure you want to delete <b>{cta.product_name}</b>?
+                                    Are you sure you want to delete <b>{product.product_name}</b>?
                                 </span>
                             )}
                         </div>
@@ -461,7 +471,7 @@ function Products() {
                     <Dialog visible={deleteProductsDialog} style={{ width: "450px" }} header="Confirm" modal footer={deleteProductsDialogFooter} onHide={hideDeleteProductsDialog}>
                         <div className="flex align-items-center justify-content-center">
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
-                            {cta && <span>Are you sure you want to delete the selected CTA's?</span>}
+                            {product && <span>Are you sure you want to delete the selected product's?</span>}
                         </div>
                     </Dialog>
                 </div>
