@@ -2,19 +2,19 @@ const router = require('express').Router();
 const { getAllproduct,addproduct, updateproduct,deleteproduct,updateproductStatus} = require('../controller/productsController')
 const upload = require('../middleware/imageMulter')
 
-//get all blog
+//get all product
 router.get("/", getAllproduct);
 
-//add blog
+//add product
 router.post("/",upload.single('image') ,addproduct);
 
-//update blog
+//update product
 router.put("/:id",upload.single('image') , updateproduct);
 
-//update blog status
+//update product status
 router.put("/status/:id", updateproductStatus);
 
-//delete blog
+//delete product
 router.delete("/:id",deleteproduct);
 
 

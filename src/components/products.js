@@ -57,7 +57,8 @@ function Products() {
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
-
+    const [parentCategory, setParentCategory] = useState([null]);
+    const [subCategory, setSubCategory] = useState([{ name: "none", value: "none" }]);
     const [file, setFile] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
@@ -71,7 +72,23 @@ function Products() {
         const getProducts = new apiService();
         getProducts.getProducts().then((data) => {setAllProducts(data) ;console.log(data)});
         setState(null);
+        getParentCategory();
+        getsubCategory();
     }, [state]);
+
+    async function getParentCategory() {
+        const blogCategory = new apiService();
+        const res = await blogCategory.getParentCategory();
+        const output = res.map((data) => ({ name: data.cat_name, value: `${data.cat_name}` }));
+        setParentCategory([...output]);
+    }
+
+    async function getsubCategory() {
+        const blogSubCategory = new apiService();
+        const res = await blogSubCategory.getSubCategory();
+        const output = res.map((data) => ({ name: data.cat_name, value: `${data.cat_name}` }));
+        setSubCategory([...output]);
+    }
     const openNew = () => {
         setproduct(emptyproducts);
         setSubmitted(false);
@@ -129,6 +146,8 @@ function Products() {
         formData.append("product_price", data.product_price);
         formData.append("product_slug", data.product_slug);
         formData.append("strength", data.strength);
+        formData.append("parentcategory", data.parentcategory);
+        formData.append("subcategory", data.subcategory);
         formData.append("othercompany", data.othercompany);
         formData.append("otherprice", data.otherprice);
         formData.append("aboutheader", data.aboutheader);
@@ -145,16 +164,30 @@ function Products() {
         } else {
             await Axios.post("http://localhost:5000/api/products", formData);
         }
-        // setState(formData)
-        setState([])
+        setState(formData)
+        // setState([])
     };
 
     const editProduct = (product) => {
         let _product = { ...product };
         setproduct({ ...product });
-        setProductDialog(true);
+        if (_product.parentcategory.includes(",")) {
+            var parentCategoryArray = _product.parentcategory.split(",");
+        } else {
+            var parentCategoryArray = [];
+            parentCategoryArray.push(_product.parentcategory);
+        }
+        if (_product.subcategory.includes(",")) {
+            var subCategoryArray = _product.subcategory.split(",");
+        } else {
+            var subCategoryArray = [];
+            subCategoryArray.push(_product.subcategory);
+        }
+        _product["parentcategory"] = parentCategoryArray;
+        _product["subcategory"] = subCategoryArray;
         _product["date"] =  new Date(product.date);
         setproduct(_product);
+        setProductDialog(true);
     };
 
     const confirmDeleteProduct = (product) => {
@@ -372,8 +405,8 @@ function Products() {
                                                 <InputText type="text"  value={product.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="strength">product strength</label>
                                             </span>
-                                            {/* <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" /> */}
-                                            {/* <MultiSelect options={subCategory} value={product.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" /> */}
+                                            <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
+                                            <MultiSelect options={subCategory} value={product.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" />
                                         </div>
                                     </AccordionTab>
                                 </Accordion>

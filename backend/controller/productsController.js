@@ -16,14 +16,14 @@ const getAllproduct = (req, res) => {
 const addproduct = asyncHandler(async (req, res) => {
     const {image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date} = req.body;
     console.log(req.body)
-    // const feature_image = req.file ? req.file.filename : req.body.image
-    // con.query(
-    //     "INSERT INTO products (image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date) value (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-    //     [image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date],
-    //     (err, result) => {
-    //         if (err) console.log(err);
-    //     }
-    // );
+    const feature_image = req.file ? req.file.filename : req.body.image
+    con.query(
+        "INSERT INTO products (image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date) value (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        [image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date],
+        (err, result) => {
+            if (err) console.log(err);
+        }
+    );
     res.status(200).json({ message: "successfully created" });
 });
 
