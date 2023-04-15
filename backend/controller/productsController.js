@@ -16,7 +16,6 @@ const getAllproduct = (req, res) => {
 const addproduct = asyncHandler(async (req, res) => {
     const {image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date} = req.body;
     console.log(req.body)
-    const feature_image = req.file ? req.file.filename : req.body.image
     con.query(
         "INSERT INTO products (image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date) value (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         [image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date],
@@ -28,12 +27,12 @@ const addproduct = asyncHandler(async (req, res) => {
 });
 
 const updateproduct = asyncHandler(async (req, res) => {
-    const {image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date} = req.body;
+    const { product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date} = req.body;
     const id = req.params.id;
     const feature_image = req.file ? req.file.filename : req.body.image
-    console.log(feature_image)
+    console.log(req.body)
     con.query('UPDATE `products` SET  image=?, product_name=?, product_price=?, product_slug=?, strength=?,parentcategory=?,subcategory=? , othercompany=?, otherprice=?, aboutheader=?, abouteditor=?, newsheader=?, newseditor=?, advanceheader=?, advanceeditor=?, status=? ,date=? WHERE id IN (?)',
-        [image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,,date, id], (err, result) => {
+        [feature_image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor, status,date, id], (err, result) => {
             if (err) console.log(err)
             //  res.send(result)
         })

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Editor } from "primereact/editor";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
+import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { MultiSelect } from "primereact/multiselect";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
@@ -32,7 +33,7 @@ function Blogs() {
         parentcategory: null,
         subcategory: "",
         blogdate: "",
-        status: 0,
+        status: 'draft',
         publishdate: "",
         content: "",
     };
@@ -41,14 +42,14 @@ function Blogs() {
     {name : 'Draft', value : 'draft'},
     {name : 'Trash', value : 'trash'}]
 
-    // const [filters2, setFilters2] = useState({
-    //     'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
-    //     'name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    //     'country.name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    //     'representative': { value: null, matchMode: FilterMatchMode.IN },
-    //     'status': { value: null, matchMode: FilterMatchMode.EQUALS },
-    //     'verified': { value: null, matchMode: FilterMatchMode.EQUALS }
-    // });
+    const [filters2, setFilters2] = useState({
+        // 'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
+        // 'blog_title': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'author': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'review': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'status': { value: null, matchMode: FilterMatchMode.EQUALS },
+        // 'verified': { value: null, matchMode: FilterMatchMode.EQUALS }
+    });
 
     const [blogs, setBlogs] = useState([]);
     const [productDialog, setProductDialog] = useState(false);
@@ -68,9 +69,13 @@ function Blogs() {
     const [authoroptions, setAuthorOptions] = useState([{ name: "none", value: "none" }]);
     const [file, setFile] = useState(null);
 
+    const [globalFilterValue2, setGlobalFilterValue2] = useState('');
+    const [loading2, setLoading2] = useState(true);
+
+
     async function fetchData() {
         const blogData = new apiService();
-        blogData.getBlog().then((data) => setBlogs(data));
+        blogData.getBlog().then((data) => {setBlogs(data); setLoading2(false)});
     }
     async function fetchImages() {
         const galleryImages = new apiService();
@@ -112,6 +117,16 @@ function Blogs() {
 
         setImages(selectedImages);
     };
+
+
+    const onGlobalFilterChange2 = (e) => {
+        const value = e.target.value;
+        let _filters2 = { ...filters2 };
+        _filters2['global'].value = value;
+        console.log(_filters2)
+        setFilters2(_filters2);
+        setGlobalFilterValue2(value);
+    }
 
     const openNew = () => {
         setBlog(emptyBlog);
@@ -186,6 +201,8 @@ function Blogs() {
         fetchData();
         setFile(null);
     };
+
+    console.log(globalFilterValue2)
 
 
     const editProduct = (blog) => {
@@ -276,6 +293,17 @@ function Blogs() {
         setBlog(_blog);
     };
 
+    const renderHeader2 = () => {
+        return (
+            <div className="flex justify-content-end">
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <InputText value={globalFilterValue2} onChange={onGlobalFilterChange2} placeholder="Keyword Search" />
+                </span>
+            </div>
+        )
+    }
+
 
     const statusItemTemplate = (option) => {
         return <span className={`status-badge status-${option.name}`}>{option.name}</span>;
@@ -286,6 +314,9 @@ function Blogs() {
         setFile(event.files[0]);
         toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 });
     };
+
+    const header2 = renderHeader2();
+
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
@@ -306,14 +337,14 @@ function Blogs() {
         );
     };
 
-    const idBodyTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Id</span>
-                {rowData.id}
-            </>
-        );
-    };
+    // const idBodyTemplate = (rowData) => {
+    //     return (
+    //         <>
+    //             <span className="p-column-title">Id</span>
+    //             {rowData.id}
+    //         </>
+    //     );
+    // };
 
     const nameBodyTemplate = (rowData) => {
         return (
@@ -364,6 +395,14 @@ function Blogs() {
     //         </>
     //     );
     // };
+
+
+    const statusRowFilterTemplate = (options) => {
+        console.log(options)
+        return <Dropdown value={options.value} options={statusOptions} onChange={(e) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Select a Status" className="p-column-filter" showClear />;
+    }
+
+
     const statusTemplate = (rowData) => {
         return (
             <>
@@ -384,15 +423,15 @@ function Blogs() {
         );
     };
 
-    const header = (
-        <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-            <h5 className="m-0">Manage Blogs</h5>
-            <span className="block mt-2 md:mt-0 p-input-icon-left">
-                <i className="pi pi-search" />
-                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
-            </span>
-        </div>
-    );
+    // const header = (
+    //     <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+    //         <h5 className="m-0">Manage Blogs</h5>
+    //         <span className="block mt-2 md:mt-0 p-input-icon-left">
+    //             <i className="pi pi-search" />
+    //             <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
+    //         </span>
+    //     </div>
+    // );
 
     const productDialogFooter = (
         <>
@@ -422,31 +461,38 @@ function Blogs() {
                     <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
                     <DataTable
-                        ref={dt}
-                        value={blogs}
-                        selection={selectedBlogs}
-                        onSelectionChange={(e) => setSelectedBlogs(e.value)}
-                        dataKey="id"
-                        paginator
-                        rows={10}
-                        rowsPerPageOptions={[5, 10, 25]}
-                        className="datatable-responsive"
-                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
-                        globalFilter={globalFilter}
-                        emptyMessage="No blogs found."
-                        header={header}
-                        responsiveLayout="scroll"
+                        value={blogs} paginator className="p-datatable-customers" rows={10} rowsPerPageOptions={[5, 10, 25]} 
+                        dataKey="id" filters={filters2} filterDisplay="row" loading={loading2} responsiveLayout="scroll"
+                        globalFilterFields={[ 'author', 'review', 'status']} header={header2} emptyMessage="No blogs found."
+
+
+
+                        // ref={dt}
+                        // value={blogs}
+                        // selection={selectedBlogs}
+                        // globalFilterFields={['blog_title', 'author', 'review', 'status']} header={header2}
+                        // dataKey="id"
+                        // paginator
+                        // rows={10}
+                        // filters={filters2}
+                        // rowsPerPageOptions={[5, 10, 25]}
+                        // className="datatable-responsive"
+                        // paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        // currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
+                        // // globalFilter={globalFilter}
+                        // emptyMessage="No blogs found."
+                        // responsiveLayout="scroll"
                     >
-                        <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
-                        <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="blog_title" header="Title" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="author_id" header="Author" sortable body={authoridTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="review_id" header="Review" sortable body={review_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="parentcategory_id" header="Parentcat" sortable body={parentcategory_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        {/* <Column field="subcategory_id" header="Subcat" sortable body={subcategory_idTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
-                        <Column field="status" header="Status" sortable body={statusTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column selectionMode="multiple" headerStyle={{ width:"3rem" }}></Column>
+                        {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
+                        <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="blog_title" header="Title"  body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="author" header="Author" filter filterPlaceholder="Search by author"
+                         body={authoridTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="review" header="Review" filter filterPlaceholder="Search by review" body={review_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="parentcategory_id" header="Parentcat" sortable body={parentcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        {/* <Column field="subcategory_id" header="Subcat" sortable body={subcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column> */}
+                        <Column field="status" header="Status" filter filterPlaceholder="Search by status" body={statusTemplate} showFilterMenu={false} filterElement={statusRowFilterTemplate}  headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 

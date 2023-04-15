@@ -64,13 +64,12 @@ function Products() {
     const dt = useRef(null);
     const fileRef = useRef(null);
 
-    console.log(product)
 
     const [state, setState] = useState(null);
 
     useEffect(() => {
         const getProducts = new apiService();
-        getProducts.getProducts().then((data) => {setAllProducts(data) ;console.log(data)});
+        getProducts.getProducts().then((data) => {setAllProducts(data)});
         setState(null);
         getParentCategory();
         getsubCategory();
@@ -119,7 +118,7 @@ function Products() {
         setSubmitted(true);
         if (product.product_name.trim()) {
             let _allProducts = [...allProducts];
-            let _product = { ...product };
+            let _product = {...product};
             if (product.id) {
                 const index = findIndexById(product.id);
 
@@ -128,9 +127,7 @@ function Products() {
                 toast.current.show({ severity: "warn", summary: "Successfully", detail: "Product Updated", life: 3000 });
             } else {
                 addupdateproductFunction(_product);
-                _allProducts.push(_product);
                 toast.current.show({ severity: "success", summary: "Successfully", detail: "Product Created", life: 3000 });
-                // fileRef.current.clear();
             }
 
             setAllProducts(_allProducts);
@@ -169,8 +166,7 @@ function Products() {
     };
 
     const editProduct = (product) => {
-        let _product = { ...product };
-        setproduct({ ...product });
+        let _product = {...product };
         if (_product.parentcategory.includes(",")) {
             var parentCategoryArray = _product.parentcategory.split(",");
         } else {
@@ -243,7 +239,8 @@ function Products() {
     };
 
     const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || "";
+        let val;
+        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
         _product[`${name}`] = val;
         setproduct(_product);
@@ -288,7 +285,7 @@ function Products() {
     const imageBodyTemplate = (rowData) => {
         return (
             <>
-                <img src={`assets/demo/images/blogs/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
+                <img src={`assets/demo/images/gallery/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
             </>
         );
     };
