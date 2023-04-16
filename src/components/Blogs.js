@@ -19,7 +19,7 @@ import Axios from "axios";
 import classNames from "classnames";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Image } from 'primereact/image';
- 
+
 
 function Blogs() {
     let emptyBlog = {
@@ -38,9 +38,11 @@ function Blogs() {
         content: "",
     };
 
-    const statusOptions = [{name : 'Publish', value : 'publish'},
-    {name : 'Draft', value : 'draft'},
-    {name : 'Trash', value : 'trash'}]
+    // const statusOptions = [{name : 'Publish', value : 'publish'},
+    // {name : 'Draft', value : 'draft'},
+    // {name : 'Trash', value : 'trash'}]
+
+    const statusOptions = ['publish','draft','trash']
 
     const [filters2, setFilters2] = useState({
         // 'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -306,7 +308,7 @@ function Blogs() {
 
 
     const statusItemTemplate = (option) => {
-        return <span className={`status-badge status-${option.name}`}>{option.name}</span>;
+        return <span className={`status-badge status-${option} px-4 py-2 border-round`}>{option}</span>;
     }
 
 
@@ -398,8 +400,33 @@ function Blogs() {
 
 
     const statusRowFilterTemplate = (options) => {
-        console.log(options)
         return <Dropdown value={options.value} options={statusOptions} onChange={(e) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Select a Status" className="p-column-filter" showClear />;
+    }
+
+
+    const representativeBodyTemplate = (rowData) => {
+        console.log(rowData)
+        const representative = rowData.author;
+        return (
+            <React.Fragment>
+                {/* <img alt={representative.name} src={`images/avatar/${representative.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
+                <span className="image-text">{representative}</span>
+            </React.Fragment>
+        );
+    }
+
+    const representativesItemTemplate = (option) => {
+        return (
+            <div className="p-multiselect-representative-option">
+                {/* <img alt={option.name} src={`images/avatar/${option.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
+                <span className="image-text">{option.name}</span>
+            </div>
+        );
+    }
+
+    const representativeRowFilterTemplate = (options) => {
+        console.log(options)
+        return <MultiSelect value={options.value} options={authoroptions} itemTemplate={representativesItemTemplate} onChange={(e) => options.filterApplyCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter" maxSelectedLabels={1} />;
     }
 
 
@@ -461,7 +488,7 @@ function Blogs() {
                     <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
                     <DataTable
-                        value={blogs} paginator className="p-datatable-customers" rows={10} rowsPerPageOptions={[5, 10, 25]} 
+                        value={blogs} paginator className="p-datatable-customers" rows={10} rowsPerPageOptions={[5, 10, 25]}
                         dataKey="id" filters={filters2} filterDisplay="row" loading={loading2} responsiveLayout="scroll"
                         globalFilterFields={[ 'author', 'review', 'status']} header={header2} emptyMessage="No blogs found."
 
@@ -487,8 +514,8 @@ function Blogs() {
                         {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="blog_title" header="Title"  body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        <Column field="author" header="Author" filter filterPlaceholder="Search by author"
-                         body={authoridTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="author" header="Author" filterPlaceholder="Search by author" body={representativeBodyTemplate} filter filterElement={representativeRowFilterTemplate}
+                          headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="review" header="Review" filter filterPlaceholder="Search by review" body={review_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="parentcategory_id" header="Parentcat" sortable body={parentcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         {/* <Column field="subcategory_id" header="Subcat" sortable body={subcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column> */}
@@ -559,7 +586,7 @@ function Blogs() {
 
                                         <Dropdown options={authoroptions} value={blog.review} onChange={(e) => onInputChange(e, "review")} className={classNames({ "p-invalid": submitted && !blog.review }, "mb-5")} placeholder="Reviewer Name" optionLabel="name"></Dropdown>
 
-                                        
+
                                     </AccordionTab>
                                 </Accordion>
                                 <Accordion>
