@@ -42,7 +42,7 @@ function Blogs() {
     // {name : 'Draft', value : 'draft'},
     // {name : 'Trash', value : 'trash'}]
 
-    const statusOptions = ['publish','draft','trash']
+    const statusOptions = ['publish', 'draft', 'trash']
 
     const [filters2, setFilters2] = useState({
         // 'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -77,7 +77,7 @@ function Blogs() {
 
     async function fetchData() {
         const blogData = new apiService();
-        blogData.getBlog().then((data) => {setBlogs(data); setLoading2(false)});
+        blogData.getBlog().then((data) => { setBlogs(data); setLoading2(false) });
     }
     async function fetchImages() {
         const galleryImages = new apiService();
@@ -112,11 +112,11 @@ function Blogs() {
         setSubCategory([...output]);
     }
 
-    const onImageChange = (e) => {
+    const onImageChange = (e, name) => {
         let selectedImages = [...images];
         if (e.checked) selectedImages.push(e.value);
         else selectedImages.splice(selectedImages.indexOf(e.value), 1);
-
+        onInputChange(e, name)
         setImages(selectedImages);
     };
 
@@ -137,7 +137,10 @@ function Blogs() {
         setFile(null);
     };
 
-    const openImageGallery = () => {
+    console.log(blog)
+
+    const openImageGallery = (e) => {
+        e.preventDefault();
         setGalleryDialog(true);
     };
 
@@ -220,7 +223,7 @@ function Blogs() {
         }
         _blog["parentcategory"] = parentCategoryArray;
         _blog["subcategory"] = subCategoryArray;
-        _blog["blogdate"] =  new Date(blog.blogdate);
+        _blog["blogdate"] = new Date(blog.blogdate);
         setBlog(_blog);
         setProductDialog(true);
     };
@@ -283,12 +286,17 @@ function Blogs() {
         toast.current.show({ severity: "error", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
     };
 
+    console.log(images)
+
     const onInputChange = (e, name) => {
         let val;
         name === "content" ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
-
         let _blog = { ...blog };
-        _blog[`${name}`] = val;
+        if (name == 'feature_image') {
+            _blog[`${name}`] = images;
+        } else {
+            _blog[`${name}`] = val;
+        }
         setBlog(_blog);
     };
 
@@ -372,7 +380,7 @@ function Blogs() {
     const featureimageTemplate = (rowData) => {
         return (
             <>
-                <Image src={`assets/demo/images/gallery/${rowData.feature_image}`} imageStyle={{width: '100px',height: '100px',objectFit: 'cover'}} preview={true} alt={rowData.feature_image} />
+                <Image src={`assets/demo/images/gallery/${rowData.feature_image}`} imageStyle={{ width: '100px', height: '100px', objectFit: 'cover' }} preview={true} alt={rowData.feature_image} />
             </>
         );
     };
@@ -428,8 +436,8 @@ function Blogs() {
     const statusTemplate = (rowData) => {
         return (
             <>
-             <span className={`status-badge status-${rowData.status} px-4 py-2 border-round`}>{rowData.status}</span>
-            {/* {rowData.status} */}
+                <span className={`status-badge status-${rowData.status} px-4 py-2 border-round`}>{rowData.status}</span>
+                {/* {rowData.status} */}
                 {/* <div className="actions">
                     <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0 ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => blogStatus(rowData)} />
                 </div> */}
@@ -485,36 +493,36 @@ function Blogs() {
                     <DataTable
                         value={blogs} paginator className="p-datatable-customers" rows={10} rowsPerPageOptions={[5, 10, 25]}
                         dataKey="id" filters={filters2} filterDisplay="row" loading={loading2} responsiveLayout="scroll"
-                        globalFilterFields={[ 'author', 'review', 'status']} header={header2} emptyMessage="No blogs found."
+                        globalFilterFields={['author', 'review', 'status']} header={header2} emptyMessage="No blogs found."
 
 
 
-                        // ref={dt}
-                        // value={blogs}
-                        // selection={selectedBlogs}
-                        // globalFilterFields={['blog_title', 'author', 'review', 'status']} header={header2}
-                        // dataKey="id"
-                        // paginator
-                        // rows={10}
-                        // filters={filters2}
-                        // rowsPerPageOptions={[5, 10, 25]}
-                        // className="datatable-responsive"
-                        // paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        // currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
-                        // // globalFilter={globalFilter}
-                        // emptyMessage="No blogs found."
-                        // responsiveLayout="scroll"
+                    // ref={dt}
+                    // value={blogs}
+                    // selection={selectedBlogs}
+                    // globalFilterFields={['blog_title', 'author', 'review', 'status']} header={header2}
+                    // dataKey="id"
+                    // paginator
+                    // rows={10}
+                    // filters={filters2}
+                    // rowsPerPageOptions={[5, 10, 25]}
+                    // className="datatable-responsive"
+                    // paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    // currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
+                    // // globalFilter={globalFilter}
+                    // emptyMessage="No blogs found."
+                    // responsiveLayout="scroll"
                     >
-                        <Column selectionMode="multiple" headerStyle={{ width:"3rem" }}></Column>
+                        <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        <Column field="blog_title" header="Title"  body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="blog_title" header="Title" body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="author" header="Author" filterPlaceholder="Search by author" body={representativeBodyTemplate} filter filterElement={representativeRowFilterTemplate}
-                          headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                            headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="review" header="Review" filter filterPlaceholder="Search by review" body={review_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="parentcategory_id" header="Parentcat" sortable body={parentcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         {/* <Column field="subcategory_id" header="Subcat" sortable body={subcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column> */}
-                        <Column field="status" header="Status" filter filterPlaceholder="Search by status" body={statusTemplate} showFilterMenu={false} filterElement={statusRowFilterTemplate}  headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="status" header="Status" filter filterPlaceholder="Search by status" body={statusTemplate} showFilterMenu={false} filterElement={statusRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
@@ -559,18 +567,18 @@ function Blogs() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://localhost:5000/api/blog" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
-                                            <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
-                                            {images?.map((item, ind) => {
-                                                return (
-                                                    <div className="col" key={ind}>
-                                                        <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
-                                                    </div>
-                                                );
-                                            })}
-                                        </TabPanel>
+                                                <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery(e)} />
+                                                {images?.map((item, ind) => {
+                                                    return (
+                                                        <div className="col" key={ind}>
+                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
+                                                        </div>
+                                                    );
+                                                })}
+                                            </TabPanel>
                                         </TabView>
                                     </AccordionTab>
                                 </Accordion>
@@ -634,7 +642,7 @@ function Blogs() {
                                 gallery?.map((item, index) => {
                                     return (
                                         <div className="col-12 md:col-2" key={index}>
-                                            <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={onImageChange} checked={images.includes(`${item.image}`)}></Checkbox>
+                                            <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={(e) => onImageChange(e, 'feature_image')} checked={images.includes(`${item.image}`)}></Checkbox>
                                             <label htmlFor={`cb3${index}`} className="p-checkbox-label">
                                                 <img src={`assets/demo/images/gallery/${item.image}`} alt={item.alt_title} style={{ width: "100%", height: "200px", objectFit: "cover", cursor: "pointer" }} className="mt-0 mx-auto mb-5 block shadow-2" />
                                             </label>
