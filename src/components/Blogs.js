@@ -204,9 +204,6 @@ function Blogs() {
         setFile(null);
     };
 
-    console.log(globalFilterValue2)
-
-
     const editProduct = (blog) => {
         let _blog = { ...blog };
         if (_blog.parentcategory.includes(",")) {
@@ -405,7 +402,6 @@ function Blogs() {
 
 
     const representativeBodyTemplate = (rowData) => {
-        console.log(rowData)
         const representative = rowData.author;
         return (
             <React.Fragment>
@@ -425,7 +421,6 @@ function Blogs() {
     }
 
     const representativeRowFilterTemplate = (options) => {
-        console.log(options)
         return <MultiSelect value={options.value} options={authoroptions} itemTemplate={representativesItemTemplate} onChange={(e) => options.filterApplyCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter" maxSelectedLabels={1} />;
     }
 
@@ -566,6 +561,16 @@ function Blogs() {
                                             <TabPanel header="upload">
                                                 <FileUpload auto url="http://localhost:5000/api/blog" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
+                                            <TabPanel header="Gallery">
+                                            <Button label="select image" icon="pi pi-check" iconPos="right" onClick={openImageGallery} />
+                                            {images?.map((item, ind) => {
+                                                return (
+                                                    <div className="col" key={ind}>
+                                                        <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
+                                                    </div>
+                                                );
+                                            })}
+                                        </TabPanel>
                                         </TabView>
                                     </AccordionTab>
                                 </Accordion>

@@ -65,14 +65,15 @@ function Gallery() {
     };
 
     const deleteImageFunction = async (data) => {
-        let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        await Axios.delete(`http://localhost:5000/api/image/${selectedIds}`)
+        let selectedIds = typeof data.id === "number" ? data.id : data.map((res) => res.id);
+        let imageName = data.image
+        await Axios.delete(`http://localhost:5000/api/image/${selectedIds}`,imageName)
         fetchData();
         toast.current.show({ severity: "success", summary: "Successfully", detail: "Deleted Successfully", life: 3000 });
     };
 
     const deleteProduct = () => {
-        deleteImageFunction(image.id);
+        deleteImageFunction(image);
         setDeleteProductDialog(false);
         setImage(emptyImage);
     };
@@ -220,7 +221,7 @@ function Gallery() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "600px" }} header="IMAGE Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "600px" }} header="Image Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                         <div className="grid">
                             <div className="col-12">
                                 <div className="p-fluid">
