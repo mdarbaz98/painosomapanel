@@ -36,6 +36,7 @@ function Blogs() {
         status: 'draft',
         publishdate: "",
         content: "",
+        reference: "",
     };
 
     // const statusOptions = [{name : 'Publish', value : 'publish'},
@@ -117,7 +118,7 @@ function Blogs() {
         if (e.checked) selectedImages.push(e.value);
         else selectedImages.splice(selectedImages.indexOf(e.value), 1);
         setImages(selectedImages);
-        onInputChange(e, name,selectedImages)
+        onInputChange(e, name, selectedImages)
     };
 
 
@@ -196,6 +197,7 @@ function Blogs() {
         formData.append("status", data.status);
         formData.append("publishdate", data.publishdate);
         formData.append("content", data.content);
+        formData.append("reference", data.reference);
 
         if (blog.id) {
             await Axios.put(`http://localhost:5000/api/blog/${data.id}`, formData);
@@ -288,9 +290,9 @@ function Blogs() {
 
     console.log(images)
 
-    const onInputChange = (e, name,selectedImages) => {
+    const onInputChange = (e, name, selectedImages) => {
         let val;
-        name === "content" ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
+        (name === "content" || name === "reference") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
         let _blog = { ...blog };
         if (name == 'feature_image') {
             _blog[`${name}`] = selectedImages;
@@ -617,6 +619,16 @@ function Blogs() {
                                 </Accordion>
                                 {/* authordropdown */}
                             </div>
+                            <Accordion style={{ width: "66%" }}>
+                                <AccordionTab header="Blog Section">
+                                    <div className="col-12 md:col-12">
+                                        <div className="card p-fluid">
+                                            <h5>Reference</h5>
+                                            <Editor style={{ height: "320px" }} value={blog.reference} onTextChange={(e) => onInputChange(e, "reference")} />
+                                        </div>
+                                    </div>
+                                </AccordionTab>
+                            </Accordion>
                         </form>
                     </Dialog>
 
