@@ -43,7 +43,7 @@ function Blogs() {
 
     const [filters2, setFilters2] = useState({
         // 'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
-        'blog_title': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'blog_title': { value: null, matchMode: FilterMatchMode.CONTAINS },
         'author': { value: null, matchMode: FilterMatchMode.IN },
         'review': { value: null, matchMode: FilterMatchMode.IN },
         'parentcategory': { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -389,7 +389,7 @@ function Blogs() {
             <>
                 <span className="p-column-title">Name</span>
                 {rowData.parentcategory}
-                {/* {rowData.subcategory} */}
+                {rowData.subcategory}
             </>
         );
     };

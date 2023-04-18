@@ -86,7 +86,6 @@ function Categories() {
         setDeleteProductsDialog(false);
     };
 
-    console.log(categoryList)
 
     const saveProduct = async () => {
         setSubmitted(true);
@@ -115,6 +114,7 @@ function Categories() {
             setCategoryList(_categories);
             setProductDialog(false);
             setparentcategoryName('');
+            getAllCategories();
         }
     };
 
