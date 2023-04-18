@@ -39,17 +39,14 @@ function Blogs() {
         reference: "",
     };
 
-    // const statusOptions = [{name : 'Publish', value : 'publish'},
-    // {name : 'Draft', value : 'draft'},
-    // {name : 'Trash', value : 'trash'}]
-
     const statusOptions = ['publish', 'draft', 'trash']
 
     const [filters2, setFilters2] = useState({
         // 'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
-        // 'blog_title': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-        'author': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-        'review': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'blog_title': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+        'author': { value: null, matchMode: FilterMatchMode.IN },
+        'review': { value: null, matchMode: FilterMatchMode.IN },
+        'parentcategory': { value: null, matchMode: FilterMatchMode.CONTAINS },
         'status': { value: null, matchMode: FilterMatchMode.EQUALS },
         // 'verified': { value: null, matchMode: FilterMatchMode.EQUALS }
     });
@@ -380,7 +377,6 @@ function Blogs() {
             </>
         );
     };
-    console.log(blogs)
     const featureimageTemplate = (rowData) => {
         return (
             <>
@@ -393,7 +389,7 @@ function Blogs() {
             <>
                 <span className="p-column-title">Name</span>
                 {rowData.parentcategory}
-                {rowData.subcategory}
+                {/* {rowData.subcategory} */}
             </>
         );
     };
@@ -412,18 +408,18 @@ function Blogs() {
         return <Dropdown value={options.value} options={statusOptions} onChange={(e) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Select a Status" className="p-column-filter" showClear />;
     }
 
-
-    const representativeBodyTemplate = (rowData) => {
-        const representative = rowData.author;
+    // for review 
+    const reviewBodyTemplate = (rowData) => {
+        const representative = rowData.review;
         return (
-            <React.Fragment>
+            <>
                 {/* <img alt={representative.name} src={`images/avatar/${representative.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
                 <span className="image-text">{representative}</span>
-            </React.Fragment>
+            </>
         );
     }
 
-    const representativesItemTemplate = (option) => {
+    const reviewItemTemplate = (option) => {
         return (
             <div className="p-multiselect-representative-option">
                 {/* <img alt={option.name} src={`images/avatar/${option.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
@@ -432,8 +428,33 @@ function Blogs() {
         );
     }
 
-    const representativeRowFilterTemplate = (options) => {
-        return <MultiSelect value={options.value} options={authoroptions} itemTemplate={representativesItemTemplate} onChange={(e) => options.filterApplyCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter" maxSelectedLabels={1} />;
+    const reviewRowFilterTemplate = (options) => {
+        return <MultiSelect value={options.value} options={authoroptions} itemTemplate={reviewItemTemplate} onChange={(e) => options.filterApplyCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter" />;
+    }
+
+
+    // for author 
+    const authorBodyTemplate = (rowData) => {
+        const representative = rowData.author;
+        return (
+            <>
+                {/* <img alt={representative.name} src={`images/avatar/${representative.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
+                <span className="image-text">{representative}</span>
+            </>
+        );
+    }
+
+    const authorItemTemplate = (option) => {
+        return (
+            <div className="p-multiselect-representative-option">
+                {/* <img alt={option.name} src={`images/avatar/${option.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
+                <span className="image-text">{option.name}</span>
+            </div>
+        );
+    }
+
+    const authorRowFilterTemplate = (options) => {
+        return <MultiSelect value={options.value} options={authoroptions} itemTemplate={authorItemTemplate} onChange={(e) => options.filterApplyCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter" />;
     }
 
 
@@ -498,7 +519,7 @@ function Blogs() {
                         value={blogs} paginator className="p-datatable-customers" rows={10} rowsPerPageOptions={[5, 10, 25]}
                         dataKey="id" filters={filters2} filterDisplay="row" loading={loading2} responsiveLayout="scroll"
                         globalFilterFields={['author', 'review', 'status']} header={header2} emptyMessage="No blogs found."
-
+                        selection={selectedBlogs}
 
 
                     // ref={dt}
@@ -520,11 +541,11 @@ function Blogs() {
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        <Column field="blog_title" header="Title" body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        <Column field="author" header="Author" filterPlaceholder="Search by author" body={representativeBodyTemplate} filter filterElement={representativeRowFilterTemplate}
+                        <Column field="blog_title" header="Title" filter filterPlaceholder="Search by Title"  body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="author" header="Author" filterPlaceholder="Search by author" body={authorBodyTemplate} filter filterElement={authorRowFilterTemplate}
                             headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        <Column field="review" header="Review" filter filterPlaceholder="Search by review" body={review_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        <Column field="parentcategory_id" header="Parentcat" sortable body={parentcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="review" header="Review" filterPlaceholder="Search by review" body={reviewBodyTemplate} filter filterElement={reviewRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="parentcategory" header="Parentcat" filter filterPlaceholder="Search by Category" body={parentcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         {/* <Column field="subcategory_id" header="Subcat" sortable body={subcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column> */}
                         <Column field="status" header="Status" filter filterPlaceholder="Search by status" body={statusTemplate} showFilterMenu={false} filterElement={statusRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
