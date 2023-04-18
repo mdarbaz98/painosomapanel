@@ -116,8 +116,8 @@ function Blogs() {
         let selectedImages = [...images];
         if (e.checked) selectedImages.push(e.value);
         else selectedImages.splice(selectedImages.indexOf(e.value), 1);
-        onInputChange(e, name)
         setImages(selectedImages);
+        onInputChange(e, name,selectedImages)
     };
 
 
@@ -288,15 +288,16 @@ function Blogs() {
 
     console.log(images)
 
-    const onInputChange = (e, name) => {
+    const onInputChange = (e, name,selectedImages) => {
         let val;
         name === "content" ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
         let _blog = { ...blog };
         if (name == 'feature_image') {
-            _blog[`${name}`] = images;
+            _blog[`${name}`] = selectedImages;
         } else {
             _blog[`${name}`] = val;
         }
+        console.log(_blog)
         setBlog(_blog);
     };
 
@@ -377,6 +378,7 @@ function Blogs() {
             </>
         );
     };
+    console.log(blogs)
     const featureimageTemplate = (rowData) => {
         return (
             <>
@@ -604,7 +606,7 @@ function Blogs() {
                                 </Accordion>
                                 <Accordion>
                                     <AccordionTab header="publish Section">
-                                        <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={blog.status} onChange={(e) => onInputChange(e, "status")} className={classNames({ "p-invalid": submitted && !blog.status }, "mb-5")} placeholder="Select status" optionLabel="name"></Dropdown>
+                                        <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={blog.status} onChange={(e) => onInputChange(e, "status")} className={classNames({ "p-invalid": submitted && !blog.status }, "mb-5")} placeholder="Select status"></Dropdown>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <Calendar id="date" value={blog.blogdate} onChange={(e) => onInputChange(e, "blogdate")} />
