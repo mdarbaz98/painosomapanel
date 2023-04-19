@@ -12,8 +12,8 @@ const getAllImage = (req, resp) => {
 };
 
 const addImage = (req, resp) => {
-    const image = req.body.title;
-    var name = req.body.title.split('.')[0]
+    const image = req.file.filename;
+    var name = image.split('.')[0]
     con.query('INSERT INTO image (`image`, `title`, `alt_title`) values(?,?,?)', [image, name, name], (err, result) => {
         if (err) console.log(err);
     })

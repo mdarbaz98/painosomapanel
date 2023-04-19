@@ -110,11 +110,9 @@ function Categories() {
                 _categories.push(_category);
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Created", life: 3000 });
             }
-
+            console.log(_categories)
             setCategoryList(_categories);
             setProductDialog(false);
-            setparentcategoryName('');
-            getAllCategories();
         }
     };
 
@@ -407,7 +405,7 @@ function Categories() {
                             <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: "2rem" }} />
                             {category && (
                                 <span>
-                                    Are you sure you want to delete <b>{category.name}</b>?
+                                    Are you sure you want to delete <b>{category.cat_name}</b>?
                                 </span>
                             )}
                         </div>

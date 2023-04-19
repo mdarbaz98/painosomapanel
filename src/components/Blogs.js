@@ -516,27 +516,20 @@ function Blogs() {
                     <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
                     <DataTable
-                        value={blogs} paginator className="p-datatable-customers" rows={10} rowsPerPageOptions={[5, 10, 25]}
-                        dataKey="id" filters={filters2} filterDisplay="row" loading={loading2} responsiveLayout="scroll"
-                        globalFilterFields={['author', 'review', 'status']} header={header2} emptyMessage="No blogs found."
+                        ref={dt}
+                        value={blogs} 
                         selection={selectedBlogs}
-
-
-                    // ref={dt}
-                    // value={blogs}
-                    // selection={selectedBlogs}
-                    // globalFilterFields={['blog_title', 'author', 'review', 'status']} header={header2}
-                    // dataKey="id"
-                    // paginator
-                    // rows={10}
-                    // filters={filters2}
-                    // rowsPerPageOptions={[5, 10, 25]}
-                    // className="datatable-responsive"
-                    // paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    // currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
-                    // // globalFilter={globalFilter}
-                    // emptyMessage="No blogs found."
-                    // responsiveLayout="scroll"
+                        dataKey="id" 
+                        paginator rows={10} 
+                        rowsPerPageOptions={[5, 10, 25]}
+                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        className="p-datatable-customers" 
+                        filters={filters2} 
+                        filterDisplay="row" 
+                        loading={loading2} 
+                        responsiveLayout="scroll"
+                        globalFilterFields={['author', 'review', 'status']} header={header2} emptyMessage="No blogs found."
+                        onSelectionChange={(e) => setSelectedBlogs(e.value)}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
