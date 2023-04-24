@@ -110,7 +110,6 @@ function Categories() {
                 _categories.push(_category);
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Created", life: 3000 });
             }
-            console.log(_categories)
             setCategoryList(_categories);
             setProductDialog(false);
         }
