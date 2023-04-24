@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-// import { Editor } from "primereact/editor";
+import { Editor as PrimeEditor } from "primereact/editor";
 import { Editor } from "@tinymce/tinymce-react";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
@@ -60,7 +60,7 @@ function Blogs() {
     const [blog, setBlog] = useState(emptyBlog);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
-    const [globalFilter, setGlobalFilter] = useState(null);
+    const [content, setContent] = useState('test');
     const [gallery, setGallery] = useState(null);
     const [images, setImages] = useState([]);
     const toast = useRef(null);
@@ -286,18 +286,14 @@ function Blogs() {
         toast.current.show({ severity: "error", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
     };
 
-    console.log(images)
 
-    const onInputChange = (e, name, selectedImages) => {
-        let val;
-        (name === "content" || name === "reference") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
+    const onInputChange = (value, name, selectedImages) => {
         let _blog = { ...blog };
         if (name == 'feature_image') {
             _blog[`${name}`] = selectedImages;
         } else {
-            _blog[`${name}`] = val;
+            _blog[`${name}`] = value;
         }
-        console.log(_blog)
         setBlog(_blog);
     };
 
@@ -562,7 +558,7 @@ function Blogs() {
                                         outputFormat="html" // html (default) / text
                                         // tinymceScriptSrc="tinymce/tinymce.min.js" // Use the tinymceScriptSrc prop to specify an external version of TinyMCE to lazy load.
                                         tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
-                                        initialValue=""
+                                        // initialValue={blog.content}
                                         value={blog.content}
                                         init={{
                                             height: 500,
@@ -631,7 +627,9 @@ function Blogs() {
                                                 },
                                             ],
                                         }}
-                                        onEditorChange={(e) => onInputChange(e, "content")}
+                                        onEditorChange={(e) => {
+                                            onInputChange(e,"content")
+                                        }}
                                         // onChange={(e) => onInputChange(e, "content")}
                                     />
                                     {/* <Editor style={{ height: "320px" }} value={blog.content} onTextChange={(e) => onInputChange(e, "content")} /> */}
@@ -644,19 +642,19 @@ function Blogs() {
                                     <AccordionTab header="Blog Section">
                                         <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e, "blog_title")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e.target.value, "blog_title")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_title">Blog title</label>
                                             </span>
                                         </div>
                                         <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => onInputChange(e, "seo_title")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => onInputChange(e.target.value, "seo_title")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="seo_title">SEO title</label>
                                             </span>
                                         </div>
                                         <div className=" p-field pt-3">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e, "slug")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e.target.value, "slug")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_slug">Blog slug</label>
                                             </span>
                                         </div>
@@ -688,27 +686,27 @@ function Blogs() {
                                 {/* categorydropdwon */}
                                 <Accordion>
                                     <AccordionTab header="Category Section">
-                                        <MultiSelect options={parentCategory} className="mb-5" value={blog.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
-                                        <MultiSelect options={subCategory} value={blog.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" />
+                                        <MultiSelect options={parentCategory} className="mb-5" value={blog.parentcategory} onChange={(e) => onInputChange(e.target.value, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
+                                        <MultiSelect options={subCategory} value={blog.subcategory} onChange={(e) => onInputChange(e.target.value, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" />
                                     </AccordionTab>
                                 </Accordion>
                                 {/* categorydropdwon */}
                                 {/* authordropdown */}
                                 <Accordion>
                                     <AccordionTab header="Author Section">
-                                        <Dropdown options={authoroptions} value={blog.author} onChange={(e) => onInputChange(e, "author")} className={classNames({ "p-invalid": submitted && !blog.author }, "mb-5")} placeholder="Author Name" optionLabel="name"></Dropdown>
+                                        <Dropdown options={authoroptions} value={blog.author} onChange={(e) => onInputChange(e.target.value, "author")} className={classNames({ "p-invalid": submitted && !blog.author }, "mb-5")} placeholder="Author Name" optionLabel="name"></Dropdown>
 
-                                        <Dropdown options={authoroptions} value={blog.review} onChange={(e) => onInputChange(e, "review")} className={classNames({ "p-invalid": submitted && !blog.review }, "mb-5")} placeholder="Reviewer Name" optionLabel="name"></Dropdown>
+                                        <Dropdown options={authoroptions} value={blog.review} onChange={(e) => onInputChange(e.target.value, "review")} className={classNames({ "p-invalid": submitted && !blog.review }, "mb-5")} placeholder="Reviewer Name" optionLabel="name"></Dropdown>
 
 
                                     </AccordionTab>
                                 </Accordion>
                                 <Accordion>
                                     <AccordionTab header="publish Section">
-                                        <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={blog.status} onChange={(e) => onInputChange(e, "status")} className={classNames({ "p-invalid": submitted && !blog.status }, "mb-5")} placeholder="Select status"></Dropdown>
+                                        <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={blog.status} onChange={(e) => onInputChange(e.target.value, "status")} className={classNames({ "p-invalid": submitted && !blog.status }, "mb-5")} placeholder="Select status"></Dropdown>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <Calendar id="date" value={blog.blogdate} onChange={(e) => onInputChange(e, "blogdate")} />
+                                                <Calendar id="date" value={blog.blogdate} onChange={(e) => onInputChange(e.target.value, "blogdate")} />
                                                 <label htmlFor="date">Blog date</label>
                                             </span>
                                         </div>
@@ -721,7 +719,7 @@ function Blogs() {
                                     <div className="col-12 md:col-12">
                                         <div className="card p-fluid">
                                             <h5>Reference</h5>
-                                            <Editor style={{ height: "320px" }} value={blog.reference} onTextChange={(e) => onInputChange(e, "reference")} />
+                                            <PrimeEditor style={{ height: "320px" }} value={blog.reference} onTextChange={(e) => onInputChange(e.htmlValue, "reference")} />
                                         </div>
                                     </div>
                                 </AccordionTab>
