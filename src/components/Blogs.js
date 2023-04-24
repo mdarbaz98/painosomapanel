@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Editor } from "primereact/editor";
+// import { Editor } from "primereact/editor";
+import { Editor } from "@tinymce/tinymce-react";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
@@ -551,7 +552,89 @@ function Blogs() {
                             <div className="col-12 md:col-8">
                                 <div className="card p-fluid">
                                     <h5>Content</h5>
-                                    <Editor style={{ height: "320px" }} value={blog.content} onTextChange={(e) => onInputChange(e, "content")} />
+                                    <Editor
+                                        apiKey="crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb"
+                                        className="editor"
+                                        style={{ width: "100%" }}
+                                        inline={false} // default false
+                                        tagName="div" // only inline
+                                        textareaName="article"
+                                        outputFormat="html" // html (default) / text
+                                        // tinymceScriptSrc="tinymce/tinymce.min.js" // Use the tinymceScriptSrc prop to specify an external version of TinyMCE to lazy load.
+                                        tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
+                                        initialValue=""
+                                        value={blog.content}
+                                        init={{
+                                            height: 500,
+                                            // min_height: 500,
+                                            // selector: "div", // change this value according to your HTML
+                                            resize: true, // true/false/'both'
+                                            // menubar: false,
+                                            branding: true,
+                                            // menubar: "insert table",
+                                            statusbar: true,
+                                            placeholder: "",
+                                            // language: "en_US",
+                                            paste_data_images: true, // default false
+                                            paste_webkit_styles: "all",
+                                            // paste_retain_style_properties: "all",
+                                            font_formats:
+                                                "Oswald=oswald; Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
+                                            fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
+                                            plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                            toolbar:
+                                                "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                            // content_css: "/styles.css",
+                                            content_style: "@import url('/font.css'); .mce-content-body { font-family: Oswald; }",
+                                            // file_picker_types: "image",
+                                            media_dimensions: false,
+                                            media_url_resolver: function (data, resolve /*, reject*/) {
+                                                console.log("## media_url_resolver data", data);
+                                                if (data.url.startsWith("https://www.youtube.com/watch/") !== -1) {
+                                                    const v = data.url.slice(data.url.indexOf("?v=") + 3);
+
+                                                    var embedHtml = '<div id="fitVids-wrapper"><iframe src="' + "https://www.youtube.com/embed/" + v + '" ></iframe></div>';
+                                                    resolve({ html: embedHtml });
+                                                } else {
+                                                    resolve({ html: "" });
+                                                }
+                                            },
+                                            file_picker_types: "file image media",
+                                            images_upload_handler: async function (blobInfo, success, failure) {
+                                                let image = new FormData();
+                                                image.append("image", blobInfo.blob());
+                                                try {
+                                                    const { data } = await Axios.post("http://localhost:5000/api/image", image);
+                                                    success(`assets/demo/images/gallery/${data}`);
+                                                } catch (error) {
+                                                    console.log(error);
+                                                    return;
+                                                }
+                                            },
+
+                                            template_selected_content_classes: "selcontent",
+                                            templates: [
+                                                {
+                                                    title: "inline template",
+                                                    description: "Some desc 1",
+                                                    content: `<p>My <button class="btn">content</button></p>`,
+                                                },
+                                                {
+                                                    title: "Simple html file template ",
+                                                    description: "Some desc 1",
+                                                    url: "templates/simple.html",
+                                                },
+                                                {
+                                                    title: "html file template",
+                                                    description: "Some desc 2",
+                                                    url: "templates/development.html",
+                                                },
+                                            ],
+                                        }}
+                                        onEditorChange={(e) => onInputChange(e, "content")}
+                                        // onChange={(e) => onInputChange(e, "content")}
+                                    />
+                                    {/* <Editor style={{ height: "320px" }} value={blog.content} onTextChange={(e) => onInputChange(e, "content")} /> */}
                                 </div>
                             </div>
 
