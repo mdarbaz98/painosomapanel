@@ -157,9 +157,9 @@ function Products() {
         formData.append("date", data.date);
 
         if (product.id) {
-            await Axios.put(`http://localhost:5000/api/products/${data.id}`, formData);
+            await Axios.put(`http://192.168.0.143:5000/api/products/${data.id}`, formData);
         } else {
-            await Axios.post("http://localhost:5000/api/products", formData);
+            await Axios.post("http://192.168.0.143:5000/api/products", formData);
         }
         setState(formData)
         // setState([])
@@ -194,7 +194,7 @@ function Products() {
 
     const deleteBlogFunction = (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        Axios.delete(`http://localhost:5000/api/products/${selectedIds}`)
+        Axios.delete(`http://192.168.0.143:5000/api/products/${selectedIds}`)
             .then()
             .catch((err) => {
                 console.log(err);
@@ -415,7 +415,7 @@ function Products() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://localhost:5000/api/products" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://192.168.0.143:5000/api/products" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                         </TabView>
                                     </AccordionTab>

@@ -90,7 +90,7 @@ function Categories() {
     const saveProduct = async () => {
         setSubmitted(true);
 
-        // const res = await Axios.get(`http://localhost:5000/api/category/${category.parent_category}`);
+        // const res = await Axios.get(`http://192.168.0.143:5000/api/category/${category.parent_category}`);
 
         // const getName = res.data.length > 0 ? res.data[0].cat_name : 'none'
 
@@ -116,13 +116,13 @@ function Categories() {
     };
 
     const addCategoryFunction = (data) => {
-        Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status})
+        Axios.post("http://192.168.0.143:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status})
             .then()
             .catch((err) => console.log(err));
     };
 
     const updateCategoryFunction = (data) => {
-        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status})
+        Axios.put(`http://192.168.0.143:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status})
             .then()
             .catch((err) => {
                 console.log(err);
@@ -135,7 +135,7 @@ function Categories() {
     };
 
     const updateStatus = async (rowData) => {
-        await Axios.put(`http://localhost:5000/api/category/status/${rowData.id}`, rowData);
+        await Axios.put(`http://192.168.0.143:5000/api/category/status/${rowData.id}`, rowData);
     }
 
     // SAMPLE
@@ -156,7 +156,7 @@ function Categories() {
 
     const deleteCategoryFunction = (data) => {
         let selectedIds = typeof (data) === "number" ? data : data.map(res => res.id);
-        Axios.delete(`http://localhost:5000/api/category/${selectedIds}`)
+        Axios.delete(`http://192.168.0.143:5000/api/category/${selectedIds}`)
             .then()
             .catch((err) => {
                 console.log(err);

@@ -60,7 +60,7 @@ function AddBlog() {
          formData.append('category',blogData.category);
          formData.append('excerpt',blogData.excerpt);
 
-        await Axios.post('http://localhost:5000/api/blog',formData).then().catch(err => console.log(err));
+        await Axios.post('http://192.168.0.143:5000/api/blog',formData).then().catch(err => console.log(err));
         setBlogData(blog);
         fileRef.current.clear();
         toast.current.show({ severity: 'success', summary: 'Successfully', detail: 'Blog Added', life: 3000 });
