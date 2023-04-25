@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Editor as PrimeEditor } from "primereact/editor";
 import { Editor } from "@tinymce/tinymce-react";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
@@ -69,9 +68,9 @@ function Blogs() {
     const [subCategory, setSubCategory] = useState([{ name: "none", value: "none" }]);
     const [authoroptions, setAuthorOptions] = useState([{ name: "none", value: "none" }]);
     const [file, setFile] = useState(null);
-
     const [globalFilterValue2, setGlobalFilterValue2] = useState('');
     const [loading2, setLoading2] = useState(true);
+    const [titleCount, ChangeTitleCount] = useState(0);
 
 
     async function fetchData() {
@@ -291,9 +290,9 @@ function Blogs() {
         let _blog = { ...blog };
         if (name == 'feature_image') {
             _blog[`${name}`] = selectedImages;
-        }else if(name=="slug"){
-            _blog[`${name}`] = value.replace(' ','-');
-        } 
+        } else if (name == "slug") {
+            _blog[`${name}`] = value.replace(' ', '-');
+        }
         else {
             _blog[`${name}`] = value;
         }
@@ -517,16 +516,16 @@ function Blogs() {
 
                     <DataTable
                         ref={dt}
-                        value={blogs} 
+                        value={blogs}
                         selection={selectedBlogs}
-                        dataKey="id" 
-                        paginator rows={10} 
+                        dataKey="id"
+                        paginator rows={10}
                         rowsPerPageOptions={[5, 10, 25]}
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        className="p-datatable-customers" 
-                        filters={filters2} 
-                        filterDisplay="row" 
-                        loading={loading2} 
+                        className="p-datatable-customers"
+                        filters={filters2}
+                        filterDisplay="row"
+                        loading={loading2}
                         responsiveLayout="scroll"
                         globalFilterFields={['author', 'review', 'status']} header={header2} emptyMessage="No blogs found."
                         onSelectionChange={(e) => setSelectedBlogs(e.value)}
@@ -534,7 +533,7 @@ function Blogs() {
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        <Column field="blog_title" header="Title" filter filterPlaceholder="Search by Title"  body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="blog_title" header="Title" filter filterPlaceholder="Search by Title" body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="author" header="Author" filterPlaceholder="Search by author" body={authorBodyTemplate} filter filterElement={authorRowFilterTemplate}
                             headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="review" header="Review" filterPlaceholder="Search by review" body={reviewBodyTemplate} filter filterElement={reviewRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
@@ -631,12 +630,24 @@ function Blogs() {
                                             ],
                                         }}
                                         onEditorChange={(e) => {
-                                            onInputChange(e,"content")
+                                            onInputChange(e, "content")
                                         }}
-                                        // onChange={(e) => onInputChange(e, "content")}
+                                    // onChange={(e) => onInputChange(e, "content")}
                                     />
                                     {/* <Editor style={{ height: "320px" }} value={blog.content} onTextChange={(e) => onInputChange(e, "content")} /> */}
                                 </div>
+                                <Accordion>
+                                <AccordionTab header="Reference Section">
+                                    <div className="col-12 md:col-12">
+                                        <Editor 
+                                        value={blog.reference} 
+                                        onEditorChange={(e) => {
+                                            onInputChange(e.htmlValue, "reference")
+                                        }}
+                                        />
+                                    </div>
+                                </AccordionTab>
+                            </Accordion>
                             </div>
 
                             <div className="col-12 md:col-4">
@@ -645,9 +656,16 @@ function Blogs() {
                                     <AccordionTab header="Blog Section">
                                         <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e.target.value, "blog_title")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => {
+                                                    let countvalue = e.target.value.length;
+                                                    ChangeTitleCount(countvalue)
+                                                    if (countvalue < 60) {
+                                                        onInputChange(e.target.value, "blog_title")
+                                                    }
+                                                }} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_title">Blog title</label>
                                             </span>
+                                            <p>{titleCount}/60</p>
                                         </div>
                                         <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
@@ -717,16 +735,6 @@ function Blogs() {
                                 </Accordion>
                                 {/* authordropdown */}
                             </div>
-                            <Accordion style={{ width: "66%" }}>
-                                <AccordionTab header="Blog Section">
-                                    <div className="col-12 md:col-12">
-                                        <div className="card p-fluid">
-                                            <h5>Reference</h5>
-                                            <PrimeEditor style={{ height: "320px" }} value={blog.reference} onTextChange={(e) => onInputChange(e.htmlValue, "reference")} />
-                                        </div>
-                                    </div>
-                                </AccordionTab>
-                            </Accordion>
                         </form>
                     </Dialog>
 

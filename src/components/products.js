@@ -4,11 +4,9 @@ import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
 import { Toolbar } from "primereact/toolbar";
-import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { apiService } from "../service/apiServices";
-import { Editor } from "primereact/editor";
 import Axios from "axios";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { MultiSelect } from "primereact/multiselect";
@@ -17,6 +15,7 @@ import { FileUpload } from "primereact/fileupload";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import classNames from "classnames";
+import { Editor } from "@tinymce/tinymce-react";
 
 
 function Products() {
@@ -63,7 +62,6 @@ function Products() {
     const toast = useRef(null);
     const dt = useRef(null);
     const fileRef = useRef(null);
-
 
     const [state, setState] = useState(null);
 
@@ -455,9 +453,12 @@ function Products() {
                                             <InputText type="text" value={product.aboutheader} onChange={(e) => onInputChange(e, "aboutheader")} style={{ fontSize: "12px" }} />
                                             <label htmlFor="aboutheader">About</label>
                                         </span>
-                                        <div className="card p-fluid">
-                                            <Editor style={{ height: '320px' }} value={product.abouteditor} onTextChange={(e) => onInputChange(e, "abouteditor")} />
-                                        </div>
+                                        <Editor 
+                                        value={product.abouteditor} 
+                                        onTextChange={(e) => {
+                                            onInputChange(e.htmlValue, "abouteditor")
+                                        }}
+                                        />
                                     </AccordionTab>
                                 </Accordion>
                             </div>
@@ -468,9 +469,12 @@ function Products() {
                                             <InputText type="text"  value={product.newsheader} onChange={(e) => onInputChange(e, "newsheader")} style={{ fontSize: "12px" }} />
                                             <label htmlFor="newsheader">News</label>
                                         </span>
-                                        <div className="card p-fluid">
-                                            <Editor style={{ height: '320px' }} value={product.newseditor} onTextChange={(e) => onInputChange(e, "newseditor")} />
-                                        </div>
+                                        <Editor 
+                                        value={product.newseditor} 
+                                        onTextChange={(e) => {
+                                            onInputChange(e.htmlValue, "newseditor")
+                                        }}
+                                        />
                                     </AccordionTab>
                                 </Accordion>
                             </div>
@@ -481,9 +485,12 @@ function Products() {
                                             <InputText type="text" id="advanceheader" value={product.advanceheader} onChange={(e) => onInputChange(e, "advanceheader")} style={{ fontSize: "12px" }} />
                                             <label htmlFor="advanceheader">Advance</label>
                                         </span>
-                                        <div className="card p-fluid">
-                                            <Editor style={{ height: '320px' }} value={product.advanceeditor} onTextChange={(e) => onInputChange(e, "advanceeditor")} />
-                                        </div>
+                                        <Editor
+                                        value={product.advanceeditor} 
+                                        onTextChange={(e) => {
+                                            onInputChange(e.htmlValue, "advanceeditor")
+                                        }}
+                                        />
                                     </AccordionTab>
                                 </Accordion>
                             </div>
