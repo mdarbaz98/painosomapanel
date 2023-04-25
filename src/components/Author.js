@@ -203,10 +203,11 @@ function Author() {
 
     const onInputChange = (e, name) => {
         let val;
-
         (name === "highlight" || name === "experience" || name === "about_soma" || name === "education") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
-
         let _blog = { ...blog };
+        if(name=="slug"){
+            val =e.target.value.replace(" ","-");
+        }
         _blog[`${name}`] = val;
         setBlog(_blog);
     }

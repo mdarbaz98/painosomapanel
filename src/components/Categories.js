@@ -202,7 +202,13 @@ function Categories() {
     };
 
     const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || "";
+        let val;
+        if(name=="cat_slug"){
+            val =e.target.value.replace(" " ,"-")
+        }
+        else{
+             val = (e.target && e.target.value) || "";
+        }
         let _category = { ...category };
         _category[`${name}`] = val;
         setCategory(_category);

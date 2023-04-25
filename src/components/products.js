@@ -242,6 +242,9 @@ function Products() {
         let val;
         (name === "abouteditor" || name === "newseditor" || name === "advanceeditor") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
+        if(name=="product_slug"){
+            val =e.target.value.replace(" ","-");
+        }
         _product[`${name}`] = val;
         setproduct(_product);
     };

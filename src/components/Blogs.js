@@ -291,7 +291,10 @@ function Blogs() {
         let _blog = { ...blog };
         if (name == 'feature_image') {
             _blog[`${name}`] = selectedImages;
-        } else {
+        }else if(name=="slug"){
+            _blog[`${name}`] = value.replace(' ','-');
+        } 
+        else {
             _blog[`${name}`] = value;
         }
         setBlog(_blog);
