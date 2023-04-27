@@ -162,7 +162,6 @@ function Products() {
             await Axios.post("http://192.168.0.143:5000/api/products", formData);
         }
         setState(formData)
-        // setState([])
     };
 
     const editProduct = (product) => {

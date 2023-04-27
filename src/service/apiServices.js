@@ -21,6 +21,7 @@ export class apiService {
     getImages() {
         return axios.get("http://192.168.0.143:5000/api/image").then((res) => res.data);
       }
+
       getProducts() {
         return axios.get("http://192.168.0.143:5000/api/products").then((res) => res.data);
       }
