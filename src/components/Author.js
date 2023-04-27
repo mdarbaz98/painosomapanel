@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Editor } from 'primereact/editor';
+import { Editor } from "@tinymce/tinymce-react";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
 import { Column } from "primereact/column";
@@ -48,7 +48,8 @@ function Author() {
     const [file, setFile] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
-
+    const [titleCount, ChangeTitleCount] = useState(0);
+    const [textAreaCount, ChangeTextAreaCount] = useState(0);
 
 
     async function fetchData() {
@@ -203,10 +204,11 @@ function Author() {
 
     const onInputChange = (e, name) => {
         let val;
-
         (name === "highlight" || name === "experience" || name === "about_soma" || name === "education") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
-
         let _blog = { ...blog };
+        if(name=="slug"){
+            val =e.target.value.replace(" ","-");
+        }
         _blog[`${name}`] = val;
         setBlog(_blog);
     }
@@ -367,9 +369,16 @@ function Author() {
                                         </div>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => onInputChange(e, "seo_title")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => {
+                                                     let countvalue =e.target.value.length;
+                                                     ChangeTitleCount(countvalue)
+                                                     if(countvalue<60){
+                                                        onInputChange(e, "seo_title")
+                                                     }
+                                                }} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="seo_title">SEO title</label>
                                             </span>
+                                            <p>{titleCount}/60</p>
                                         </div>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
@@ -379,9 +388,16 @@ function Author() {
                                         </div>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="seo_description" value={blog.seo_description} onChange={(e) => onInputChange(e, "seo_description")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="seo_description" value={blog.seo_description} onChange={(e) => {
+                                                     let countvalue =e.target.value.length;
+                                                     ChangeTextAreaCount(countvalue)
+                                                     if(countvalue<160){
+                                                        onInputChange(e, "seo_description")
+                                                     }
+                                                    }} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="seo_description">Author Description</label>
                                             </span>
+                                            <p>{textAreaCount}/160</p>
                                         </div>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
@@ -430,25 +446,45 @@ function Author() {
                             <div className="col-12 md:col-6">
                                 <div className="card p-fluid">
                                     <h5>Highlight</h5>
-                                    <Editor style={{ height: '320px' }} value={blog.highlight} onTextChange={(e) => onInputChange(e, "highlight")} />
+                                    <Editor 
+                                        value={blog.highlight} 
+                                        onTextChange={(e) => {
+                                            onInputChange(e.htmlValue, "highlight")
+                                        }}
+                                        />
                                 </div>
                             </div>
                             <div className="col-12 md:col-6">
                                 <div className="card p-fluid">
                                     <h5>Experience</h5>
-                                    <Editor style={{ height: '320px' }} value={blog.experience} onTextChange={(e) => onInputChange(e, "experience")} />
+                                    <Editor 
+                                        value={blog.experience} 
+                                        onTextChange={(e) => {
+                                            onInputChange(e.htmlValue, "experience")
+                                        }}
+                                        />
                                 </div>
                             </div>
                             <div className="col-12 md:col-6">
                                 <div className="card p-fluid">
                                     <h5>Education</h5>
-                                    <Editor style={{ height: '320px' }} value={blog.education} onTextChange={(e) => onInputChange(e, "education")} />
+                                    <Editor 
+                                        value={blog.education} 
+                                        onTextChange={(e) => {
+                                            onInputChange(e.htmlValue, "education")
+                                        }}
+                                        />
                                 </div>
                             </div>
                             <div className="col-12 md:col-6">
                                 <div className="card p-fluid">
                                     <h5>About soma</h5>
-                                    <Editor style={{ height: '320px' }} value={blog.about_soma} onTextChange={(e) => onInputChange(e, "about_soma")} />
+                                    <Editor 
+                                        value={blog.about_soma} 
+                                        onTextChange={(e) => {
+                                            onInputChange(e.htmlValue, "about_soma")
+                                        }}
+                                        />
                                 </div>
                             </div>
 

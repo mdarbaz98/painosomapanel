@@ -15,13 +15,6 @@ import { Dropdown } from "primereact/dropdown";
 import Axios from "axios";
 
 function Categories() {
-
-
-    // let initialValue =
-    //     [{ name: "none", value: "0" }];
-
-
-
     let emptyCategory = {
         id: "",
         cat_name: "",
@@ -47,11 +40,13 @@ function Categories() {
     const [parentcategoryName, setparentcategoryName] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
+    const [titleCount, ChangeTitleCount] = useState(0);
+    const [textAreaCount, ChangeTextAreaCount] = useState(0);
 
     useEffect(() => {
         getAllCategories();
         getParentCategory();
-    }, [categoryList.length,parentcategoryName]);
+    }, [categoryList.length, parentcategoryName]);
 
     // all the categories
     const getAllCategories = () => {
@@ -116,13 +111,13 @@ function Categories() {
     };
 
     const addCategoryFunction = (data) => {
-        Axios.post("http://192.168.0.143:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status})
+        Axios.post("http://192.168.0.143:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
             .then()
             .catch((err) => console.log(err));
     };
 
     const updateCategoryFunction = (data) => {
-        Axios.put(`http://192.168.0.143:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status})
+        Axios.put(`http://192.168.0.143:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
             .then()
             .catch((err) => {
                 console.log(err);
@@ -142,13 +137,13 @@ function Categories() {
     const categoryStatus = (rowData) => {
         const index = findIndexById(rowData.id);
         let _categories = [...categoryList];
-        let _category = {...rowData};  
+        let _category = { ...rowData };
         _category["status"] = rowData.status === 0 ? 1 : 0;
         _categories[index] = _category
         setCategoryList(_categories);
         updateStatus(_category);
     }
-    
+
     const confirmDeleteProduct = (category) => {
         setCategory(category);
         setDeleteProductDialog(true);
@@ -202,7 +197,13 @@ function Categories() {
     };
 
     const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || "";
+        let val;
+        if (name == "cat_slug") {
+            val = e.target.value.replace(" ", "-")
+        }
+        else {
+            val = (e.target && e.target.value) || "";
+        }
         let _category = { ...category };
         _category[`${name}`] = val;
         setCategory(_category);
@@ -369,7 +370,14 @@ function Categories() {
                             <div className="col-6">
                                 <div className="field">
                                     <label htmlFor="categoryName">Category Name</label>
-                                    <InputText id="name" value={category.cat_name} onChange={(e) => onInputChange(e, "cat_name")} required autoFocus className={classNames({ "p-invalid": submitted && !category.cat_name })} />
+                                    <InputText id="name" value={category.cat_name} onChange={(e) => {
+                                        let countvalue =e.target.value.length;
+                                        ChangeTitleCount(countvalue)
+                                        if(countvalue<60){
+                                            onInputChange(e, "cat_name")
+                                        }
+                                    }} required autoFocus className={classNames({ "p-invalid": submitted && !category.cat_name })} />
+                                    <p>{titleCount}/60</p>
                                     {submitted && !category.cat_name && <small className="p-invalid">Category Name is required.</small>}
                                 </div>
                                 <div className="field">
@@ -379,7 +387,14 @@ function Categories() {
                                 </div>
                                 <div className="field">
                                     <label htmlFor="description">Seo Description</label>
-                                    <InputTextarea id="description" value={category.cat_desc} onChange={(e) => onInputChange(e, "cat_desc")} className={classNames({ "p-invalid": submitted && !category.cat_desc })} required rows={3} cols={20} />
+                                    <InputTextarea id="description" value={category.cat_desc} onChange={(e) => {
+                                          let countvalue =e.target.value.length;
+                                          ChangeTextAreaCount(countvalue)
+                                          if(countvalue<160){
+                                            onInputChange(e, "cat_desc")
+                                          }
+                                        }} className={classNames({ "p-invalid": submitted && !category.cat_desc })} required rows={3} cols={20} />
+                                         <p>{textAreaCount}/160</p>
                                     {submitted && !category.cat_desc && <small className="p-invalid">Seo description is required.</small>}
                                 </div>
                             </div>
@@ -391,7 +406,6 @@ function Categories() {
                                 </div>
                                 <div className="field">
                                     <label htmlFor="categoryTitle">Seo Title</label>
-                                    {/* <Dropdown id="categoryTitle" options={categories} value={parentCategory} onChange={(e) => onInputChange(e,'categoryTitle')} optionLabel="name"></Dropdown> */}
                                     <InputText id="categoryTitle" value={category.cat_title} onChange={(e) => onInputChange(e, "cat_title")} required className={classNames({ "p-invalid": submitted && !category.cat_title })} />
                                     {submitted && !category.cat_title && <small className="p-invalid">Seo Title is required.</small>}
                                 </div>
