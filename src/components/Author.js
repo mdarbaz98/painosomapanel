@@ -422,7 +422,7 @@ function Author() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://192.168.0.143:5000/api/author" className="mb-5" name="image" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://192.168.0.143:5000/api/image" className="mb-5" name="image" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                         </TabView>
                                     </AccordionTab>
