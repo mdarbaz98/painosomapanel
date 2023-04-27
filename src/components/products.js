@@ -237,7 +237,7 @@ function Products() {
 
     const onInputChange = (e, name) => {
         let val;
-        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
+        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
         if(name=="product_slug"){
             val =e.target.value.replace(" ","-");
@@ -454,8 +454,8 @@ function Products() {
                                         </span>
                                         <Editor 
                                         value={product.abouteditor} 
-                                        onTextChange={(e) => {
-                                            onInputChange(e.htmlValue, "abouteditor")
+                                        onEditorChange={(e) => {
+                                            onInputChange(e, "abouteditor")
                                         }}
                                         />
                                     </AccordionTab>
@@ -470,8 +470,8 @@ function Products() {
                                         </span>
                                         <Editor 
                                         value={product.newseditor} 
-                                        onTextChange={(e) => {
-                                            onInputChange(e.htmlValue, "newseditor")
+                                        onEditorChange={(e) => {
+                                            onInputChange(e, "newseditor")
                                         }}
                                         />
                                     </AccordionTab>
@@ -486,8 +486,8 @@ function Products() {
                                         </span>
                                         <Editor
                                         value={product.advanceeditor} 
-                                        onTextChange={(e) => {
-                                            onInputChange(e.htmlValue, "advanceeditor")
+                                        onEditorChange={(e) => {
+                                            onInputChange(e, "advanceeditor")
                                         }}
                                         />
                                     </AccordionTab>

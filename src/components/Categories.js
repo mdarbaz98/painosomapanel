@@ -96,13 +96,15 @@ function Categories() {
             let _category = { ...category };
             if (category.id) {
                 const index = findIndexById(category.id);
-                _categories[index] = _category;
+                _categories[index] = _category;  
                 updateCategoryFunction(_category);
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Updated", life: 3000 });
             } else {
                 // _category.id = createId();
                 addCategoryFunction(_category);
                 _categories.push(_category);
+                ChangeTitleCount(0)
+                ChangeTextAreaCount(0)
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Created", life: 3000 });
             }
             setCategoryList(_categories);
@@ -373,9 +375,9 @@ function Categories() {
                                     <InputText id="name" value={category.cat_name} onChange={(e) => {
                                         let countvalue =e.target.value.length;
                                         ChangeTitleCount(countvalue)
-                                        if(countvalue<60){
+                                    
                                             onInputChange(e, "cat_name")
-                                        }
+                                        
                                     }} required autoFocus className={classNames({ "p-invalid": submitted && !category.cat_name })} />
                                     <p>{titleCount}/60</p>
                                     {submitted && !category.cat_name && <small className="p-invalid">Category Name is required.</small>}
@@ -390,9 +392,8 @@ function Categories() {
                                     <InputTextarea id="description" value={category.cat_desc} onChange={(e) => {
                                           let countvalue =e.target.value.length;
                                           ChangeTextAreaCount(countvalue)
-                                          if(countvalue<160){
                                             onInputChange(e, "cat_desc")
-                                          }
+                                          
                                         }} className={classNames({ "p-invalid": submitted && !category.cat_desc })} required rows={3} cols={20} />
                                          <p>{textAreaCount}/160</p>
                                     {submitted && !category.cat_desc && <small className="p-invalid">Seo description is required.</small>}

@@ -89,7 +89,10 @@ function Author() {
 
     const saveProduct = async () => {
         setSubmitted(true);
-        if (blog.name.trim()) {
+
+        const image = file ? file : blog.image;
+
+        if (blog.name.trim() && image) {
             let _blogs = [...blogs];
             let _blog = { ...blog };
             if (blog.id) {
@@ -97,10 +100,10 @@ function Author() {
 
                 _blogs[index] = _blog;
                 addUpdate(_blog);
-                toast.current.show({ severity: "success", summary: "Successfully", detail: "blog Updated", life: 3000 });
+                toast.current.show({ severity: "success", summary: "Successfully", detail: "Author Updated", life: 3000 });
             } else {
                 addUpdate(_blog);
-                toast.current.show({ severity: "success", summary: "Successfully", detail: "blog Created", life: 3000 });
+                toast.current.show({ severity: "success", summary: "Successfully", detail: "Author Created", life: 3000 });
             }
 
             setBlogs(_blogs);
@@ -203,8 +206,9 @@ function Author() {
     };
 
     const onInputChange = (e, name) => {
+        console.log(e,name)
         let val;
-        (name === "highlight" || name === "experience" || name === "about_soma" || name === "education") ? (val = e.htmlValue || "") : (val = (e.target && e.target.value) || "");
+        (name === "highlight" || name === "experience" || name === "about_soma" || name === "education") ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _blog = { ...blog };
         if(name=="slug"){
             val =e.target.value.replace(" ","-");
@@ -343,8 +347,8 @@ function Author() {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="image" header="Image" sortable body={imageTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        <Column field="name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="position" header="Position" sortable body={positionTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="status" header="Status" sortable body={statusTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
@@ -372,9 +376,7 @@ function Author() {
                                                 <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => {
                                                      let countvalue =e.target.value.length;
                                                      ChangeTitleCount(countvalue)
-                                                     if(countvalue<60){
                                                         onInputChange(e, "seo_title")
-                                                     }
                                                 }} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="seo_title">SEO title</label>
                                             </span>
@@ -391,9 +393,7 @@ function Author() {
                                                 <InputText type="text" id="seo_description" value={blog.seo_description} onChange={(e) => {
                                                      let countvalue =e.target.value.length;
                                                      ChangeTextAreaCount(countvalue)
-                                                     if(countvalue<160){
                                                         onInputChange(e, "seo_description")
-                                                     }
                                                     }} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="seo_description">Author Description</label>
                                             </span>
@@ -448,8 +448,8 @@ function Author() {
                                     <h5>Highlight</h5>
                                     <Editor 
                                         value={blog.highlight} 
-                                        onTextChange={(e) => {
-                                            onInputChange(e.htmlValue, "highlight")
+                                        onEditorChange={(e) => {
+                                            onInputChange(e, "highlight")
                                         }}
                                         />
                                 </div>
@@ -459,8 +459,8 @@ function Author() {
                                     <h5>Experience</h5>
                                     <Editor 
                                         value={blog.experience} 
-                                        onTextChange={(e) => {
-                                            onInputChange(e.htmlValue, "experience")
+                                        onEditorChange={(e) => {
+                                            onInputChange(e, "experience")
                                         }}
                                         />
                                 </div>
@@ -470,8 +470,8 @@ function Author() {
                                     <h5>Education</h5>
                                     <Editor 
                                         value={blog.education} 
-                                        onTextChange={(e) => {
-                                            onInputChange(e.htmlValue, "education")
+                                        onEditorChange={(e) => {
+                                            onInputChange(e, "education")
                                         }}
                                         />
                                 </div>
@@ -481,8 +481,8 @@ function Author() {
                                     <h5>About soma</h5>
                                     <Editor 
                                         value={blog.about_soma} 
-                                        onTextChange={(e) => {
-                                            onInputChange(e.htmlValue, "about_soma")
+                                        onEditorChange={(e) => {
+                                            onInputChange(e, "about_soma")
                                         }}
                                         />
                                 </div>

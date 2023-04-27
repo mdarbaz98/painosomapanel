@@ -532,7 +532,7 @@ function Blogs() {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
-                        <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        {/* <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column> */}
                         <Column field="blog_title" header="Title" filter filterPlaceholder="Search by Title" body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="author" header="Author" filterPlaceholder="Search by author" body={authorBodyTemplate} filter filterElement={authorRowFilterTemplate}
                             headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
@@ -659,9 +659,7 @@ function Blogs() {
                                                 <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => {
                                                     let countvalue = e.target.value.length;
                                                     ChangeTitleCount(countvalue)
-                                                    if (countvalue < 60) {
                                                         onInputChange(e.target.value, "blog_title")
-                                                    }
                                                 }} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_title">Blog title</label>
                                             </span>
