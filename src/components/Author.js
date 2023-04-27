@@ -206,12 +206,12 @@ function Author() {
     };
 
     const onInputChange = (e, name) => {
-        console.log(e,name)
+        console.log(e, name)
         let val;
         (name === "highlight" || name === "experience" || name === "about_soma" || name === "education") ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _blog = { ...blog };
-        if(name=="slug"){
-            val =e.target.value.replace(" ","-");
+        if (name == "slug") {
+            val = e.target.value.replace(" ", "-");
         }
         _blog[`${name}`] = val;
         setBlog(_blog);
@@ -354,7 +354,7 @@ function Author() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "1200px" }} header="Manage authors" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "1200px" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                         <div>
                             {blog &&
                                 <img src={`assets/demo/images/gallery/${blog.image}`} alt={blog.image} className="shadow-2" width="100" />
@@ -374,9 +374,9 @@ function Author() {
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => {
-                                                     let countvalue =e.target.value.length;
-                                                     ChangeTitleCount(countvalue)
-                                                        onInputChange(e, "seo_title")
+                                                    let countvalue = e.target.value.length;
+                                                    ChangeTitleCount(countvalue)
+                                                    onInputChange(e, "seo_title")
                                                 }} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="seo_title">SEO title</label>
                                             </span>
@@ -391,10 +391,10 @@ function Author() {
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <InputText type="text" id="seo_description" value={blog.seo_description} onChange={(e) => {
-                                                     let countvalue =e.target.value.length;
-                                                     ChangeTextAreaCount(countvalue)
-                                                        onInputChange(e, "seo_description")
-                                                    }} style={{ fontSize: "12px" }} />
+                                                    let countvalue = e.target.value.length;
+                                                    ChangeTextAreaCount(countvalue)
+                                                    onInputChange(e, "seo_description")
+                                                }} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="seo_description">Author Description</label>
                                             </span>
                                             <p>{textAreaCount}/160</p>
@@ -446,45 +446,45 @@ function Author() {
                             <div className="col-12 md:col-6">
                                 <div className="card p-fluid">
                                     <h5>Highlight</h5>
-                                    <Editor 
-                                        value={blog.highlight} 
+                                    <Editor
+                                        value={blog.highlight}
                                         onEditorChange={(e) => {
                                             onInputChange(e, "highlight")
                                         }}
-                                        />
+                                    />
                                 </div>
                             </div>
                             <div className="col-12 md:col-6">
                                 <div className="card p-fluid">
                                     <h5>Experience</h5>
-                                    <Editor 
-                                        value={blog.experience} 
+                                    <Editor
+                                        value={blog.experience}
                                         onEditorChange={(e) => {
                                             onInputChange(e, "experience")
                                         }}
-                                        />
+                                    />
                                 </div>
                             </div>
                             <div className="col-12 md:col-6">
                                 <div className="card p-fluid">
                                     <h5>Education</h5>
-                                    <Editor 
-                                        value={blog.education} 
+                                    <Editor
+                                        value={blog.education}
                                         onEditorChange={(e) => {
                                             onInputChange(e, "education")
                                         }}
-                                        />
+                                    />
                                 </div>
                             </div>
                             <div className="col-12 md:col-6">
                                 <div className="card p-fluid">
                                     <h5>About soma</h5>
-                                    <Editor 
-                                        value={blog.about_soma} 
+                                    <Editor
+                                        value={blog.about_soma}
                                         onEditorChange={(e) => {
                                             onInputChange(e, "about_soma")
                                         }}
-                                        />
+                                    />
                                 </div>
                             </div>
 
