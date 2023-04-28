@@ -72,7 +72,7 @@ function Blogs() {
     const [loading2, setLoading2] = useState(true);
     const [titleCount, ChangeTitleCount] = useState(0);
 
-
+    console.log(blog)
     async function fetchData() {
         const blogData = new apiService();
         blogData.getBlog().then((data) => { setBlogs(data); setLoading2(false) });
@@ -632,9 +632,7 @@ function Blogs() {
                                         onEditorChange={(e) => {
                                             onInputChange(e, "content")
                                         }}
-                                    // onChange={(e) => onInputChange(e, "content")}
                                     />
-                                    {/* <Editor style={{ height: "320px" }} value={blog.content} onTextChange={(e) => onInputChange(e, "content")} /> */}
                                 </div>
                                 <Accordion>
                                 <AccordionTab header="Reference Section">
@@ -642,7 +640,7 @@ function Blogs() {
                                         <Editor 
                                         value={blog.reference} 
                                         onEditorChange={(e) => {
-                                            onInputChange(e.htmlValue, "reference")
+                                            onInputChange(e, "reference")
                                         }}
                                         />
                                     </div>
