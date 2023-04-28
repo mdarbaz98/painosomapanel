@@ -27,6 +27,7 @@ function Blogs() {
         blog_title: "",
         seo_title: "",
         slug: "",
+        blog_desc: "",
         author: "",
         review: "",
         feature_image: "",
@@ -71,6 +72,7 @@ function Blogs() {
     const [globalFilterValue2, setGlobalFilterValue2] = useState('');
     const [loading2, setLoading2] = useState(true);
     const [titleCount, ChangeTitleCount] = useState(0);
+    const [blogCount, ChangeBlogCount] = useState(0);
 
     console.log(blog)
     async function fetchData() {
@@ -185,6 +187,7 @@ function Blogs() {
         formData.append("blog_title", data.blog_title);
         formData.append("seo_title", data.seo_title);
         formData.append("slug", data.slug);
+        formData.append("blog_desc", data.blog_desc);
         formData.append("author", data.author);
         formData.append("review", data.review);
         formData.append("image", file ? file : data.feature_image);
@@ -334,15 +337,6 @@ function Blogs() {
         );
     };
 
-    const rightToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <FileUpload mode="basic" accept="image/*" maxFileSize={1000000} label="Import" chooseLabel="Import" className="mr-2 inline-block" />
-                <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
-            </React.Fragment>
-        );
-    };
-
     // const idBodyTemplate = (rowData) => {
     //     return (
     //         <>
@@ -471,8 +465,9 @@ function Blogs() {
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editProduct(rowData)} />
+                <Button icon="pi pi-pencil" className="p-button-rounded p-button-primary mr-2" onClick={() => editProduct(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-warning mt-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-eye" className="p-button-rounded p-button-success mt-2" onClick={() => confirmDeleteProduct(rowData)} />
             </div>
         );
     };
@@ -512,7 +507,7 @@ function Blogs() {
                 <div className="card">
                     <h5>Blog Page</h5>
                     <Toast ref={toast} />
-                    <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+                    <Toolbar className="mb-4" left={leftToolbarTemplate}></Toolbar>
 
                     <DataTable
                         ref={dt}
@@ -543,7 +538,7 @@ function Blogs() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "1200px" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "100%" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                         {/* {blog.feature_image && <Image src={`assets/demo/images/gallery/${blog.feature_image}`} preview={true} alt={blog.feature_image} />} */}
                         {/* {blog.feature_image && <img src={`assets/demo/images/gallery/${blog.feature_image}`} alt={blog.feature_image} width="100" className="shadow-2 round" />} */}
                         <form className="grid p-fluid">
@@ -585,7 +580,6 @@ function Blogs() {
                                         // file_picker_types: "image",
                                         media_dimensions: false,
                                         media_url_resolver: function (data, resolve /*, reject*/) {
-                                            console.log("## media_url_resolver data", data);
                                             if (data.url.startsWith("https://www.youtube.com/watch/") !== -1) {
                                                 const v = data.url.slice(data.url.indexOf("?v=") + 3);
 
@@ -655,26 +649,40 @@ function Blogs() {
                                     <AccordionTab header="Blog Section">
                                         <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => {
-                                                    let countvalue = e.target.value.length;
-                                                    ChangeTitleCount(countvalue)
-                                                    onInputChange(e.target.value, "blog_title")
-                                                }} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e.target.value, "blog_title")}
+                                                    style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_title">Blog title</label>
                                             </span>
-                                            <p>{titleCount}/60</p>
                                         </div>
                                         <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => onInputChange(e.target.value, "seo_title")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => {
+                                                    let countvalue = e.target.value.length;
+                                                    ChangeTitleCount(countvalue)
+                                                    onInputChange(e.target.value, "seo_title")
+                                                }}
+                                                    style={{ fontSize: "12px" }} />
                                                 <label htmlFor="seo_title">SEO title</label>
                                             </span>
+                                            <p>{titleCount}/60</p>
                                         </div>
-                                        <div className=" p-field pt-3">
+                                        <div className=" p-field pb-3">
                                             <span className="p-float-label">
                                                 <InputText type="text" id="blog_slug" value={blog.slug} onChange={(e) => onInputChange(e.target.value, "slug")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_slug">Blog slug</label>
                                             </span>
+                                        </div>
+                                        <div className=" p-field pt-3 mb-5">
+                                            <span className="p-float-label">
+                                                <InputText type="text" id="blog_desc" value={blog.blog_desc} onChange={(e) => {
+                                                    let countvalue = e.target.value.length;
+                                                    ChangeBlogCount(countvalue)
+                                                    onInputChange(e.target.value, "blog_desc")
+                                                }}
+                                                    style={{ fontSize: "12px" }} />
+                                                <label htmlFor="blog_desc">Blog description</label>
+                                            </span>
+                                            <p>{blogCount}/160</p>
                                         </div>
                                     </AccordionTab>
                                 </Accordion>

@@ -37,7 +37,7 @@ function Products() {
         advanceheader: "",
         advanceeditor: "",
         status: 0,
-        date:""
+        date: ""
     };
 
 
@@ -67,7 +67,7 @@ function Products() {
 
     useEffect(() => {
         const getProducts = new apiService();
-        getProducts.getProducts().then((data) => {setAllProducts(data)});
+        getProducts.getProducts().then((data) => { setAllProducts(data) });
         setState(null);
         getParentCategory();
         getsubCategory();
@@ -116,7 +116,7 @@ function Products() {
         setSubmitted(true);
         if (product.product_name.trim()) {
             let _allProducts = [...allProducts];
-            let _product = {...product};
+            let _product = { ...product };
             if (product.id) {
                 const index = findIndexById(product.id);
 
@@ -163,7 +163,7 @@ function Products() {
     };
 
     const editProduct = (product) => {
-        let _product = {...product };
+        let _product = { ...product };
         if (_product.parentcategory.includes(",")) {
             var parentCategoryArray = _product.parentcategory.split(",");
         } else {
@@ -178,7 +178,7 @@ function Products() {
         }
         _product["parentcategory"] = parentCategoryArray;
         _product["subcategory"] = subCategoryArray;
-        _product["date"] =  new Date(product.date);
+        _product["date"] = new Date(product.date);
         setproduct(_product);
         setProductDialog(true);
     };
@@ -239,8 +239,8 @@ function Products() {
         let val;
         (name === "abouteditor" || name === "newseditor" || name === "advanceeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
-        if(name=="product_slug"){
-            val =e.target.value.replace(" ","-");
+        if (name == "product_slug") {
+            val = e.target.value.replace(" ", "-");
         }
         _product[`${name}`] = val;
         setproduct(_product);
@@ -257,14 +257,6 @@ function Products() {
         );
     };
 
-    const rightToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                {/* <FileUpload mode="basic" accept="image/*" maxFileSize={1000000} label="Import" chooseLabel="Import" className="mr-2 inline-block" /> */}
-                <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
-            </React.Fragment>
-        );
-    };
 
     const codeBodyTemplate = (rowData) => {
         return (
@@ -309,8 +301,9 @@ function Products() {
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
-                <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" onClick={() => editProduct(rowData)} />
+                <Button icon="pi pi-pencil" className="p-button-rounded p-button-primary mr-2" onClick={() => editProduct(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-warning mt-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-eye" className="p-button-rounded p-button-success mt-2" onClick={() => confirmDeleteProduct(rowData)} />
             </div>
         );
     };
@@ -350,7 +343,7 @@ function Products() {
                 <div className="card">
                     <h5>Product Page</h5>
                     <Toast ref={toast} />
-                    <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+                    <Toolbar className="mb-4" left={leftToolbarTemplate}></Toolbar>
 
                     <DataTable
                         ref={dt}
@@ -378,7 +371,7 @@ function Products() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "1200px" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "100%" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                         {/* {blog.feature_img && <img src={`assets/demo/images/blogs/${blog.feature_img}`} alt={blog.feature_img} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />} */}
                         <div className="grid py-5 p-fluid">
                             <div className="col-12 md:col-4">
@@ -391,7 +384,7 @@ function Products() {
                                                 <label htmlFor="product_name">product name</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
-                                                <InputText type="text"  value={product.product_price} onChange={(e) => onInputChange(e, "product_price")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" value={product.product_price} onChange={(e) => onInputChange(e, "product_price")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="product_price">product price</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
@@ -399,7 +392,7 @@ function Products() {
                                                 <label htmlFor="product_slug">product slug</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
-                                                <InputText type="text"  value={product.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" value={product.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="strength">product strength</label>
                                             </span>
                                             <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
@@ -433,11 +426,11 @@ function Products() {
                                                 <label htmlFor="date">Product date</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text"  value={product.othercompany} onChange={(e) => onInputChange(e, "othercompany")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" value={product.othercompany} onChange={(e) => onInputChange(e, "othercompany")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="othercompany">Company name</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text"  value={product.otherprice} onChange={(e) => onInputChange(e, "otherprice")} style={{ fontSize: "12px" }} />
+                                                <InputText type="text" value={product.otherprice} onChange={(e) => onInputChange(e, "otherprice")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="otherprice">Company price</label>
                                             </span>
                                         </div>
@@ -452,11 +445,20 @@ function Products() {
                                             <InputText type="text" value={product.aboutheader} onChange={(e) => onInputChange(e, "aboutheader")} style={{ fontSize: "12px" }} />
                                             <label htmlFor="aboutheader">About</label>
                                         </span>
-                                        <Editor 
-                                        value={product.abouteditor} 
-                                        onEditorChange={(e) => {
-                                            onInputChange(e, "abouteditor")
-                                        }}
+                                        <Editor
+                                            className="editor"
+                                            style={{ width: "100%" }}
+                                            tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
+                                            value={product.abouteditor}
+                                            init={{
+                                                height: 500,
+                                                plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                                toolbar:
+                                                    "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                            }}
+                                            onEditorChange={(e) => {
+                                                onInputChange(e, "abouteditor")
+                                            }}
                                         />
                                     </AccordionTab>
                                 </Accordion>
@@ -465,14 +467,21 @@ function Products() {
                                 <Accordion>
                                     <AccordionTab header="News Section">
                                         <span className="p-float-label mb-5 mt-2">
-                                            <InputText type="text"  value={product.newsheader} onChange={(e) => onInputChange(e, "newsheader")} style={{ fontSize: "12px" }} />
+                                            <InputText type="text" value={product.newsheader} onChange={(e) => onInputChange(e, "newsheader")} style={{ fontSize: "12px" }} />
                                             <label htmlFor="newsheader">News</label>
                                         </span>
-                                        <Editor 
-                                        value={product.newseditor} 
-                                        onEditorChange={(e) => {
-                                            onInputChange(e, "newseditor")
-                                        }}
+                                        <Editor
+                                            init={{
+                                                height: 300,
+                                                plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                                toolbar:
+                                                    "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                            }}
+                                            tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
+                                            value={product.newseditor}
+                                            onEditorChange={(e) => {
+                                                onInputChange(e, "newseditor")
+                                            }}
                                         />
                                     </AccordionTab>
                                 </Accordion>
@@ -485,10 +494,17 @@ function Products() {
                                             <label htmlFor="advanceheader">Advance</label>
                                         </span>
                                         <Editor
-                                        value={product.advanceeditor} 
-                                        onEditorChange={(e) => {
-                                            onInputChange(e, "advanceeditor")
-                                        }}
+                                            init={{
+                                                height: 300,
+                                                plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                                toolbar:
+                                                    "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                            }}
+                                            tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
+                                            value={product.advanceeditor}
+                                            onEditorChange={(e) => {
+                                                onInputChange(e, "advanceeditor")
+                                            }}
                                         />
                                     </AccordionTab>
                                 </Accordion>

@@ -33,3 +33,6 @@ span.flag{width:44px;height:30px;display:inline-block;}img.flag{width:30px}.flag
      text-transform: capitalize;
 }
  
+.tox-notification--warning{
+     display: none !important;
+}

@@ -14,6 +14,7 @@ const getAllAuthor = (req, res) => {
 
 //Add Author
 const addAuthor = asyncHandler(async (req, res) => {
+    console.log(req.body)
     const { 
         name,
         position,

@@ -14,25 +14,26 @@ const getAllBlog = (req, res) => {
 
 //Add blog
 const addBlog = asyncHandler(async (req, res) => {
-    const { blog_title, seo_title, slug, author, review, parentcategory, subcategory,content,reference, blogdate, status, publishdate } = req.body;
+    console.log(req.body)
+    const { blog_title, seo_title, slug,blog_desc, author, review, parentcategory, subcategory,content,reference, blogdate, status, publishdate } = req.body;
 
     const feature_image = req.file ? req.file.filename : req.body.image
     con.query(
-        "INSERT INTO blog ( blog_title, seo_title, slug, author, review, feature_image, parentcategory, subcategory,content,reference, blogdate, status, publishdate) value (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        [blog_title, seo_title, slug, author, review, feature_image, parentcategory, subcategory,content,reference, blogdate, status, publishdate],
+        "INSERT INTO blog ( blog_title, seo_title, slug, blog_desc, author, review, feature_image, parentcategory, subcategory,content,reference, blogdate, status, publishdate) value (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        [blog_title, seo_title, slug, blog_desc, author, review, feature_image, parentcategory, subcategory,content,reference, blogdate, status, publishdate],
         (err, result) => {
             if (err) console.log(err);
         }
     );
     res.status(200).json({ message: "successfully created" });
-});
+});   
 
 const updateBlog = asyncHandler(async (req, res) => {
-    const { blog_title, seo_title, slug, author, review, parentcategory, subcategory,content,reference, blogdate, status, publishdate } = req.body;
+    const { blog_title, seo_title, slug,blog_desc, author, review, parentcategory, subcategory,content,reference, blogdate, status, publishdate } = req.body;
     const id = req.params.id;
     const feature_image = req.file ? req.file.filename : req.body.image
-    con.query('UPDATE `blog` SET  blog_title=?, seo_title=?, slug=?, author=?, review=?, feature_image=?, parentcategory=?, subcategory=?,content=?,reference=?, blogdate=?, status=?, publishdate=? WHERE id IN (?)',
-        [blog_title, seo_title, slug, author, review, feature_image, parentcategory, subcategory,content,reference, blogdate, status, publishdate, id], (err, result) => {
+    con.query('UPDATE `blog` SET  blog_title=?, seo_title=?, slug=?,blog_desc=?, author=?, review=?, feature_image=?, parentcategory=?, subcategory=?,content=?,reference=?, blogdate=?, status=?, publishdate=? WHERE id IN (?)',
+        [blog_title, seo_title, slug, blog_desc, author, review, feature_image, parentcategory, subcategory,content,reference, blogdate, status, publishdate, id], (err, result) => {
             if (err) console.log(err)
             //  res.send(result)
         })

@@ -12,7 +12,7 @@ import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import Axios from "axios";
 import { apiService } from "../service/apiServices";
-import { Accordion, AccordionTab } from 'primereact/accordion';
+import { Accordion, AccordionTab } from "primereact/accordion";
 
 function Author() {
     let emptyAuthor = {
@@ -29,11 +29,11 @@ function Author() {
         experience: "",
         education: "",
         about_soma: "",
-        status: 0
+        status: 0,
     };
     const option = [
-        { name: 'Author', value: 'Author' },
-        { name: 'Reviewer', value: 'Reviewer' }
+        { name: "Author", value: "Author" },
+        { name: "Reviewer", value: "Reviewer" },
     ];
 
     const [blogs, setBlogs] = useState([]);
@@ -51,11 +51,10 @@ function Author() {
     const [titleCount, ChangeTitleCount] = useState(0);
     const [textAreaCount, ChangeTextAreaCount] = useState(0);
 
-
     async function fetchData() {
         const blogData = new apiService();
         blogData.getAuthor().then((data) => {
-            setBlogs(data)
+            setBlogs(data);
         });
     }
 
@@ -63,15 +62,13 @@ function Author() {
         fetchData();
     }, []);
 
-    useEffect(() => {
-    }, [blog.parentcategory_id]);
-
+    useEffect(() => {}, [blog.parentcategory_id]);
 
     const openNew = () => {
         setBlog(emptyAuthor);
         setSubmitted(false);
         setProductDialog(true);
-        setFile(null)
+        setFile(null);
     };
 
     const hideDialog = () => {
@@ -112,7 +109,6 @@ function Author() {
         }
     };
 
-
     const addUpdate = async (data) => {
         const formData = new FormData();
         formData.append("image", file ? file : data.image);
@@ -128,7 +124,7 @@ function Author() {
         formData.append("education", data.education);
         formData.append("about_soma", data.about_soma);
         formData.append("status", data.status);
-        console.log(blog.id)
+        console.log(blog.id);
         if (blog.id) {
             await Axios.put(`http://192.168.0.143:5000/api/author/${data.id}`, formData);
         } else {
@@ -146,17 +142,17 @@ function Author() {
     const updateStatus = async (rowData) => {
         await Axios.put(`http://192.168.0.143:5000/api/author/status/${rowData.id}`, rowData);
         fetchData();
-    }
+    };
 
     const authorStatus = (rowData) => {
         const index = findIndexById(rowData.id);
         let _auhtorList = [...blogs];
         let _author = { ...rowData };
         _author["status"] = rowData.status === 0 ? 1 : 0;
-        _auhtorList[index] = _author
+        _auhtorList[index] = _author;
         setBlogs(_auhtorList);
-        updateStatus(_author)
-    }
+        updateStatus(_author);
+    };
 
     const confirmDeleteProduct = (blog) => {
         setBlog(blog);
@@ -206,22 +202,21 @@ function Author() {
     };
 
     const onInputChange = (e, name) => {
-        console.log(e, name)
+        console.log(e, name);
         let val;
-        (name === "highlight" || name === "experience" || name === "about_soma" || name === "education") ? (val = e || "") : (val = (e.target && e.target.value) || "");
+        name === "highlight" || name === "experience" || name === "about_soma" || name === "education" ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _blog = { ...blog };
         if (name == "slug") {
             val = e.target.value.replace(" ", "-");
         }
         _blog[`${name}`] = val;
         setBlog(_blog);
-    }
+    };
 
     const imageUpload = async (event) => {
-        setFile(event.files[0])
-        toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 })
-
-    }
+        setFile(event.files[0]);
+        toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 });
+    };
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
@@ -233,29 +228,12 @@ function Author() {
         );
     };
 
-    const rightToolbarTemplate = () => {
-        return (
-            <React.Fragment>
-                <FileUpload mode="basic" accept="image/*" maxFileSize={1000000} label="Import" chooseLabel="Import" className="mr-2 inline-block" />
-                <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
-            </React.Fragment>
-        );
-    };
-
     const idBodyTemplate = (rowData) => {
-        return (
-            <>
-                {rowData.id}
-            </>
-        );
+        return <>{rowData.id}</>;
     };
 
     const nameBodyTemplate = (rowData) => {
-        return (
-            <>
-                {rowData.name}
-            </>
-        );
+        return <>{rowData.name}</>;
     };
     const imageTemplate = (rowData) => {
         return (
@@ -265,11 +243,7 @@ function Author() {
         );
     };
     const positionTemplate = (rowData) => {
-        return (
-            <>
-                {rowData.position}
-            </>
-        );
+        return <>{rowData.position}</>;
     };
     const statusTemplate = (rowData) => {
         return (
@@ -284,7 +258,8 @@ function Author() {
         return (
             <div className="actions">
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-primary mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger mt-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-eye" className="p-button-rounded p-button-success" onClick={() => confirmDeleteProduct(rowData)} />
             </div>
         );
     };
@@ -326,7 +301,7 @@ function Author() {
                 <div className="card">
                     <h5>Author Page</h5>
                     <Toast ref={toast} />
-                    <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+                    <Toolbar className="mb-4" left={leftToolbarTemplate}></Toolbar>
 
                     <DataTable
                         ref={dt}
@@ -346,7 +321,7 @@ function Author() {
                         responsiveLayout="scroll"
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
-                        <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         <Column field="image" header="Image" sortable body={imageTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="position" header="Position" sortable body={positionTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
@@ -354,12 +329,8 @@ function Author() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "1200px" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        <div>
-                            {blog &&
-                                <img src={`assets/demo/images/gallery/${blog.image}`} alt={blog.image} className="shadow-2" width="100" />
-                            }
-                        </div>
+                    <Dialog visible={productDialog} style={{ width: "100%" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                        <div>{blog && <img src={`assets/demo/images/gallery/${blog.image}`} alt={blog.image} className="shadow-2" width="100" />}</div>
                         <form className="grid py-5 p-fluid">
                             <div className="col-12 md:col-4">
                                 {/* seosection  */}
@@ -373,11 +344,17 @@ function Author() {
                                         </div>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => {
-                                                    let countvalue = e.target.value.length;
-                                                    ChangeTitleCount(countvalue)
-                                                    onInputChange(e, "seo_title")
-                                                }} style={{ fontSize: "12px" }} />
+                                                <InputText
+                                                    type="text"
+                                                    id="seo_title"
+                                                    value={blog.seo_title}
+                                                    onChange={(e) => {
+                                                        let countvalue = e.target.value.length;
+                                                        ChangeTitleCount(countvalue);
+                                                        onInputChange(e, "seo_title");
+                                                    }}
+                                                    style={{ fontSize: "12px" }}
+                                                />
                                                 <label htmlFor="seo_title">SEO title</label>
                                             </span>
                                             <p>{titleCount}/60</p>
@@ -390,11 +367,17 @@ function Author() {
                                         </div>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="seo_description" value={blog.seo_description} onChange={(e) => {
-                                                    let countvalue = e.target.value.length;
-                                                    ChangeTextAreaCount(countvalue)
-                                                    onInputChange(e, "seo_description")
-                                                }} style={{ fontSize: "12px" }} />
+                                                <InputText
+                                                    type="text"
+                                                    id="seo_description"
+                                                    value={blog.seo_description}
+                                                    onChange={(e) => {
+                                                        let countvalue = e.target.value.length;
+                                                        ChangeTextAreaCount(countvalue);
+                                                        onInputChange(e, "seo_description");
+                                                    }}
+                                                    style={{ fontSize: "12px" }}
+                                                />
                                                 <label htmlFor="seo_description">Author Description</label>
                                             </span>
                                             <p>{textAreaCount}/160</p>
@@ -405,13 +388,7 @@ function Author() {
                                                 <label htmlFor="degree">Author Degree</label>
                                             </span>
                                         </div>
-                                        <Dropdown
-                                            value={blog.position}
-                                            onChange={(e) => onInputChange(e, "position")}
-                                            placeholder="Select a position"
-                                            options={option}
-                                            optionLabel="name"
-                                        />
+                                        <Dropdown value={blog.position} onChange={(e) => onInputChange(e, "position")} placeholder="Select a position" options={option} optionLabel="name" />
                                     </AccordionTab>
                                 </Accordion>
                                 {/* seosection */}
@@ -447,9 +424,16 @@ function Author() {
                                 <div className="card p-fluid">
                                     <h5>Highlight</h5>
                                     <Editor
+                                        init={{
+                                            height: 300,
+                                            plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                            toolbar:
+                                                "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                        }}
+                                        tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
                                         value={blog.highlight}
                                         onEditorChange={(e) => {
-                                            onInputChange(e, "highlight")
+                                            onInputChange(e, "highlight");
                                         }}
                                     />
                                 </div>
@@ -458,9 +442,16 @@ function Author() {
                                 <div className="card p-fluid">
                                     <h5>Experience</h5>
                                     <Editor
+                                        init={{
+                                            height: 300,
+                                            plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                            toolbar:
+                                                "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                        }}
+                                        tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
                                         value={blog.experience}
                                         onEditorChange={(e) => {
-                                            onInputChange(e, "experience")
+                                            onInputChange(e, "experience");
                                         }}
                                     />
                                 </div>
@@ -469,9 +460,16 @@ function Author() {
                                 <div className="card p-fluid">
                                     <h5>Education</h5>
                                     <Editor
+                                        init={{
+                                            height: 300,
+                                            plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                            toolbar:
+                                                "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                        }}
+                                        tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
                                         value={blog.education}
                                         onEditorChange={(e) => {
-                                            onInputChange(e, "education")
+                                            onInputChange(e, "education");
                                         }}
                                     />
                                 </div>
@@ -480,14 +478,20 @@ function Author() {
                                 <div className="card p-fluid">
                                     <h5>About soma</h5>
                                     <Editor
+                                        init={{
+                                            height: 300,
+                                            plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                            toolbar:
+                                                "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                        }}
+                                        tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
                                         value={blog.about_soma}
                                         onEditorChange={(e) => {
-                                            onInputChange(e, "about_soma")
+                                            onInputChange(e, "about_soma");
                                         }}
                                     />
                                 </div>
                             </div>
-
                         </form>
                     </Dialog>
 
