@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
-import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { FilterMatchMode, FilterOperator } from "primereact/api";
 import { MultiSelect } from "primereact/multiselect";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
@@ -12,14 +12,15 @@ import { FileUpload } from "primereact/fileupload";
 import { Toolbar } from "primereact/toolbar";
 import { TabView, TabPanel } from "primereact/tabview";
 import { Dialog } from "primereact/dialog";
+import { InputTextarea } from "primereact/inputtextarea";
 import { InputText } from "primereact/inputtext";
 import { apiService } from "../service/apiServices";
 import { Calendar } from "primereact/calendar";
 import Axios from "axios";
 import classNames from "classnames";
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { Image } from 'primereact/image';
-
+import { Image } from "primereact/image";
+import { data } from "jquery";
 
 function Blogs() {
     let emptyBlog = {
@@ -34,33 +35,42 @@ function Blogs() {
         parentcategory: null,
         subcategory: "",
         blogdate: "",
-        status: 'draft',
+        status: "draft",
         publishdate: "",
         content: "",
         reference: "",
     };
 
-    const statusOptions = ['publish', 'draft', 'trash']
+    let emptyFaq =[
+        {
+            question: "",
+            answer: "",
+        },
+    ]
+
+    const statusOptions = ["publish", "draft", "trash"];
 
     const [filters2, setFilters2] = useState({
         // 'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
-        'blog_title': { value: null, matchMode: FilterMatchMode.CONTAINS },
-        'author': { value: null, matchMode: FilterMatchMode.IN },
-        'review': { value: null, matchMode: FilterMatchMode.IN },
-        'parentcategory': { value: null, matchMode: FilterMatchMode.CONTAINS },
-        'status': { value: null, matchMode: FilterMatchMode.EQUALS },
+        blog_title: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        author: { value: null, matchMode: FilterMatchMode.IN },
+        review: { value: null, matchMode: FilterMatchMode.IN },
+        parentcategory: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        status: { value: null, matchMode: FilterMatchMode.EQUALS },
         // 'verified': { value: null, matchMode: FilterMatchMode.EQUALS }
     });
+
+    const [faq, setFaq] = useState(emptyFaq);
 
     const [blogs, setBlogs] = useState([]);
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [galleryDialog, setGalleryDialog] = useState(false);
+    const [faqDialog, setFaqDialog] = useState(false);
     const [blog, setBlog] = useState(emptyBlog);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
-    const [content, setContent] = useState('test');
     const [gallery, setGallery] = useState(null);
     const [images, setImages] = useState([]);
     const toast = useRef(null);
@@ -69,14 +79,18 @@ function Blogs() {
     const [subCategory, setSubCategory] = useState([{ name: "none", value: "none" }]);
     const [authoroptions, setAuthorOptions] = useState([{ name: "none", value: "none" }]);
     const [file, setFile] = useState(null);
-    const [globalFilterValue2, setGlobalFilterValue2] = useState('');
+    const [globalFilterValue2, setGlobalFilterValue2] = useState("");
     const [loading2, setLoading2] = useState(true);
     const [titleCount, ChangeTitleCount] = useState(0);
     const [blogCount, ChangeBlogCount] = useState(0);
+    const [editorInsert, setEditorInsert] = useState(null);
 
     async function fetchData() {
         const blogData = new apiService();
-        blogData.getBlog().then((data) => { setBlogs(data); setLoading2(false) });
+        blogData.getBlog().then((data) => {
+            setBlogs(data);
+            setLoading2(false);
+        });
     }
     async function fetchImages() {
         const galleryImages = new apiService();
@@ -111,23 +125,26 @@ function Blogs() {
         setSubCategory([...output]);
     }
 
+    const newFaq = () => {
+        setFaq([...faq, { question: "", answer: "" }]);
+    };
+
     const onImageChange = (e, name) => {
         let selectedImages = [...images];
         if (e.checked) selectedImages.push(e.value);
         else selectedImages.splice(selectedImages.indexOf(e.value), 1);
         setImages(selectedImages);
-        onInputChange(e, name, selectedImages)
+        onInputChange(e, name, selectedImages);
     };
-
 
     const onGlobalFilterChange2 = (e) => {
         const value = e.target.value;
         let _filters2 = { ...filters2 };
-        _filters2['global'].value = value;
-        console.log(_filters2)
+        _filters2["global"].value = value;
+        console.log(_filters2);
         setFilters2(_filters2);
         setGlobalFilterValue2(value);
-    }
+    };
 
     const openNew = () => {
         setBlog(emptyBlog);
@@ -135,7 +152,6 @@ function Blogs() {
         setProductDialog(true);
         setFile(null);
     };
-
 
     const openImageGallery = (e) => {
         e.preventDefault();
@@ -150,9 +166,15 @@ function Blogs() {
     const hideDeleteProductDialog = () => {
         setDeleteProductDialog(false);
     };
-
+    const hideFaqDialog = () => {
+        setFaqDialog(false);
+    };
     const hideDeleteProductsDialog = () => {
         setDeleteProductsDialog(false);
+    };
+
+    const faqCloseDialog = () => {
+        setFaqDialog(false);
     };
 
     const hideGalleryDialog = () => {
@@ -286,20 +308,29 @@ function Blogs() {
         toast.current.show({ severity: "error", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
     };
 
-
     const onInputChange = (value, name, selectedImages) => {
         let _blog = { ...blog };
-        if (name == 'feature_image') {
+        if (name == "feature_image") {
             _blog[`${name}`] = selectedImages;
         } else if (name == "slug") {
-            _blog[`${name}`] = value.replace(' ', '-');
-        }
-        else {
+            _blog[`${name}`] = value.replace(" ", "-");
+        } else {
             _blog[`${name}`] = value;
         }
         setBlog(_blog);
     };
 
+    const handleFaqChange = (index, e) => {
+        let _faq = [...faq];
+        _faq[index][e.target.name] = e.target.value;
+        setFaq(_faq);
+    };
+
+    const removeFaq = (index) => {
+        let _faq = [...faq];
+        _faq.splice(index, 1);
+        setFaq(_faq);
+    };
     const renderHeader2 = () => {
         return (
             <div className="flex justify-content-end">
@@ -308,14 +339,12 @@ function Blogs() {
                     <InputText value={globalFilterValue2} onChange={onGlobalFilterChange2} placeholder="Keyword Search" />
                 </span>
             </div>
-        )
-    }
-
+        );
+    };
 
     const statusItemTemplate = (option) => {
         return <span className={`status-badge status-${option} px-4 py-2 border-round`}>{option}</span>;
-    }
-
+    };
 
     const onUpload = async (event) => {
         setFile(event.files[0]);
@@ -371,7 +400,7 @@ function Blogs() {
     const featureimageTemplate = (rowData) => {
         return (
             <>
-                <Image src={`assets/demo/images/gallery/${rowData.feature_image}`} imageStyle={{ width: '100px', height: '100px', objectFit: 'cover' }} preview={true} alt={rowData.feature_image} />
+                <Image src={`assets/demo/images/gallery/${rowData.feature_image}`} imageStyle={{ width: "100px", height: "100px", objectFit: "cover" }} preview={true} alt={rowData.feature_image} />
             </>
         );
     };
@@ -394,12 +423,37 @@ function Blogs() {
     //     );
     // };
 
+    const saveFaq = () => {
+        const faqData = `<div class="accordion" id="accordionExample">
+        ${faq?.map((data,ind) => {
+            return (
+                `
+                    <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq${ind}">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                           ${data.question}
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="faq${ind}" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                           ${data.answer}
+                        </div>
+                    </div>
+                </div>
+                `
+            );
+        })}
+      </div>`;
+      editorInsert.insertContent(faqData)
+      setFaqDialog(false)
+      setFaq(emptyFaq)
+    }
 
     const statusRowFilterTemplate = (options) => {
         return <Dropdown value={options.value} options={statusOptions} onChange={(e) => options.filterApplyCallback(e.value)} itemTemplate={statusItemTemplate} placeholder="Select a Status" className="p-column-filter" showClear />;
-    }
+    };
 
-    // for review 
+    // for review
     const reviewBodyTemplate = (rowData) => {
         const representative = rowData.review;
         return (
@@ -408,7 +462,7 @@ function Blogs() {
                 <span className="image-text">{representative}</span>
             </>
         );
-    }
+    };
 
     const reviewItemTemplate = (option) => {
         return (
@@ -417,14 +471,13 @@ function Blogs() {
                 <span className="image-text">{option.name}</span>
             </div>
         );
-    }
+    };
 
     const reviewRowFilterTemplate = (options) => {
         return <MultiSelect value={options.value} options={authoroptions} itemTemplate={reviewItemTemplate} onChange={(e) => options.filterApplyCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter" />;
-    }
+    };
 
-
-    // for author 
+    // for author
     const authorBodyTemplate = (rowData) => {
         const representative = rowData.author;
         return (
@@ -433,7 +486,7 @@ function Blogs() {
                 <span className="image-text">{representative}</span>
             </>
         );
-    }
+    };
 
     const authorItemTemplate = (option) => {
         return (
@@ -442,12 +495,11 @@ function Blogs() {
                 <span className="image-text">{option.name}</span>
             </div>
         );
-    }
+    };
 
     const authorRowFilterTemplate = (options) => {
         return <MultiSelect value={options.value} options={authoroptions} itemTemplate={authorItemTemplate} onChange={(e) => options.filterApplyCallback(e.value)} optionLabel="name" placeholder="Any" className="p-column-filter" />;
-    }
-
+    };
 
     const statusTemplate = (rowData) => {
         return (
@@ -470,15 +522,9 @@ function Blogs() {
         );
     };
 
-    // const header = (
-    //     <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-    //         <h5 className="m-0">Manage Blogs</h5>
-    //         <span className="block mt-2 md:mt-0 p-input-icon-left">
-    //             <i className="pi pi-search" />
-    //             <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
-    //         </span>
-    //     </div>
-    // );
+    const imageClick = (e) => {
+        editorInsert.insertContent(`<img src="${e.target.src}" />`);
+    };
 
     const productDialogFooter = (
         <>
@@ -486,12 +532,7 @@ function Blogs() {
             <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
         </>
     );
-    const galleryDialogFooter = (
-        <>
-            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
-        </>
-    );
+
     const deleteProductDialogFooter = (
         <>
             <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} />
@@ -505,13 +546,12 @@ function Blogs() {
         </>
     );
 
-    const galleryInsertFunction = (editor) => {
-        setGalleryDialog(true)
-        editor.insertContent(`<img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg" class="gm-observing gm-observing-cb">`);
-    }
-
-    console.log(blog.content)
-    console.log(images)
+    const FaqDialogFooter = (
+        <>
+            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={faqCloseDialog} />
+            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveFaq} />
+        </>
+    );
 
     return (
         <div className="grid crud-demo">
@@ -526,7 +566,8 @@ function Blogs() {
                         value={blogs}
                         selection={selectedBlogs}
                         dataKey="id"
-                        paginator rows={10}
+                        paginator
+                        rows={10}
                         rowsPerPageOptions={[5, 10, 25]}
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         className="p-datatable-customers"
@@ -534,15 +575,16 @@ function Blogs() {
                         filterDisplay="row"
                         loading={loading2}
                         responsiveLayout="scroll"
-                        globalFilterFields={['author', 'review', 'status']} header={header2} emptyMessage="No blogs found."
+                        globalFilterFields={["author", "review", "status"]}
+                        header={header2}
+                        emptyMessage="No blogs found."
                         onSelectionChange={(e) => setSelectedBlogs(e.value)}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         {/* <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column> */}
                         <Column field="blog_title" header="Title" filter filterPlaceholder="Search by Title" body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        <Column field="author" header="Author" filterPlaceholder="Search by author" body={authorBodyTemplate} filter filterElement={authorRowFilterTemplate}
-                            headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="author" header="Author" filterPlaceholder="Search by author" body={authorBodyTemplate} filter filterElement={authorRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="review" header="Review" filterPlaceholder="Search by review" body={reviewBodyTemplate} filter filterElement={reviewRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="parentcategory" header="Parentcat" filter filterPlaceholder="Search by Category" body={parentcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         {/* <Column field="subcategory_id" header="Subcat" sortable body={subcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column> */}
@@ -567,7 +609,6 @@ function Blogs() {
                                     tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
                                     // initialValue={blog.content}
                                     value={blog.content}
-                                    
                                     init={{
                                         height: 500,
                                         // min_height: 500,
@@ -588,18 +629,20 @@ function Blogs() {
                                         plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
                                         setup: function (editor) {
                                             editor.ui.registry.addButton("addFaq", {
-                                              text: "Add FAQ",
-                                              onAction: () => {
-                                                editor.insertContent('hi');
-                                              }
+                                                text: "Add FAQ",
+                                                onAction: () => {
+                                                    setEditorInsert(editor);
+                                                    setFaqDialog(true);
+                                                },
                                             });
                                             editor.ui.registry.addButton("Gallery", {
-                                              text: "Gallery",
-                                              onAction: () => {
-                                                galleryInsertFunction (editor);
-                                              }
+                                                text: "Gallery",
+                                                onAction: () => {
+                                                    setGalleryDialog(true);
+                                                    setEditorInsert(editor);
+                                                },
                                             });
-                                          },
+                                        },
                                         toolbar:
                                             "Gallery | addFaq | undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
                                         // content_css: "/styles.css",
@@ -651,7 +694,7 @@ function Blogs() {
                                         ],
                                     }}
                                     onEditorChange={(e) => {
-                                        onInputChange(e, "content")
+                                        onInputChange(e, "content");
                                     }}
                                 />
                                 <Accordion>
@@ -665,7 +708,7 @@ function Blogs() {
                                             }}
                                             value={blog.reference}
                                             onEditorChange={(e) => {
-                                                onInputChange(e, "reference")
+                                                onInputChange(e, "reference");
                                             }}
                                         />
                                     </AccordionTab>
@@ -678,19 +721,23 @@ function Blogs() {
                                     <AccordionTab header="Blog Section">
                                         <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e.target.value, "blog_title")}
-                                                    style={{ fontSize: "12px" }} />
+                                                <InputText type="text" id="blog_title" value={blog.blog_title} onChange={(e) => onInputChange(e.target.value, "blog_title")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="blog_title">Blog title</label>
                                             </span>
                                         </div>
                                         <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="seo_title" value={blog.seo_title} onChange={(e) => {
-                                                    let countvalue = e.target.value.length;
-                                                    ChangeTitleCount(countvalue)
-                                                    onInputChange(e.target.value, "seo_title")
-                                                }}
-                                                    style={{ fontSize: "12px" }} />
+                                                <InputText
+                                                    type="text"
+                                                    id="seo_title"
+                                                    value={blog.seo_title}
+                                                    onChange={(e) => {
+                                                        let countvalue = e.target.value.length;
+                                                        ChangeTitleCount(countvalue);
+                                                        onInputChange(e.target.value, "seo_title");
+                                                    }}
+                                                    style={{ fontSize: "12px" }}
+                                                />
                                                 <label htmlFor="seo_title">SEO title</label>
                                             </span>
                                             <p>{titleCount}/60</p>
@@ -703,12 +750,17 @@ function Blogs() {
                                         </div>
                                         <div className=" p-field pt-3 mb-5">
                                             <span className="p-float-label">
-                                                <InputText type="text" id="blog_desc" value={blog.blog_desc} onChange={(e) => {
-                                                    let countvalue = e.target.value.length;
-                                                    ChangeBlogCount(countvalue)
-                                                    onInputChange(e.target.value, "blog_desc")
-                                                }}
-                                                    style={{ fontSize: "12px" }} />
+                                                <InputText
+                                                    type="text"
+                                                    id="blog_desc"
+                                                    value={blog.blog_desc}
+                                                    onChange={(e) => {
+                                                        let countvalue = e.target.value.length;
+                                                        ChangeBlogCount(countvalue);
+                                                        onInputChange(e.target.value, "blog_desc");
+                                                    }}
+                                                    style={{ fontSize: "12px" }}
+                                                />
                                                 <label htmlFor="blog_desc">Blog description</label>
                                             </span>
                                             <p>{blogCount}/160</p>
@@ -752,8 +804,6 @@ function Blogs() {
                                         <Dropdown options={authoroptions} value={blog.author} onChange={(e) => onInputChange(e.target.value, "author")} className={classNames({ "p-invalid": submitted && !blog.author }, "mb-5")} placeholder="Author Name" optionLabel="name"></Dropdown>
 
                                         <Dropdown options={authoroptions} value={blog.review} onChange={(e) => onInputChange(e.target.value, "review")} className={classNames({ "p-invalid": submitted && !blog.review }, "mb-5")} placeholder="Reviewer Name" optionLabel="name"></Dropdown>
-
-
                                     </AccordionTab>
                                 </Accordion>
                                 <Accordion>
@@ -790,15 +840,23 @@ function Blogs() {
                         </div>
                     </Dialog>
 
-                    <Dialog visible={galleryDialog} style={{ width: "1200px" }} header="Gallery" modal footer={galleryDialogFooter} onHide={hideGalleryDialog}>
+                    <Dialog visible={galleryDialog} style={{ width: "100%" }} header="Gallery" modal onHide={hideGalleryDialog}>
                         <div className="grid">
                             {gallery && gallery ? (
                                 gallery?.map((item, index) => {
                                     return (
                                         <div className="col-12 md:col-2" key={index}>
-                                            <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={(e) => onImageChange(e, 'feature_image')} checked={images.includes(`${item.image}`)}></Checkbox>
+                                            <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={(e) => onImageChange(e, "feature_image")} checked={images.includes(`${item.image}`)}></Checkbox>
                                             <label htmlFor={`cb3${index}`} className="p-checkbox-label">
-                                                <img src={`assets/demo/images/gallery/${item.image}`} alt={item.alt_title} style={{ width: "100%", height: "200px", objectFit: "cover", cursor: "pointer" }} className="mt-0 mx-auto mb-5 block shadow-2" />
+                                                <img
+                                                    onClick={(e) => {
+                                                        imageClick(e);
+                                                    }}
+                                                    src={`assets/demo/images/gallery/${item.image}`}
+                                                    alt={item.alt_title}
+                                                    style={{ width: "100%", height: "200px", objectFit: "cover", cursor: "pointer" }}
+                                                    className="mt-0 mx-auto mb-5 block shadow-2"
+                                                />
                                             </label>
                                         </div>
                                     );
@@ -810,6 +868,55 @@ function Blogs() {
                     </Dialog>
 
                     {/* image  gallery dialog  */}
+
+                    {/* faq dialog */}
+
+                    <Dialog visible={faqDialog} style={{ width: "650px" }} header="Faq" footer={FaqDialogFooter} modal onHide={hideFaqDialog}>
+                        {faq?.map((item, index) => {
+                            return (
+                                <div className="p-fluid card">
+                                    <div className=" p-field pt-3 mb-5">
+                                        <span className="p-float-label">
+                                            <InputText
+                                                type="text"
+                                                value={item.question}
+                                                onChange={(e) => {
+                                                    handleFaqChange(index, e);
+                                                }}
+                                                name="question"
+                                                id="Question"
+                                                style={{ fontSize: "12px" }}
+                                            />
+                                            <label htmlFor="Answer">Question</label>
+                                        </span>
+                                    </div>
+                                    <div className=" p-field pt-3 mb-5">
+                                        <span className="p-float-label">
+                                            <InputTextarea
+                                                rows={5}
+                                                cols={30}
+                                                value={item.answer}
+                                                name="answer"
+                                                onChange={(e) => {
+                                                    handleFaqChange(index, e);
+                                                }}
+                                            />
+                                            <label htmlFor="Answer">Answer</label>
+                                        </span>
+                                    </div>
+                                    {index > 0 && (
+                                        <div className="p-field">
+                                            <Button className="p-button-danger" label="Delete" icon="pi pi-trash" style={{ width: "fit-content" }} onClick={removeFaq} />
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+
+                        <Button label="Add More" onClick={newFaq} icon="pi pi-plus" />
+                    </Dialog>
+
+                    {/* faq dialog */}
                 </div>
             </div>
         </div>
