@@ -6,10 +6,10 @@ const upload = require('../middleware/imageMulter')
 Router.get('/',getAllImage);
 
 //get all tha cta
-Router.post('/',upload.array('image',20), addImage);
+Router.post('/',upload.array('image[]',20), addImage);
 
 //get all tha cta
-Router.put('/:id',upload.single('image'), updateImage);
+Router.put('/:id',upload.single('image[]'), updateImage);
 
 //get all tha cta
 Router.delete('/:id',deleteImage);

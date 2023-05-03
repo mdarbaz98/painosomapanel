@@ -198,9 +198,9 @@ function Blogs() {
         formData.append("reference", data.reference);
 
         if (blog.id) {
-            await Axios.put(`http://192.168.0.143:5000/api/blog/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/blog/${data.id}`, formData);
         } else {
-            await Axios.post("http://192.168.0.143:5000/api/blog", formData);
+            await Axios.post("http://localhost:5000/api/blog", formData);
         }
         setImages([]);
         fetchData();
@@ -233,7 +233,7 @@ function Blogs() {
         setDeleteProductDialog(true);
     };
     const updateStatus = async (rowData) => {
-        await Axios.put(`http://192.168.0.143:5000/api/blog/status/${rowData.id}`, rowData);
+        await Axios.put(`http://localhost:5000/api/blog/status/${rowData.id}`, rowData);
     };
     const blogStatus = (rowData) => {
         const index = findIndexById(rowData.id);
@@ -246,7 +246,7 @@ function Blogs() {
     };
     const deleteBlogFunction = async (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        await Axios.delete(`http://192.168.0.143:5000/api/blog/${selectedIds}`).then();
+        await Axios.delete(`http://localhost:5000/api/blog/${selectedIds}`).then();
         fetchData();
     };
 
@@ -507,7 +507,7 @@ function Blogs() {
 
     const galleryInsertFunction = (editor) => {
         setGalleryDialog(true)
-        editor.insertContent(`<img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg" class="gm-observing gm-observing-cb">`);
+        // editor.insertContent(`<img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg" class="gm-observing gm-observing-cb">`);
     }
 
     console.log(blog.content)
@@ -621,7 +621,7 @@ function Blogs() {
                                             let image = new FormData();
                                             image.append("image", blobInfo.blob());
                                             try {
-                                                const { data } = await Axios.post("http://192.168.0.143:5000/api/image", image);
+                                                const { data } = await Axios.post("http://localhost:5000/api/image", image);
                                                 success(`assets/demo/images/gallery/${data}`);
                                             } catch (error) {
                                                 console.log(error);
@@ -721,7 +721,7 @@ function Blogs() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://192.168.0.143:5000/api/image" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery(e)} />
