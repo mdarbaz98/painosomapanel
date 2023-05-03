@@ -523,7 +523,9 @@ function Blogs() {
     };
 
     const imageClick = (e) => {
-        editorInsert.insertContent(`<img src="${e.target.src}" />`);
+        editorInsert && editorInsert.insertContent(`<img src="${e.target.src}" />`);
+        setImages([])
+        setEditorInsert(null)
     };
 
     const productDialogFooter = (
@@ -874,7 +876,7 @@ function Blogs() {
                     <Dialog visible={faqDialog} style={{ width: "650px" }} header="Faq" footer={FaqDialogFooter} modal onHide={hideFaqDialog}>
                         {faq?.map((item, index) => {
                             return (
-                                <div className="p-fluid card">
+                                <div className="p-fluid card" key={index}>
                                     <div className=" p-field pt-3 mb-5">
                                         <span className="p-float-label">
                                             <InputText
