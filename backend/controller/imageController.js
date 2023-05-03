@@ -18,8 +18,8 @@ const addImage = (req, resp) => {
         con.query("INSERT INTO image (`image`, `title`, `alt_title`) values(?,?,?)", [image.filename, name, name], (err, result) => {
             if (err) console.log(err);
         });
-        // resp.send(image.filename);
     });
+    resp.send('Successfully Uploaded');
 };
 
 const updateImage = (req, resp) => {

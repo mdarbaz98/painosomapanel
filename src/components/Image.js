@@ -97,7 +97,6 @@ function Gallery() {
         const formData = new FormData();
         event.files.map((item) => {
             formData.append("image",item)
-            // formData.append("title",item.name)
         })
         const res = await Axios.post('http://192.168.0.143:5000/api/image',formData);
         fetchData();
@@ -234,7 +233,7 @@ function Gallery() {
                                 <div className="p-fluid">
                                     {/* <h5>Vertical</h5> */}
                                     <div className="field">
-                                    <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image" customUpload uploadHandler={imageUpload} multiple accept="image/*" maxFileSize={1000000} />
+                                    <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image" uploadHandler={imageUpload} multiple accept="image/*" maxFileSize={1000000} />
                                     </div>
                                 </div>
                             </div>

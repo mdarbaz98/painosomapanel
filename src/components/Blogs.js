@@ -74,7 +74,6 @@ function Blogs() {
     const [titleCount, ChangeTitleCount] = useState(0);
     const [blogCount, ChangeBlogCount] = useState(0);
 
-    console.log(blog)
     async function fetchData() {
         const blogData = new apiService();
         blogData.getBlog().then((data) => { setBlogs(data); setLoading2(false) });
@@ -137,7 +136,6 @@ function Blogs() {
         setFile(null);
     };
 
-    console.log(blog)
 
     const openImageGallery = (e) => {
         e.preventDefault();
@@ -466,8 +464,8 @@ function Blogs() {
         return (
             <div className="actions">
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-primary mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning mt-2" onClick={() => confirmDeleteProduct(rowData)} />
-                <Button icon="pi pi-eye" className="p-button-rounded p-button-success mt-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-danger mt-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-eye" className="p-button-rounded p-button-success ml-2" />
             </div>
         );
     };
@@ -483,6 +481,12 @@ function Blogs() {
     // );
 
     const productDialogFooter = (
+        <>
+            <Button label="Cancel" icon="pi pi-times" className="p-button-text" />
+            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
+        </>
+    );
+    const galleryDialogFooter = (
         <>
             <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
             <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
@@ -500,6 +504,14 @@ function Blogs() {
             <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
         </>
     );
+
+    const galleryInsertFunction = (editor) => {
+        setGalleryDialog(true)
+        editor.insertContent(`<img src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg" class="gm-observing gm-observing-cb">`);
+    }
+
+    console.log(blog.content)
+    console.log(images)
 
     return (
         <div className="grid crud-demo">
@@ -555,6 +567,7 @@ function Blogs() {
                                     tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
                                     // initialValue={blog.content}
                                     value={blog.content}
+                                    
                                     init={{
                                         height: 500,
                                         // min_height: 500,
@@ -573,8 +586,22 @@ function Blogs() {
                                             "Oswald=oswald; Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
                                         fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
                                         plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                        setup: function (editor) {
+                                            editor.ui.registry.addButton("addFaq", {
+                                              text: "Add FAQ",
+                                              onAction: () => {
+                                                editor.insertContent('hi');
+                                              }
+                                            });
+                                            editor.ui.registry.addButton("Gallery", {
+                                              text: "Gallery",
+                                              onAction: () => {
+                                                galleryInsertFunction (editor);
+                                              }
+                                            });
+                                          },
                                         toolbar:
-                                            "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                            "Gallery | addFaq | undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
                                         // content_css: "/styles.css",
                                         content_style: "@import url('/font.css'); .mce-content-body { font-family: Oswald; }",
                                         // file_picker_types: "image",
@@ -607,7 +634,9 @@ function Blogs() {
                                             {
                                                 title: "inline template",
                                                 description: "Some desc 1",
-                                                content: `<p>My <button class="btn">content</button></p>`,
+                                                content: `<p>My <button class="btn">content</button></p>
+                                                <p>My <button class="btn">content</button></p>
+                                                <p>My <button class="btn">content</button></p>`,
                                             },
                                             {
                                                 title: "Simple html file template ",
@@ -761,7 +790,7 @@ function Blogs() {
                         </div>
                     </Dialog>
 
-                    <Dialog visible={galleryDialog} style={{ width: "1200px" }} header="Gallery" modal onHide={hideGalleryDialog}>
+                    <Dialog visible={galleryDialog} style={{ width: "1200px" }} header="Gallery" modal footer={galleryDialogFooter} onHide={hideGalleryDialog}>
                         <div className="grid">
                             {gallery && gallery ? (
                                 gallery?.map((item, index) => {
