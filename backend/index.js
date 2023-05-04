@@ -19,7 +19,7 @@ app.use("/api/category",categoryRoute)
 app.use("/api/blog",blogRoute)
 app.use("/api/image",imageRoute)
 app.use("/api/author",authorRoute)
-app.use("/api/products ",productsRoute)
+app.use("/api/products",productsRoute)
 
 app.listen(5000, () => {
     console.log("server started");
