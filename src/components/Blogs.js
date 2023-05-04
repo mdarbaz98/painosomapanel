@@ -140,6 +140,7 @@ function Blogs() {
         setImages(selectedImages);
         onInputChange(e, name, selectedImages);
         setGalleryDialog(false)
+        setGalleryDialog2(false)
     };
     const onImageChange2 = (e, name) => {
         let selectedImages = [...images2];
@@ -150,7 +151,6 @@ function Blogs() {
         setGalleryDialog(false)
     };
 
-    console.log(images2)
 
     const onGlobalFilterChange2 = (e) => {
         const value = e.target.value;
