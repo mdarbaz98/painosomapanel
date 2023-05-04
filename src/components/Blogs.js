@@ -67,12 +67,15 @@ function Blogs() {
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [galleryDialog, setGalleryDialog] = useState(false);
+    const [galleryDialog2, setGalleryDialog2] = useState(false);
     const [faqDialog, setFaqDialog] = useState(false);
     const [blog, setBlog] = useState(emptyBlog);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [gallery, setGallery] = useState(null);
+    const [gallery2, setGallery2] = useState(null);
     const [images, setImages] = useState([]);
+    const [images2, setImages2] = useState([]);
     const toast = useRef(null);
     const dt = useRef(null);
     const [parentCategory, setParentCategory] = useState([null]);
@@ -94,7 +97,8 @@ function Blogs() {
     }
     async function fetchImages() {
         const galleryImages = new apiService();
-        galleryImages.getImages().then((data) => setGallery(data));
+        galleryImages.getImages().then((data) => {setGallery(data)
+        setGallery2(data)});
     }
 
     useEffect(() => {
@@ -135,13 +139,23 @@ function Blogs() {
         else selectedImages.splice(selectedImages.indexOf(e.value), 1);
         setImages(selectedImages);
         onInputChange(e, name, selectedImages);
+        setGalleryDialog(false)
     };
+    const onImageChange2 = (e, name) => {
+        let selectedImages = [...images2];
+        if (e.checked) selectedImages.push(e.value);
+        else selectedImages.splice(selectedImages.indexOf(e.value), 1);
+        setImages2(selectedImages);
+        onInputChange(e, name, selectedImages);
+        setGalleryDialog(false)
+    };
+
+    console.log(images2)
 
     const onGlobalFilterChange2 = (e) => {
         const value = e.target.value;
         let _filters2 = { ...filters2 };
         _filters2["global"].value = value;
-        console.log(_filters2);
         setFilters2(_filters2);
         setGlobalFilterValue2(value);
     };
@@ -153,9 +167,9 @@ function Blogs() {
         setFile(null);
     };
 
-    const openImageGallery = (e) => {
+    const openImageGallery2 = (e) => {
         e.preventDefault();
-        setGalleryDialog(true);
+        setGalleryDialog2(true);
     };
 
     const hideDialog = () => {
@@ -179,6 +193,9 @@ function Blogs() {
 
     const hideGalleryDialog = () => {
         setGalleryDialog(false);
+    };
+    const hideGalleryDialog2 = () => {
+        setGalleryDialog2(false);
     };
 
     const saveProduct = async () => {
@@ -225,6 +242,7 @@ function Blogs() {
             await Axios.post("http://192.168.0.143:5000/api/blog", formData);
         }
         setImages([]);
+        setImages2([]);
         fetchData();
         setFile(null);
     };
@@ -424,17 +442,17 @@ function Blogs() {
     // };
 
     const saveFaq = () => {
-        const faqData = `<div class="accordion" id="accordionExample">
+        const faqData = `<div class="accordion faq" id="accordionExample">
         ${faq?.map((data,ind) => {
             return (
                 `
                     <div class="accordion-item">
-                    <h2 class="accordion-header" id="faq${ind}">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <p class="accordion-header" id="faq${ind}">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${ind}" aria-expanded="true" aria-controls="#collapse${ind}">
                            ${data.question}
                         </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="faq${ind}" data-bs-parent="#accordionExample">
+                    </p>
+                    <div id="collapse${ind}" class="accordion-collapse collapse show" aria-labelledby="faq${ind}" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
                            ${data.answer}
                         </div>
@@ -524,7 +542,6 @@ function Blogs() {
 
     const imageClick = (e) => {
         editorInsert && editorInsert.insertContent(`<img src="${e.target.src}" />`);
-        setImages([])
         setEditorInsert(null)
     };
 
@@ -648,7 +665,7 @@ function Blogs() {
                                         toolbar:
                                             "Gallery | addFaq | undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
                                         // content_css: "/styles.css",
-                                        content_style: "@import url('/font.css'); .mce-content-body { font-family: Oswald; }",
+                                        // content_style: "@import url('/font.css'); .mce-content-body { font-family: Oswald; }",
                                         // file_picker_types: "image",
                                         media_dimensions: false,
                                         media_url_resolver: function (data, resolve /*, reject*/) {
@@ -778,8 +795,8 @@ function Blogs() {
                                                 <FileUpload auto url="http://192.168.0.143:5000/api/image" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
-                                                <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery(e)} />
-                                                {images?.map((item, ind) => {
+                                                <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
+                                                {images2?.map((item, ind) => {
                                                     return (
                                                         <div className="col" key={ind}>
                                                             <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
@@ -869,6 +886,35 @@ function Blogs() {
                         </div>
                     </Dialog>
 
+                    {/* image  gallery dialog  */}
+
+                    {/* gallery for feature_image  */}
+                    <Dialog visible={galleryDialog2} style={{ width: "100%" }} header="Gallery" modal onHide={hideGalleryDialog2}>
+                        <div className="grid">
+                            {gallery2 && gallery2 ? (
+                                gallery2?.map((item, index) => {
+                                    return (
+                                        <div className="col-12 md:col-2" key={index}>
+                                            <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={(e) => onImageChange2(e, "feature_image")} checked={images2.includes(`${item.image}`)}></Checkbox>
+                                            <label htmlFor={`cb3${index}`} className="p-checkbox-label">
+                                                <img
+                                                    onClick={(e) => {
+                                                        imageClick(e);
+                                                    }}
+                                                    src={`assets/demo/images/gallery/${item.image}`}
+                                                    alt={item.alt_title}
+                                                    style={{ width: "100%", height: "200px", objectFit: "cover", cursor: "pointer" }}
+                                                    className="mt-0 mx-auto mb-5 block shadow-2"
+                                                />
+                                            </label>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p>No images </p>
+                            )}
+                        </div>
+                    </Dialog>
                     {/* image  gallery dialog  */}
 
                     {/* faq dialog */}
