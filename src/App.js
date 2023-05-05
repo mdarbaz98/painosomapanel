@@ -22,6 +22,7 @@ import Categories from './components/Categories';
 import products from './components/products';
 import Gallery from './components/Image';
 import Author from './components/Author';
+import Login from './components/Login';
 
 const App = () => {
     const [layoutMode, setLayoutMode] = useState('overlay');
@@ -34,6 +35,9 @@ const App = () => {
     const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
     const copyTooltipRef = useRef();
     const location = useLocation();
+
+
+    const [value, setValue] = useState(null);
 
     PrimeReact.ripple = true;
 
@@ -229,38 +233,44 @@ const App = () => {
         'layout-theme-light': layoutColorMode === 'light'
     });
 
+const  getData = (userdata) => {
+    setValue(userdata)
+    console.log(userdata)
+}
+
     return (
-        <div className={wrapperClass} onClick={onWrapperClick}>
-            <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
+        (value?.password === "pos123" && value.name === "posadmin") ? <div className={wrapperClass} onClick={onWrapperClick}>
+        <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-            <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
-                mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
+        <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
+            mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
 
-            <div className="layout-sidebar" onClick={onSidebarClick}>
-                <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
-            </div>
-
-            <div className="layout-main-container">
-                <div className="layout-main">
-                    <Route path="/" exact render={() => <Dashboard colorMode={layoutColorMode} location={location} />} />
-                    <Route path="/category" component={Categories} />
-                    <Route path="/blog" component={Blogs} />
-                    <Route path="/products" component={products} />
-                    <Route path="/gallery" component={Gallery} />
-                    <Route path="/author" component={Author} />
-                </div>
-
-                <AppFooter layoutColorMode={layoutColorMode} />
-            </div>
-
-            <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
-                layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
-
-            <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-                <div className="layout-mask p-component-overlay"></div>
-            </CSSTransition>
-
+        <div className="layout-sidebar" onClick={onSidebarClick}>
+            <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
         </div>
+
+        <div className="layout-main-container">
+            <div className="layout-main">
+                <Route path="/" exact render={() => <Dashboard colorMode={layoutColorMode} location={location} />} />
+                <Route path="/category" component={Categories} />
+                <Route path="/blog" component={Blogs} />
+                <Route path="/products" component={products} />
+                <Route path="/gallery" component={Gallery} />
+                <Route path="/author" component={Author} />
+                <Route path="/Login" component={Login} />
+            </div>
+
+            <AppFooter layoutColorMode={layoutColorMode} />
+        </div>
+
+        <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
+            layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+
+        <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+            <div className="layout-mask p-component-overlay"></div>
+        </CSSTransition>
+
+    </div>: <Login onSubmit={getData} ></Login> 
     );
 
 }
