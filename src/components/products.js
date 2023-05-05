@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { DataTable } from "primereact/datatable";
+import { Checkbox } from "primereact/checkbox";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
@@ -55,13 +56,17 @@ function Products() {
     const [product, setproduct] = useState(emptyproducts);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
     const [submitted, setSubmitted] = useState(false);
+    const [galleryDialog2, setGalleryDialog2] = useState(false);
+    const [images2, setImages2] = useState([]);
+    const [gallery2, setGallery2] = useState(null);
+    
+
     const [globalFilter, setGlobalFilter] = useState(null);
     const [parentCategory, setParentCategory] = useState([null]);
     const [subCategory, setSubCategory] = useState([{ name: "none", value: "none" }]);
     const [file, setFile] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
-    const fileRef = useRef(null);
 
     const [state, setState] = useState(null);
 
@@ -71,7 +76,17 @@ function Products() {
         setState(null);
         getParentCategory();
         getsubCategory();
+        fetchImages()
     }, [state]);
+
+    async function fetchImages() {
+        const galleryImages = new apiService();
+        galleryImages.getImages().then((data) => {
+        setGallery2(data)});
+    }
+
+    console.log(product)
+    console.log(images2)
 
     async function getParentCategory() {
         const blogCategory = new apiService();
@@ -104,10 +119,7 @@ function Products() {
     const hideDeleteProductsDialog = () => {
         setDeleteProductsDialog(false);
     };
-    const onUpload = async (event) => {
-        setFile(event.files[0]);
-        toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 });
-    };
+
     const statusItemTemplate = (option) => {
         return <span className={`status-badge status-${option.name}`}>{option.name}</span>;
     }
@@ -136,7 +148,7 @@ function Products() {
 
     const addupdateproductFunction = async (data) => {
         const formData = new FormData();
-        formData.append("image", file ? file : data.image);
+        formData.append("image[]", data.image);
         formData.append("product_name", data.product_name);
         formData.append("product_price", data.product_price);
         formData.append("product_slug", data.product_slug);
@@ -221,6 +233,27 @@ function Products() {
     const exportCSV = () => {
         dt.current.exportCSV();
     };
+    const onUpload = async (event) => {
+        setFile(event.files[0]);
+        toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 });
+    };
+
+    const openImageGallery2 = (e) => {
+        e.preventDefault();
+        setGalleryDialog2(true);
+    };
+
+    const hideGalleryDialog2 = () => {
+        setGalleryDialog2(false);
+    };
+
+    const onImageChange2 = (e, name) => {
+        let selectedImages = [...images2];
+        if (e.checked) selectedImages.push(e.value);
+        else selectedImages.splice(selectedImages.indexOf(e.value), 1);
+        setImages2(selectedImages);
+        onInputChange(e, name, selectedImages);
+    };
 
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
@@ -235,14 +268,19 @@ function Products() {
         toast.current.show({ severity: "success", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
     };
 
-    const onInputChange = (e, name) => {
+    const onInputChange = (e, name,selectedImages) => {
         let val;
         (name === "abouteditor" || name === "newseditor" || name === "advanceeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
         if (name == "product_slug") {
             val = e.target.value.replace(" ", "-");
         }
+        if (name == "feature_image") {
+            _product[`${name}`] =  selectedImages[0];
+            _product[`image`] = selectedImages;
+        }else{
         _product[`${name}`] = val;
+        }
         setproduct(_product);
     };
 
@@ -405,10 +443,20 @@ function Products() {
                             {/* imagesection */}
                             <div className="col-12 md:col-4">
                                 <Accordion>
-                                    <AccordionTab header="Image Section">
+                                <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://localhost:5000/api/products" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
+                                            </TabPanel>
+                                            <TabPanel header="Gallery">
+                                                <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
+                                                {images2?.map((item, ind) => {
+                                                    return (
+                                                        <div className="col" key={ind}>
+                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
+                                                        </div>
+                                                    );
+                                                })}
                                             </TabPanel>
                                         </TabView>
                                     </AccordionTab>
@@ -511,6 +559,33 @@ function Products() {
                             </div>
                         </div>
                     </Dialog>
+
+                    {/* gallery for product  */}
+                    <Dialog visible={galleryDialog2} style={{ width: "100%" }} header="Gallery" modal onHide={hideGalleryDialog2}>
+                        <div className="grid">
+                            {gallery2 && gallery2 ? (
+                                gallery2?.map((item, index) => {
+                                    return (
+                                        <div className="col-12 md:col-2" key={index}>
+                                            <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={(e) => onImageChange2(e, "feature_image")} checked={images2.includes(`${item.image}`)}></Checkbox>
+                                            <label htmlFor={`cb3${index}`} className="p-checkbox-label">
+                                                <img
+                                                    src={`assets/demo/images/gallery/${item.image}`}
+                                                    alt={item.alt_title}
+                                                    style={{ width: "100%", height: "200px", objectFit: "cover", cursor: "pointer" }}
+                                                    className="mt-0 mx-auto mb-5 block shadow-2"
+                                                />
+                                            </label>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p>No images </p>
+                            )}
+                        </div>
+                    </Dialog>
+                    {/* gallery for product  */}
+                    
 
                     <Dialog visible={deleteProductDialog} style={{ width: "450px" }} header="Confirm" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                         <div className="flex align-items-center justify-content-center">
