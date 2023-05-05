@@ -238,6 +238,21 @@ function Products() {
         toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 });
     };
 
+    const myUploader = async (event) => {
+        try{
+        const formData = new FormData();
+        event.files.map((item) => {
+            formData.append("image[]",item)
+        })
+        const res = await Axios.post('http://localhost:5000/api/image',formData)
+        fetchImages();
+        setProductDialog(false)
+        toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
+        }catch(err){
+        toast.current.show({ severity: "danger", summary: "Error", detail: `${err}`, life: 3000 });
+        }
+    }
+
     const openImageGallery2 = (e) => {
         e.preventDefault();
         setGalleryDialog2(true);
@@ -311,6 +326,7 @@ function Products() {
             </>
         );
     };
+
 
     const imageBodyTemplate = (rowData) => {
         return (
@@ -403,7 +419,7 @@ function Products() {
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         <Column field="id" header="Id" sortable body={codeBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="product_name" header="Name" sortable body={product_nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="images" header="images" sortable body={imageBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        {/* <Column field="images" header="images" sortable body={imageBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         <Column field="status" header="status" sortable body={statusBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="date" header="date" sortable body={dateBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
@@ -446,7 +462,7 @@ function Products() {
                                 <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
+                                            <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
