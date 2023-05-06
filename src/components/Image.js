@@ -92,16 +92,16 @@ function Gallery() {
     };
 
 
-    const imageUpload = async (event) => {
+    const myUploader = async (event) => {
         try{
         const formData = new FormData();
         event.files.map((item) => {
             formData.append("image[]",item)
         })
-        console.log(await Axios.post('http://localhost:5000/api/image',formData))
+        const res = await Axios.post('http://localhost:5000/api/image',formData)
         fetchData();
         setProductDialog(false)
-        // toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
+        toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
         }catch(err){
         toast.current.show({ severity: "danger", summary: "Error", detail: `${err}`, life: 3000 });
         }
@@ -233,7 +233,7 @@ function Gallery() {
                                 <div className="p-fluid">
                                     {/* <h5>Vertical</h5> */}
                                     <div className="field">
-                                    <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" uploadHandler={imageUpload} multiple accept="image/*" maxFileSize={1000000} />
+                                    <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                     </div>
                                 </div>
                             </div>

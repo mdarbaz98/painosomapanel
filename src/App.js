@@ -235,7 +235,6 @@ const App = () => {
 
 const  getData = (userdata) => {
     setValue(userdata)
-    console.log(userdata)
 }
 
     return (

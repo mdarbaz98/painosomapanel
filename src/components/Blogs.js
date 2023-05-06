@@ -227,7 +227,7 @@ function Blogs() {
         formData.append("blog_desc", data.blog_desc);
         formData.append("author", data.author);
         formData.append("review", data.review);
-        formData.append("image", file ? file : data.feature_image);
+        formData.append("image[]", file ? file : data.feature_image);
         formData.append("parentcategory", data.parentcategory);
         formData.append("subcategory", data.subcategory);
         formData.append("blogdate", data.blogdate);
@@ -364,9 +364,9 @@ function Blogs() {
         return <span className={`status-badge status-${option} px-4 py-2 border-round`}>{option}</span>;
     };
 
-    const onUpload = async (event) => {
-        setFile(event.files[0]);
+    const onImageUpload = async (event) => {
         toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 });
+        fetchImages();
     };
 
     const header2 = renderHeader2();
@@ -792,7 +792,7 @@ function Blogs() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" name="image" customUpload uploadHandler={onUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" onUpload={onImageUpload} name="image[]" accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />

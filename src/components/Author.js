@@ -111,7 +111,7 @@ function Author() {
 
     const addUpdate = async (data) => {
         const formData = new FormData();
-        formData.append("image", file ? file : data.image);
+        formData.append("image[]", file ? file : data.image);
         formData.append("name", data.name);
         formData.append("position", data.position);
         formData.append("slug", data.slug);
@@ -399,7 +399,7 @@ function Author() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" name="image" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" name="image[]" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                         </TabView>
                                     </AccordionTab>
