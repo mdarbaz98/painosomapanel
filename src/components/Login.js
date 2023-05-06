@@ -31,13 +31,14 @@ const [user, setUser]= useState({
                 <h1 className='mb-5 text-center font-bold text-blue-600'>Login Form</h1>
                <div className='p-fluid mb-5'>
                <span className="p-float-label">
-                    <InputText id="in" value={user.name} name='name' onChange={(e) => handleFunction(e)} />
-                    <label htmlFor="in">Username</label>
+                    <InputText id="in" value={user.name} name='name' style={{fontSize:"15px"}} onChange={(e) => handleFunction(e)} />
+                    <label style={{fontSize:"13px"}} htmlFor="in">Username</label>
                 </span>
                </div>
                <div className='p-fluid'>
                 <span className="p-float-label">
-                <Password value={user.password} name='password' onChange={(e) => handleFunction(e)} toggleMask />
+                <Password value={user.password} name='password' style={{fontSize:"15px"}} onChange={(e) => handleFunction(e)} toggleMask />
+                <label style={{fontSize:"13px"}} htmlFor="in">Password</label>
                 </span>
                 </div>
                 <Button onClick={handleSubmit} className='mt-4 w-full' label='Submit'></Button>
