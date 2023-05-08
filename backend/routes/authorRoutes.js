@@ -6,10 +6,10 @@ const router = require("express").Router();
 router.get("/", getAllAuthor);
 
 //add category
-router.post("/",upload.single('image'),addAuthor);
+router.post("/",upload.single('image[]'),addAuthor);
 
 //update category
-router.put("/:id",upload.single('image'), updateAuthor);
+router.put("/:id",upload.single('image[]'), updateAuthor);
 
 //update category status
 router.put("/status/:id", updateAuthorStatus);
