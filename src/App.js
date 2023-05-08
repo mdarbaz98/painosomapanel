@@ -8,6 +8,7 @@ import { AppMenu } from './AppMenu';
 import { AppConfig } from './AppConfig';
 import Dashboard from './components/Dashboard';
 import PrimeReact from 'primereact/api';
+import { Toast } from "primereact/toast";
 import { Tooltip } from 'primereact/tooltip';
 import 'primereact/resources/primereact.css';
 import 'primeicons/primeicons.css';
@@ -35,6 +36,8 @@ const App = () => {
     const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
     const copyTooltipRef = useRef();
     const location = useLocation();
+    const toast = useRef(null);
+
 
 
     const [value, setValue] = useState(null);
@@ -147,20 +150,20 @@ const App = () => {
         {
             label: 'Get Started', icon: 'pi pi-th-large',
             items: [
-                        {
-                            label: 'Categories', icon: 'pi pi-th-large', to: '/category'
-                        },{
-                            label: 'Blogs', icon: 'pi pi-book', to: '/blog'
-                        },
-                        {
-                            label: 'products', icon: 'pi pi-box', to: '/products'
-                        },
-                        {
-                            label: 'Gallery', icon: 'pi pi-images', to: '/gallery'
-                        },
-                        {
-                            label: 'Author', icon: 'pi pi-user', to: '/author'
-                        },
+                {
+                    label: 'Categories', icon: 'pi pi-th-large', to: '/category'
+                }, {
+                    label: 'Blogs', icon: 'pi pi-book', to: '/blog'
+                },
+                {
+                    label: 'products', icon: 'pi pi-box', to: '/products'
+                },
+                {
+                    label: 'Gallery', icon: 'pi pi-images', to: '/gallery'
+                },
+                {
+                    label: 'Author', icon: 'pi pi-user', to: '/author'
+                },
             ]
         },
 
@@ -233,44 +236,49 @@ const App = () => {
         'layout-theme-light': layoutColorMode === 'light'
     });
 
-const  getData = (userdata) => {
-    setValue(userdata)
-    console.log(userdata)
-}
+    const getData = (userdata) => {
+        setValue(userdata)
+        toast.current.show({ severity: "success", summary: "Welcome", detail: `${userdata.username}`, life: 3000 });
+    }
 
     return (
-        (value?.password === "pos123" && value.name === "posadmin") ? <div className={wrapperClass} onClick={onWrapperClick}>
-        <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
+        <div className={wrapperClass} onClick={onWrapperClick}>
+            <Toast ref={toast} />
+            <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-        <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
-            mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
+           {value &&  <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
+                mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />}
 
-        <div className="layout-sidebar" onClick={onSidebarClick}>
-            <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
-        </div>
-
-        <div className="layout-main-container">
-            <div className="layout-main">
-                <Route path="/" exact render={() => <Dashboard colorMode={layoutColorMode} location={location} />} />
-                <Route path="/category" component={Categories} />
-                <Route path="/blog" component={Blogs} />
-                <Route path="/products" component={products} />
-                <Route path="/gallery" component={Gallery} />
-                <Route path="/author" component={Author} />
-                <Route path="/Login" component={Login} />
+            <div className="layout-sidebar" onClick={onSidebarClick}>
+                <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
             </div>
 
-            <AppFooter layoutColorMode={layoutColorMode} />
+            <div className="layout-main-container">
+                {value ?
+                    <div className="layout-main">
+                        <Route path="/" exact render={() => <Dashboard colorMode={layoutColorMode} location={location} />} />
+                        <Route path="/category" component={Categories} />
+                        <Route path="/blog" component={Blogs} />
+                        <Route path="/products" component={products} />
+                        <Route path="/gallery" component={Gallery} />
+                        <Route path="/author" component={Author} />
+                        <Route path="/Login" component={Login} />
+                    </div>
+                    :
+                    <Login onSubmit={getData} ></Login>}
+
+
+                <AppFooter layoutColorMode={layoutColorMode} />
+            </div>
+
+            <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
+                layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+
+            <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+                <div className="layout-mask p-component-overlay"></div>
+            </CSSTransition>
+
         </div>
-
-        <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
-            layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
-
-        <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-            <div className="layout-mask p-component-overlay"></div>
-        </CSSTransition>
-
-    </div>: <Login onSubmit={getData} ></Login> 
     );
 
 }
