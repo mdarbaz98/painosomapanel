@@ -40,8 +40,12 @@ const App = () => {
     const toast = useRef(null);
 
 
+    useEffect(() => {
+     toast.current.show({ severity: "success", summary: "Welcome", detail: `${value?.username}`, life: 3000 });
+    },[])
 
-    const [value, setValue] = useState('Admin');
+
+    const [value, setValue] = useState(null);
 
     PrimeReact.ripple = true;
 
@@ -238,7 +242,7 @@ const App = () => {
     });
 
 
-        value && toast.current.show({ severity: "success", summary: "Welcome", detail: `${value?.username}`, life: 3000 });
+        
 
 
     return (

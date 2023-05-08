@@ -31,7 +31,7 @@ function AddCategory() {
     };
 
     const addCategoryFunction = () => {
-        Axios.post("http://localhost:5000/category", { name: addCategory, parentName: parentCategory, categoryDesc: categoryDesc, CategorySlug: categorySlug, CategoryTitle: categoryTitle, metaDesc: metaDescription}).then((res) => {
+        Axios.post("http://192.168.0.143:5000/category", { name: addCategory, parentName: parentCategory, categoryDesc: categoryDesc, CategorySlug: categorySlug, CategoryTitle: categoryTitle, metaDesc: metaDescription}).then((res) => {
             res ? showSuccess(): showError()
         });
     };

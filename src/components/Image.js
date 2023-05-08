@@ -67,7 +67,7 @@ function Gallery() {
     const deleteImageFunction = async (data) => {
         let selectedIds = typeof data.id === "number" ? data.id : data.map((res) => res.id);
         let imageName = data.image
-        await Axios.delete(`http://localhost:5000/api/image/${selectedIds}`,imageName)
+        await Axios.delete(`http://192.168.0.143:5000/api/image/${selectedIds}`,imageName)
         fetchData();
         toast.current.show({ severity: "success", summary: "Successfully", detail: "Deleted Successfully", life: 3000 });
     };
@@ -98,7 +98,7 @@ function Gallery() {
         event.files.map((item) => {
             formData.append("image[]",item)
         })
-        const res = await Axios.post('http://localhost:5000/api/image',formData)
+        const res = await Axios.post('http://192.168.0.143:5000/api/image',formData)
         fetchData();
         setProductDialog(false)
         toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
@@ -233,7 +233,7 @@ function Gallery() {
                                 <div className="p-fluid">
                                     {/* <h5>Vertical</h5> */}
                                     <div className="field">
-                                    <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
+                                    <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                     </div>
                                 </div>
                             </div>
