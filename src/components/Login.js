@@ -49,6 +49,7 @@ export const Login = (props) => {
         else {
             setLogin(value?.data[0])
             setValue(login)
+            localStorage.setItem('username',login.username)
         }
     }
 
