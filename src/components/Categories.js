@@ -42,6 +42,7 @@ function Categories() {
     const dt = useRef(null);
     const [titleCount, ChangeTitleCount] = useState(0);
     const [textAreaCount, ChangeTextAreaCount] = useState(0);
+    const [seotitleCount, setSeoTitleCount] = useState(0);
 
     useEffect(() => {
         getAllCategories();
@@ -96,11 +97,10 @@ function Categories() {
             let _category = { ...category };
             if (category.id) {
                 const index = findIndexById(category.id);
-                _categories[index] = _category;  
+                _categories[index] = _category;
                 updateCategoryFunction(_category);
                 toast.current.show({ severity: "success", summary: "Successful", detail: "Category Updated", life: 3000 });
             } else {
-                // _category.id = createId();
                 addCategoryFunction(_category);
                 _categories.push(_category);
                 ChangeTitleCount(0)
@@ -366,11 +366,11 @@ function Categories() {
                                 <div className="field">
                                     <label htmlFor="categoryName">Category Name</label>
                                     <InputText id="name" value={category.cat_name} onChange={(e) => {
-                                        let countvalue =e.target.value.length;
+                                        let countvalue = e.target.value.length;
                                         ChangeTitleCount(countvalue)
-                                    
-                                            onInputChange(e, "cat_name")
-                                        
+
+                                        onInputChange(e, "cat_name")
+
                                     }} required autoFocus className={classNames({ "p-invalid": submitted && !category.cat_name })} />
                                     <p>{titleCount}/60</p>
                                     {submitted && !category.cat_name && <small className="p-invalid">Category Name is required.</small>}
@@ -383,12 +383,12 @@ function Categories() {
                                 <div className="field">
                                     <label htmlFor="description">Seo Description</label>
                                     <InputTextarea id="description" value={category.cat_desc} onChange={(e) => {
-                                          let countvalue =e.target.value.length;
-                                          ChangeTextAreaCount(countvalue)
-                                            onInputChange(e, "cat_desc")
-                                          
-                                        }} className={classNames({ "p-invalid": submitted && !category.cat_desc })} required rows={3} cols={20} />
-                                         <p>{textAreaCount}/160</p>
+                                        let countvalue = e.target.value.length;
+                                        ChangeTextAreaCount(countvalue)
+                                        onInputChange(e, "cat_desc")
+
+                                    }} className={classNames({ "p-invalid": submitted && !category.cat_desc })} required rows={3} cols={20} />
+                                    <p>{textAreaCount}/160</p>
                                     {submitted && !category.cat_desc && <small className="p-invalid">Seo description is required.</small>}
                                 </div>
                             </div>
@@ -400,8 +400,14 @@ function Categories() {
                                 </div>
                                 <div className="field">
                                     <label htmlFor="categoryTitle">Seo Title</label>
-                                    <InputText id="categoryTitle" value={category.cat_title} onChange={(e) => onInputChange(e, "cat_title")} required className={classNames({ "p-invalid": submitted && !category.cat_title })} />
+                                    <InputText id="categoryTitle" value={category.cat_title} onChange={(e) => {
+                                        let countvalue = e.target.value.length;
+
+                                        setSeoTitleCount(countvalue)
+                                        onInputChange(e, "cat_title")
+                                    }} required className={classNames({ "p-invalid": submitted && !category.cat_title })} />
                                     {submitted && !category.cat_title && <small className="p-invalid">Seo Title is required.</small>}
+                                    <p>{seotitleCount}/60</p>
                                 </div>
                             </div>
                         </div>

@@ -17,7 +17,7 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import classNames from "classnames";
 import { Editor } from "@tinymce/tinymce-react";
-
+import { compareAsc, format } from 'date-fns'
 
 function Products() {
     let emptyproducts = {
@@ -86,7 +86,6 @@ function Products() {
     }
 
     console.log(product)
-    console.log(images2)
 
     async function getParentCategory() {
         const blogCategory = new apiService();
@@ -344,10 +343,11 @@ function Products() {
         );
     };
     const dateBodyTemplate = (rowData) => {
-        var productDate = new Date(rowData.date).toLocaleDateString()
+        let productDate = new Date(rowData.date);
+        const result=format(productDate,'dd/MM/yyyy')
         return (
             <>
-                {productDate}
+                {result}
             </>
         );
     };

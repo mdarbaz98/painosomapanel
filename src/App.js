@@ -41,7 +41,7 @@ const App = () => {
 
 
 
-    const [value, setValue] = useState('Admin');
+    const [value, setValue] = useState("dfs");
 
     PrimeReact.ripple = true;
 
@@ -236,9 +236,6 @@ const App = () => {
         'p-ripple-disabled': ripple === false,
         'layout-theme-light': layoutColorMode === 'light'
     });
-
-
-        value && toast.current.show({ severity: "success", summary: "Welcome", detail: `${value?.username}`, life: 3000 });
 
 
     return (
