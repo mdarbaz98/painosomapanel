@@ -1,9 +1,10 @@
-import React  from 'react';
+import React, { useContext }  from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
+import { AuthContext } from './context/authContext';
 
 export const AppTopbar = (props) => {
-
+const {value} = useContext(AuthContext)
     return (
         <div className="layout-topbar">
             <Link to="/" className="layout-topbar-logo">
@@ -37,6 +38,7 @@ export const AppTopbar = (props) => {
                             <i className="pi pi-user"/>
                             <span>Profile</span>
                         </button>
+        {value?.username}
                     </li>
                 </ul>
         </div>

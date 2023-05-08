@@ -24,6 +24,7 @@ import products from './components/products';
 import Gallery from './components/Image';
 import Author from './components/Author';
 import Login from './components/Login';
+import { AuthContext } from './context/authContext';
 
 const App = () => {
     const [layoutMode, setLayoutMode] = useState('overlay');
@@ -40,7 +41,7 @@ const App = () => {
 
 
 
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState('Admin');
 
     PrimeReact.ripple = true;
 
@@ -236,12 +237,12 @@ const App = () => {
         'layout-theme-light': layoutColorMode === 'light'
     });
 
-    const getData = (userdata) => {
-        setValue(userdata)
-        toast.current.show({ severity: "success", summary: "Welcome", detail: `${userdata.username}`, life: 3000 });
-    }
+
+        value && toast.current.show({ severity: "success", summary: "Welcome", detail: `${value?.username}`, life: 3000 });
+
 
     return (
+        <AuthContext.Provider value={{value,setValue}}>
         <div className={wrapperClass} onClick={onWrapperClick}>
             <Toast ref={toast} />
             <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
@@ -265,7 +266,7 @@ const App = () => {
                         <Route path="/Login" component={Login} />
                     </div>
                     :
-                    <Login onSubmit={getData} ></Login>}
+                    <Login ></Login>}
 
 
                 <AppFooter layoutColorMode={layoutColorMode} />
@@ -279,6 +280,7 @@ const App = () => {
             </CSSTransition>
 
         </div>
+        </AuthContext.Provider >
     );
 
 }

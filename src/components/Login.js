@@ -1,13 +1,16 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import Axios from 'axios';
 import { Toast } from "primereact/toast";
+import { AuthContext } from '../context/authContext';
 
 
 export const Login = (props) => {
+    const {value, setValue} = useContext(AuthContext)
+    console.log(value)
     const toast = useRef(null);
 
     const [login, setLogin] = useState({
@@ -29,6 +32,7 @@ export const Login = (props) => {
         _user[e.target.name] = e.target.value;
 
         setLogin(_user)
+
     }
 
     const handleRegisterFunction = (e) => {
@@ -44,7 +48,7 @@ export const Login = (props) => {
         }
         else {
             setLogin(value?.data[0])
-            props.onSubmit(login)
+            setValue(login)
         }
     }
 
