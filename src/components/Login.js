@@ -1,20 +1,22 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import Axios from 'axios';
+import { Toast } from "primereact/toast";
 
 
 export const Login = (props) => {
+    const toast = useRef(null);
 
     const [login, setLogin] = useState({
-        name: "",
+        username: "",
         password: ""
     })
 
     const [register, setRegister] = useState({
-        name: "",
+        username: "",
         password: ""
     })
 
@@ -31,32 +33,35 @@ export const Login = (props) => {
 
     const handleRegisterFunction = (e) => {
         let _user = { ...register };
-
         _user[e.target.name] = e.target.value;
-
         setRegister(_user)
     }
 
     const handleLogin = async () => {
         const value = await Axios.post('http://localhost:5000/api/login', login);
-        console.log(value)
-        // props.onSubmit(login);
+        if (value?.data.message) {
+            toast.current.show({ severity: "error", summary: "Error", detail: `${value?.data.message}`, life: 3000 });
+        }
+        else {
+            setLogin(value?.data[0])
+            props.onSubmit(login)
+        }
     }
 
     const handleRegister = async () => {
         const value = await Axios.post('http://localhost:5000/api/register', register);
         setIsRegister(false)
-        // props.onSubmit(register);
     }
 
     return (
 
         <div className='flex justify-content-center align-items-center h-screen'>
+            <Toast ref={toast} />
             {!isregister ? <div className='card py-8 px-8' style={{ width: "600px" }}>
                 <h1 className='mb-5 text-center font-bold text-blue-600'>Login Form</h1>
                 <div className='p-fluid mb-5'>
                     <span className="p-float-label">
-                        <InputText id="in" value={login.name} name='name' onChange={(e) => handleLoginFunction(e)} />
+                        <InputText id="in" value={login.username} name='username' onChange={(e) => handleLoginFunction(e)} />
                         <label htmlFor="in">Username</label>
                     </span>
                 </div>
@@ -65,15 +70,16 @@ export const Login = (props) => {
                         <Password value={login.password} name='password' onChange={(e) => handleLoginFunction(e)} toggleMask />
                     </span>
                 </div>
-                <Button onClick={handleLogin} className='my-4 w-full' label='Submit'></Button>
+                <Button onClick={handleLogin} className='my-4 w-full' label='Login'></Button>
                 <Button onClick={() => { setIsRegister(true) }} label="Register Here" className="p-button-secondary my-2" />
+                {/* <h1>{loginstatus}</h1> */}
             </div>
                 :
                 <div className='card py-8 px-8' style={{ width: "600px" }}>
                     <h1 className='mb-5 text-center font-bold text-blue-600'>Register Form</h1>
                     <div className='p-fluid mb-5'>
                         <span className="p-float-label">
-                            <InputText id="in" value={register.name} name='name' onChange={(e) => handleRegisterFunction(e)} />
+                            <InputText id="in" value={register.username} name='username' onChange={(e) => handleRegisterFunction(e)} />
                             <label htmlFor="in">Username</label>
                         </span>
                     </div>
@@ -82,7 +88,7 @@ export const Login = (props) => {
                             <Password value={register.password} name='password' onChange={(e) => handleRegisterFunction(e)} toggleMask />
                         </span>
                     </div>
-                    <Button onClick={handleRegister} className='mt-4 w-full' label='Submit'></Button>
+                    <Button onClick={handleRegister} className='mt-4 w-full' label='Register'></Button>
                 </div>}
 
         </div>
