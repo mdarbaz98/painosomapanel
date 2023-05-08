@@ -41,7 +41,7 @@ function Blogs() {
         reference: "",
     };
 
-    let emptyFaq =[
+    let emptyFaq = [
         {
             question: "",
             answer: "",
@@ -97,8 +97,10 @@ function Blogs() {
     }
     async function fetchImages() {
         const galleryImages = new apiService();
-        galleryImages.getImages().then((data) => {setGallery(data)
-        setGallery2(data)});
+        galleryImages.getImages().then((data) => {
+            setGallery(data)
+            setGallery2(data)
+        });
     }
 
     useEffect(() => {
@@ -443,7 +445,7 @@ function Blogs() {
 
     const saveFaq = () => {
         const faqData = `<div class="accordion faq" id="accordionExample">
-        ${faq?.map((data,ind) => {
+        ${faq?.map((data, ind) => {
             return (
                 `
                     <div class="accordion-item">
@@ -462,9 +464,9 @@ function Blogs() {
             );
         })}
       </div>`;
-      editorInsert.insertContent(faqData)
-      setFaqDialog(false)
-      setFaq(emptyFaq)
+        editorInsert.insertContent(faqData)
+        setFaqDialog(false)
+        setFaq(emptyFaq)
     }
 
     const statusRowFilterTemplate = (options) => {

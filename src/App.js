@@ -25,6 +25,7 @@ import Gallery from './components/Image';
 import Author from './components/Author';
 import Login from './components/Login';
 import { AuthContext } from './context/authContext';
+import { Value } from 'sass';
 
 const App = () => {
     const [layoutMode, setLayoutMode] = useState('overlay');
@@ -43,7 +44,6 @@ const App = () => {
     useEffect(() => {
      toast.current.show({ severity: "success", summary: "Welcome", detail: `${value?.username}`, life: 3000 });
     },[])
-
 
     const [value, setValue] = useState(null);
 
@@ -242,16 +242,13 @@ const App = () => {
     });
 
 
-        
-
-
     return (
         <AuthContext.Provider value={{value,setValue}}>
         <div className={wrapperClass} onClick={onWrapperClick}>
             <Toast ref={toast} />
             <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-           {value &&  <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
+           {Value && localStorage.getItem('username') &&  <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
                 mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />}
 
             <div className="layout-sidebar" onClick={onSidebarClick}>
@@ -259,7 +256,7 @@ const App = () => {
             </div>
 
             <div className="layout-main-container">
-                {value ?
+                {Value && localStorage.getItem('username') ?
                     <div className="layout-main">
                         <Route path="/" exact render={() => <Dashboard colorMode={layoutColorMode} location={location} />} />
                         <Route path="/category" component={Categories} />
