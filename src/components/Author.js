@@ -168,7 +168,7 @@ function Author() {
         deleteBlogFunction(blog.id);
         setDeleteProductDialog(false);
         setBlog(emptyAuthor);
-        toast.current.show({ severity: "error", summary: "Successfully", detail: "Blog Deleted", life: 3000 });
+        toast.current.show({ severity: "error", summary: "Successfully", detail: "Authors Deleted", life: 3000 });
     };
 
     const findIndexById = (id) => {
@@ -193,7 +193,7 @@ function Author() {
         deleteBlogFunction(selectedBlogs);
         setDeleteProductsDialog(false);
         setSelectedBlogs(null);
-        toast.current.show({ severity: "error", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
+        toast.current.show({ severity: "error", summary: "Successfully", detail: "Authors Deleted", life: 3000 });
     };
 
     const onInputChange = (e, name) => {

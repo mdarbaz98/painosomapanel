@@ -38,7 +38,7 @@ function Products() {
         advanceheader: "",
         advanceeditor: "",
         status: 0,
-        date: ""
+        date: new Date()
     };
 
     const [allProducts, setAllProducts] = useState("");
@@ -72,6 +72,8 @@ function Products() {
         getsubCategory();
         fetchImages()
     }, [state]);
+
+    console.log(product)
 
     async function fetchImages() {
         const galleryImages = new apiService();
@@ -320,6 +322,7 @@ function Products() {
     };
     const dateBodyTemplate = (rowData) => {
         let productDate = new Date(rowData.date);
+        console.log(productDate)
         const result=format(productDate,'dd/MM/yyyy')
         return (
             <>
