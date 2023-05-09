@@ -42,9 +42,8 @@ function Author() {
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [blog, setBlog] = useState(emptyAuthor);
     const [selectedBlogs, setSelectedBlogs] = useState(null);
-    const [submitted, setSubmitted] = useState(false);
+    const [submitted,setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
-    const [displayBasic, setDisplayBasic] = useState(false);
     const [file, setFile] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
@@ -126,9 +125,9 @@ function Author() {
         formData.append("status", data.status);
         console.log(blog.id);
         if (blog.id) {
-            await Axios.put(`http://192.168.0.143:5000/api/author/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/author/${data.id}`, formData);
         } else {
-            await Axios.post("http://192.168.0.143:5000/api/author", formData);
+            await Axios.post("http://localhost:5000/api/author", formData);
         }
         setFile(null);
         fetchData();
@@ -140,7 +139,7 @@ function Author() {
     };
 
     const updateStatus = async (rowData) => {
-        await Axios.put(`http://192.168.0.143:5000/api/author/status/${rowData.id}`, rowData);
+        await Axios.put(`http://localhost:5000/api/author/status/${rowData.id}`, rowData);
         fetchData();
     };
 
@@ -161,7 +160,7 @@ function Author() {
 
     const deleteBlogFunction = async (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        await Axios.delete(`http://192.168.0.143:5000/api/author/${selectedIds}`).then();
+        await Axios.delete(`http://localhost:5000/api/author/${selectedIds}`).then();
         fetchData();
     };
 
@@ -184,10 +183,6 @@ function Author() {
         return index;
     };
 
-    const exportCSV = () => {
-        dt.current.exportCSV();
-    };
-
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
     };
@@ -206,7 +201,7 @@ function Author() {
         let val;
         name === "highlight" || name === "experience" || name === "about_soma" || name === "education" ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _blog = { ...blog };
-        if (name == "slug") {
+        if (name === "slug") {
             val = e.target.value.replace(" ", "-");
         }
         _blog[`${name}`] = val;
@@ -228,9 +223,6 @@ function Author() {
         );
     };
 
-    const idBodyTemplate = (rowData) => {
-        return <>{rowData.id}</>;
-    };
 
     const nameBodyTemplate = (rowData) => {
         return <>{rowData.name}</>;
@@ -293,7 +285,6 @@ function Author() {
         </>
     );
 
-    const basicDialogFooter = <Button type="button" label="Dismiss" onClick={() => setDisplayBasic(false)} icon="pi pi-check" className="p-button-secondary" />;
 
     return (
         <div className="grid crud-demo">
@@ -321,7 +312,6 @@ function Author() {
                         responsiveLayout="scroll"
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
-                        {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         <Column field="image" header="Image" sortable body={imageTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="position" header="Position" sortable body={positionTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
@@ -399,7 +389,7 @@ function Author() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" name="image[]" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                         </TabView>
                                     </AccordionTab>

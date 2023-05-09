@@ -5,7 +5,6 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
 import { Button } from "primereact/button";
-import { FileUpload } from "primereact/fileupload";
 import { Toolbar } from "primereact/toolbar";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
@@ -37,7 +36,7 @@ function Categories() {
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
     const [parentcategory, setparentcategory] = useState(null);
-    const [parentcategoryName, setparentcategoryName] = useState(null);
+    const [parentcategoryName,setparentcategoryName] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
     const [titleCount, ChangeTitleCount] = useState(0);
@@ -86,7 +85,7 @@ function Categories() {
     const saveProduct = async () => {
         setSubmitted(true);
 
-        // const res = await Axios.get(`http://192.168.0.143:5000/api/category/${category.parent_category}`);
+        // const res = await Axios.get(`http://localhost:5000/api/category/${category.parent_category}`);
 
         // const getName = res.data.length > 0 ? res.data[0].cat_name : 'none'
 
@@ -113,13 +112,13 @@ function Categories() {
     };
 
     const addCategoryFunction = (data) => {
-        Axios.post("http://192.168.0.143:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
+        Axios.post("http://localhost:5000/api/category", { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
             .then()
             .catch((err) => console.log(err));
     };
 
     const updateCategoryFunction = (data) => {
-        Axios.put(`http://192.168.0.143:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
+        Axios.put(`http://localhost:5000/api/category/${data.id}`, { cat_name: data.cat_name, parent_category: data.parent_category, cat_desc: data.cat_desc, cat_slug: data.cat_slug, cat_title: data.cat_title, status: data.status })
             .then()
             .catch((err) => {
                 console.log(err);
@@ -132,7 +131,7 @@ function Categories() {
     };
 
     const updateStatus = async (rowData) => {
-        await Axios.put(`http://192.168.0.143:5000/api/category/status/${rowData.id}`, rowData);
+        await Axios.put(`http://localhost:5000/api/category/status/${rowData.id}`, rowData);
     }
 
     // SAMPLE
@@ -153,7 +152,7 @@ function Categories() {
 
     const deleteCategoryFunction = (data) => {
         let selectedIds = typeof (data) === "number" ? data : data.map(res => res.id);
-        Axios.delete(`http://192.168.0.143:5000/api/category/${selectedIds}`)
+        Axios.delete(`http://localhost:5000/api/category/${selectedIds}`)
             .then()
             .catch((err) => {
                 console.log(err);
@@ -181,10 +180,6 @@ function Categories() {
         return index;
     };
 
-    const exportCSV = () => {
-        dt.current.exportCSV();
-    };
-
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
     };
@@ -200,7 +195,7 @@ function Categories() {
 
     const onInputChange = (e, name) => {
         let val;
-        if (name == "cat_slug") {
+        if (name === "cat_slug") {
             val = e.target.value.replace(" ", "-")
         }
         else {
@@ -221,15 +216,6 @@ function Categories() {
             </React.Fragment>
         );
     };
-
-
-    const idBodyTemplate = (rowData) => {
-        return (
-            <>
-                {rowData.id}
-            </>
-        );
-    }
 
     const nameBodyTemplate = (rowData) => {
         return (
@@ -350,7 +336,6 @@ function Categories() {
                         responsiveLayout="scroll"
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
-                        {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: '14%', minWidth: '10rem' }}></Column> */}
                         <Column field="cat_name" header="Name" sortable body={nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="cat_slug" header="Slug" sortable body={slugBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="cat_title" header="Title" sortable body={titleBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>

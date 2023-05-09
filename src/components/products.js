@@ -17,7 +17,7 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import classNames from "classnames";
 import { Editor } from "@tinymce/tinymce-react";
-import { compareAsc, format } from 'date-fns'
+import { format } from 'date-fns'
 
 function Products() {
     let emptyproducts = {
@@ -41,14 +41,6 @@ function Products() {
         date: ""
     };
 
-
-
-    const statusOptions = [{ name: 'Publish', value: 'publish' },
-    { name: 'Draft', value: 'draft' },
-    { name: 'Trash', value: 'trash' }]
-
-
-    // const [blogs, setBlogs] = useState("");
     const [allProducts, setAllProducts] = useState("");
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -59,16 +51,18 @@ function Products() {
     const [galleryDialog2, setGalleryDialog2] = useState(false);
     const [images2, setImages2] = useState([]);
     const [gallery2, setGallery2] = useState(null);
-    
-
     const [globalFilter, setGlobalFilter] = useState(null);
     const [parentCategory, setParentCategory] = useState([null]);
     const [subCategory, setSubCategory] = useState([{ name: "none", value: "none" }]);
-    const [file, setFile] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
-
     const [state, setState] = useState(null);
+
+
+    const statusOptions = [{ name: 'Publish', value: 'publish' },
+    { name: 'Draft', value: 'draft' },
+    { name: 'Trash', value: 'trash' }]
+
 
     useEffect(() => {
         const getProducts = new apiService();
@@ -84,8 +78,6 @@ function Products() {
         galleryImages.getImages().then((data) => {
         setGallery2(data)});
     }
-
-    console.log(product)
 
     async function getParentCategory() {
         const blogCategory = new apiService();
@@ -166,9 +158,9 @@ function Products() {
         formData.append("date", data.date);
 
         if (product.id) {
-            await Axios.put(`http://192.168.0.143:5000/api/products/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/products/${data.id}`, formData);
         } else {
-            await Axios.post("http://192.168.0.143:5000/api/products", formData);
+            await Axios.post("http://localhost:5000/api/products", formData);
         }
         setState(formData)
     };
@@ -202,7 +194,7 @@ function Products() {
 
     const deleteBlogFunction = (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        Axios.delete(`http://192.168.0.143:5000/api/products/${selectedIds}`)
+        Axios.delete(`http://localhost:5000/api/products/${selectedIds}`)
             .then()
             .catch((err) => {
                 console.log(err);
@@ -229,21 +221,13 @@ function Products() {
         return index;
     };
 
-    const exportCSV = () => {
-        dt.current.exportCSV();
-    };
-    const onUpload = async (event) => {
-        setFile(event.files[0]);
-        toast.current.show({ severity: "success", summary: "Successfully", detail: `Image Added Successfully`, life: 3000 });
-    };
-
     const myUploader = async (event) => {
         try{
         const formData = new FormData();
         event.files.map((item) => {
             formData.append("image[]",item)
         })
-        const res = await Axios.post('http://192.168.0.143:5000/api/image',formData)
+        const res = await Axios.post('http://localhost:5000/api/image',formData)
         fetchImages();
         setProductDialog(false)
         toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
@@ -286,10 +270,10 @@ function Products() {
         let val;
         (name === "abouteditor" || name === "newseditor" || name === "advanceeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
-        if (name == "product_slug") {
+        if (name === "product_slug") {
             val = e.target.value.replace(" ", "-");
         }
-        if (name == "feature_image") {
+        if (name === "feature_image") {
             _product[`${name}`] =  selectedImages[0];
             _product[`image`] = selectedImages;
         }else{
@@ -327,14 +311,6 @@ function Products() {
     };
 
 
-    const imageBodyTemplate = (rowData) => {
-        return (
-            <>
-                <img src={`assets/demo/images/gallery/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
-            </>
-        );
-    };
-
     const statusBodyTemplate = (rowData) => {
         return (
             <>
@@ -356,8 +332,8 @@ function Products() {
         return (
             <div className="actions">
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-primary mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning mt-2" onClick={() => confirmDeleteProduct(rowData)} />
-                <Button icon="pi pi-eye" className="p-button-rounded p-button-success mt-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-trash" className="p-button-rounded p-button-warning mr-2" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-eye" className="p-button-rounded p-button-success" onClick={() => confirmDeleteProduct(rowData)} />
             </div>
         );
     };
@@ -419,14 +395,12 @@ function Products() {
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
                         <Column field="id" header="Id" sortable body={codeBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="product_name" header="Name" sortable body={product_nameBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        {/* <Column field="images" header="images" sortable body={imageBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         <Column field="status" header="status" sortable body={statusBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="date" header="date" sortable body={dateBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
                     <Dialog visible={productDialog} style={{ width: "100%" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        {/* {blog.feature_img && <img src={`assets/demo/images/blogs/${blog.feature_img}`} alt={blog.feature_img} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />} */}
                         <div className="grid py-5 p-fluid">
                             <div className="col-12 md:col-4">
                                 {/* productsection  */}
@@ -462,7 +436,7 @@ function Products() {
                                 <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                            <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
+                                            <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />

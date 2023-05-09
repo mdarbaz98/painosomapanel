@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
-import { FilterMatchMode, FilterOperator } from "primereact/api";
+import { FilterMatchMode} from "primereact/api";
 import { MultiSelect } from "primereact/multiselect";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
@@ -19,8 +19,6 @@ import { Calendar } from "primereact/calendar";
 import Axios from "axios";
 import classNames from "classnames";
 import { Accordion, AccordionTab } from "primereact/accordion";
-import { Image } from "primereact/image";
-import { data } from "jquery";
 
 function Blogs() {
     let emptyBlog = {
@@ -51,13 +49,11 @@ function Blogs() {
     const statusOptions = ["publish", "draft", "trash"];
 
     const [filters2, setFilters2] = useState({
-        // 'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
         blog_title: { value: null, matchMode: FilterMatchMode.CONTAINS },
         author: { value: null, matchMode: FilterMatchMode.IN },
         review: { value: null, matchMode: FilterMatchMode.IN },
         parentcategory: { value: null, matchMode: FilterMatchMode.CONTAINS },
         status: { value: null, matchMode: FilterMatchMode.EQUALS },
-        // 'verified': { value: null, matchMode: FilterMatchMode.EQUALS }
     });
 
     const [faq, setFaq] = useState(emptyFaq);
@@ -239,9 +235,9 @@ function Blogs() {
         formData.append("reference", data.reference);
 
         if (blog.id) {
-            await Axios.put(`http://192.168.0.143:5000/api/blog/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/blog/${data.id}`, formData);
         } else {
-            await Axios.post("http://192.168.0.143:5000/api/blog", formData);
+            await Axios.post("http://localhost:5000/api/blog", formData);
         }
         setImages([]);
         setImages2([]);
@@ -274,21 +270,10 @@ function Blogs() {
         setBlog(blog);
         setDeleteProductDialog(true);
     };
-    const updateStatus = async (rowData) => {
-        await Axios.put(`http://192.168.0.143:5000/api/blog/status/${rowData.id}`, rowData);
-    };
-    const blogStatus = (rowData) => {
-        const index = findIndexById(rowData.id);
-        let _blogList = [...blogs];
-        let _blog = { ...rowData };
-        _blog["status"] = rowData.status === 0 ? 1 : 0;
-        _blogList[index] = _blog;
-        setBlogs(_blogList);
-        updateStatus(_blog);
-    };
+
     const deleteBlogFunction = async (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        await Axios.delete(`http://192.168.0.143:5000/api/blog/${selectedIds}`).then();
+        await Axios.delete(`http://localhost:5000/api/blog/${selectedIds}`).then();
         fetchData();
     };
 
@@ -311,9 +296,6 @@ function Blogs() {
         return index;
     };
 
-    const exportCSV = () => {
-        dt.current.exportCSV();
-    };
 
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
@@ -330,9 +312,9 @@ function Blogs() {
 
     const onInputChange = (value, name, selectedImages) => {
         let _blog = { ...blog };
-        if (name == "feature_image") {
+        if (name === "feature_image") {
             _blog[`${name}`] = selectedImages;
-        } else if (name == "slug") {
+        } else if (name === "slug") {
             _blog[`${name}`] = value.replace(" ", "-");
         } else {
             _blog[`${name}`] = value;
@@ -384,43 +366,11 @@ function Blogs() {
         );
     };
 
-    // const idBodyTemplate = (rowData) => {
-    //     return (
-    //         <>
-    //             <span className="p-column-title">Id</span>
-    //             {rowData.id}
-    //         </>
-    //     );
-    // };
-
     const nameBodyTemplate = (rowData) => {
         return (
             <>
                 <span className="p-column-title">Name</span>
                 {rowData.blog_title}
-            </>
-        );
-    };
-    const authoridTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.author}
-            </>
-        );
-    };
-    const review_idTemplate = (rowData) => {
-        return (
-            <>
-                <span className="p-column-title">Name</span>
-                {rowData.review}
-            </>
-        );
-    };
-    const featureimageTemplate = (rowData) => {
-        return (
-            <>
-                <Image src={`assets/demo/images/gallery/${rowData.feature_image}`} imageStyle={{ width: "100px", height: "100px", objectFit: "cover" }} preview={true} alt={rowData.feature_image} />
             </>
         );
     };
@@ -433,15 +383,6 @@ function Blogs() {
             </>
         );
     };
-    // const subcategory_idTemplate = (rowData) => {
-    //     return (
-    //         <>
-    //             <span className="p-column-title">Name</span>
-    //             {rowData.parentcategory}
-    //             {rowData.subcategory}
-    //         </>
-    //     );
-    // };
 
     const saveFaq = () => {
         const faqData = `<div class="accordion faq" id="accordionExample">
@@ -478,7 +419,6 @@ function Blogs() {
         const representative = rowData.review;
         return (
             <>
-                {/* <img alt={representative.name} src={`images/avatar/${representative.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
                 <span className="image-text">{representative}</span>
             </>
         );
@@ -487,7 +427,6 @@ function Blogs() {
     const reviewItemTemplate = (option) => {
         return (
             <div className="p-multiselect-representative-option">
-                {/* <img alt={option.name} src={`images/avatar/${option.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
                 <span className="image-text">{option.name}</span>
             </div>
         );
@@ -502,7 +441,6 @@ function Blogs() {
         const representative = rowData.author;
         return (
             <>
-                {/* <img alt={representative.name} src={`images/avatar/${representative.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
                 <span className="image-text">{representative}</span>
             </>
         );
@@ -511,7 +449,6 @@ function Blogs() {
     const authorItemTemplate = (option) => {
         return (
             <div className="p-multiselect-representative-option">
-                {/* <img alt={option.name} src={`images/avatar/${option.image}`} onError={(e) => e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png'} width={32} style={{ verticalAlign: 'middle' }} /> */}
                 <span className="image-text">{option.name}</span>
             </div>
         );
@@ -525,10 +462,6 @@ function Blogs() {
         return (
             <>
                 <span className={`status-badge status-${rowData.status} px-4 py-2 border-round`}>{rowData.status}</span>
-                {/* {rowData.status} */}
-                {/* <div className="actions">
-                    <Button icon={rowData.status === 0 ? "pi pi-angle-double-down" : "pi pi pi-angle-double-up"} className={`${rowData.status === 0 ? "p-button p-button-secondary mr-2" : "p-button p-button-success mr-2"}`} onClick={() => blogStatus(rowData)} />
-                </div> */}
             </>
         );
     };
@@ -537,7 +470,7 @@ function Blogs() {
             <div className="actions">
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-primary mr-2" onClick={() => editProduct(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-danger mt-2" onClick={() => confirmDeleteProduct(rowData)} />
-                <Button icon="pi pi-eye" className="p-button-rounded p-button-success ml-2" />
+                <Button icon="pi pi-eye" className="p-button-rounded p-button-success mt-2" />
             </div>
         );
     };
@@ -602,20 +535,15 @@ function Blogs() {
                         onSelectionChange={(e) => setSelectedBlogs(e.value)}
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: "3rem" }}></Column>
-                        {/* <Column field="id" header="Id" sortable body={idBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
-                        {/* <Column field="Image" header="Image" sortable body={featureimageTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column> */}
                         <Column field="blog_title" header="Title" filter filterPlaceholder="Search by Title" body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="author" header="Author" filterPlaceholder="Search by author" body={authorBodyTemplate} filter filterElement={authorRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="review" header="Review" filterPlaceholder="Search by review" body={reviewBodyTemplate} filter filterElement={reviewRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="parentcategory" header="Parentcat" filter filterPlaceholder="Search by Category" body={parentcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        {/* <Column field="subcategory_id" header="Subcat" sortable body={subcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column> */}
                         <Column field="status" header="Status" filter filterPlaceholder="Search by status" body={statusTemplate} showFilterMenu={false} filterElement={statusRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
                     <Dialog visible={productDialog} style={{ width: "100%" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        {/* {blog.feature_image && <Image src={`assets/demo/images/gallery/${blog.feature_image}`} preview={true} alt={blog.feature_image} />} */}
-                        {/* {blog.feature_image && <img src={`assets/demo/images/gallery/${blog.feature_image}`} alt={blog.feature_image} width="100" className="shadow-2 round" />} */}
                         <form className="grid p-fluid">
                             <div className="col-12 md:col-8">
                                 <Editor
@@ -626,24 +554,16 @@ function Blogs() {
                                     tagName="div" // only inline
                                     textareaName="article"
                                     outputFormat="html" // html (default) / text
-                                    // tinymceScriptSrc="tinymce/tinymce.min.js" // Use the tinymceScriptSrc prop to specify an external version of TinyMCE to lazy load.
                                     tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
-                                    // initialValue={blog.content}
                                     value={blog.content}
                                     init={{
                                         height: 500,
-                                        // min_height: 500,
-                                        // selector: "div", // change this value according to your HTML
                                         resize: true, // true/false/'both'
-                                        // menubar: false,
                                         branding: true,
-                                        // menubar: "insert table",
                                         statusbar: true,
                                         placeholder: "",
-                                        // language: "en_US",
                                         paste_data_images: true, // default false
                                         paste_webkit_styles: "all",
-                                        // paste_retain_style_properties: "all",
                                         font_formats:
                                             "Oswald=oswald; Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
                                         fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
@@ -666,9 +586,6 @@ function Blogs() {
                                         },
                                         toolbar:
                                             "Gallery | addFaq | undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
-                                        // content_css: "/styles.css",
-                                        // content_style: "@import url('/font.css'); .mce-content-body { font-family: Oswald; }",
-                                        // file_picker_types: "image",
                                         media_dimensions: false,
                                         media_url_resolver: function (data, resolve /*, reject*/) {
                                             if (data.url.startsWith("https://www.youtube.com/watch/") !== -1) {
@@ -685,7 +602,7 @@ function Blogs() {
                                             let image = new FormData();
                                             image.append("image", blobInfo.blob());
                                             try {
-                                                const { data } = await Axios.post("http://192.168.0.143:5000/api/image", image);
+                                                const { data } = await Axios.post("http://localhost:5000/api/image", image);
                                                 success(`assets/demo/images/gallery/${data}`);
                                             } catch (error) {
                                                 console.log(error);
@@ -794,7 +711,7 @@ function Blogs() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://192.168.0.143:5000/api/image" className="mb-5" onUpload={onImageUpload} name="image[]" accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" onUpload={onImageUpload} name="image[]" accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />

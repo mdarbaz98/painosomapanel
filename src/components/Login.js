@@ -24,6 +24,9 @@ export const Login = (props) => {
 
     const [isregister, setIsRegister] = useState(false)
 
+    useEffect(()=>{
+        setValue(localStorage.getItem('username'))
+    },[value])
     const handleLoginFunction = (e) => {
 
         let _user = { ...login };
@@ -41,18 +44,19 @@ export const Login = (props) => {
     }
 
     const handleLogin = async () => {
-        const value = await Axios.post('http://192.168.0.143:5000/api/login', login);
+        const value = await Axios.post('http://localhost:5000/api/login', login);
         if (value?.data.message) {
             toast.current.show({ severity: "error", summary: "Error", detail: `${value?.data.message}`, life: 3000 });
         }
         else {
             setLogin(value?.data[0])
+            setValue(value?.data[0].username)
             localStorage.setItem('username',login.username)
         }
     }
 
     const handleRegister = async () => {
-        const value = await Axios.post('http://192.168.0.143:5000/api/register', register);
+        // const value = await Axios.post('http://localhost:5000/api/register', register);
         setIsRegister(false)
     }
 
