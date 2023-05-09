@@ -25,5 +25,8 @@ export class apiService {
       getProducts() {
         return axios.get("http://localhost:5000/api/products").then((res) => res.data);
       }
+      getBlogsByDesc() {
+        return axios.get("http://localhost:5000/api/blog/desc").then((res) => res.data);
+      }
 }
 

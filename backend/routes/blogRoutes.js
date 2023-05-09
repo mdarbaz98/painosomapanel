@@ -1,10 +1,14 @@
 const router = require("express").Router();
-const {getAllBlog,addBlog, updateBlog, deleteBlog,updateblogStatus} =require('../controller/blogController');
+const {getAllBlog,addBlog, updateBlog, deleteBlog,updateblogStatus,getdescBlog} =require('../controller/blogController');
 const upload = require('../middleware/imageMulter')
 
 
 //get all blog
 router.get("/", getAllBlog);
+
+
+//get all blog by desc
+router.get("/desc", getdescBlog);
 
 //add blog
 router.post("/",upload.single('image') ,addBlog);

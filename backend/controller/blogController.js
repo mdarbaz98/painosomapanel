@@ -63,10 +63,23 @@ const updateblogStatus = asyncHandler(async (req, res) => {
 });
 
 
+
+// blogs in descending order
+
+const getdescBlog = (req, res) => {
+    con.query("SELECT `blog_title`,`feature_image`, `blogdate` FROM `blog` ORDER BY id DESC LIMIT 10", (err, result) => {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(result);
+        }
+    });
+};
 module.exports = {
     getAllBlog,
     addBlog,
     updateBlog,
     deleteBlog,
-    updateblogStatus
+    updateblogStatus,
+    getdescBlog
 };

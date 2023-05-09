@@ -322,7 +322,6 @@ function Products() {
     };
     const dateBodyTemplate = (rowData) => {
         let productDate = new Date(rowData.date);
-        console.log(productDate)
         const result=format(productDate,'dd/MM/yyyy')
         return (
             <>

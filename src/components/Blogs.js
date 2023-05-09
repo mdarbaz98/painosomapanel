@@ -32,7 +32,7 @@ function Blogs() {
         feature_image: "",
         parentcategory: null,
         subcategory: "",
-        blogdate: "",
+        blogdate: new Date(),
         status: "draft",
         publishdate: "",
         content: "",
