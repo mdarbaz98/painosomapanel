@@ -10,7 +10,6 @@ import { AuthContext } from '../context/authContext';
 
 export const Login = (props) => {
     const {value, setValue} = useContext(AuthContext)
-    console.log(value)
     const toast = useRef(null);
 
     const [login, setLogin] = useState({
@@ -48,7 +47,6 @@ export const Login = (props) => {
         }
         else {
             setLogin(value?.data[0])
-            setValue(login)
             localStorage.setItem('username',login.username)
         }
     }

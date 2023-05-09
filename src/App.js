@@ -241,6 +241,7 @@ const App = () => {
         'layout-theme-light': layoutColorMode === 'light'
     });
 
+console.log(value)
 
     return (
         <AuthContext.Provider value={{value,setValue}}>
@@ -248,7 +249,7 @@ const App = () => {
             <Toast ref={toast} />
             <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-           {Value && localStorage.getItem('username') &&  <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
+           {Value && localStorage?.getItem('username') &&  <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
                 mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />}
 
             <div className="layout-sidebar" onClick={onSidebarClick}>
@@ -256,7 +257,7 @@ const App = () => {
             </div>
 
             <div className="layout-main-container">
-                {Value && localStorage.getItem('username') ?
+                {Value && localStorage?.getItem('username') ?
                     <div className="layout-main">
                         <Route path="/" exact render={() => <Dashboard colorMode={layoutColorMode} location={location} />} />
                         <Route path="/category" component={Categories} />
