@@ -30,10 +30,10 @@ const lineData = {
 const Dashboard = (props) => {
     const [blogs, setBlogs] = useState(null);
     const [lineOptions, setLineOptions] = useState(null);
-    const [stastics,setStastics] = useState({
-        blogs:null,
-        products:null,
-        authors:null
+    const [stastics, setStastics] = useState({
+        blogs: 0,
+        products: 0,
+        authors: 0,
     })
 
     const applyLightTheme = () => {
@@ -102,10 +102,26 @@ const Dashboard = (props) => {
 
     useEffect(() => {
         const data = new apiService();
-        data.getBlogsByDesc().then(data => setBlogs(data));
-        data.getBlog().then(data => stastics["blogs"]=data.length);
-    }, [stastics]);
-console.log(stastics)
+        data.getBlogsByDesc().then(data => setBlogs(data)); 
+        getAllData()      
+    }, []);
+
+    const getAllData = async () => {
+        const data = new apiService();
+
+        let blogs = await data.getBlog().then(data => data.length);
+        let products = await data.getProducts().then(data => data.length);
+        let authors = await data.getAuthor().then(data => data.length);
+
+        setStastics({
+            blogs,
+            products,
+            authors
+        })
+    }
+
+    console.log(stastics)
+
     useEffect(() => {
         if (props.colorMode === 'light') {
             applyLightTheme();
@@ -124,8 +140,8 @@ console.log(stastics)
                             <span className="block text-500 font-medium mb-3">All Blogs</span>
                             <div className="text-900 font-medium text-xl">{stastics.blogs}</div>
                         </div>
-                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
-                            <i className="pi pi-shopping-cart text-blue-500 text-xl"/>
+                        <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                            <i className="pi pi-shopping-cart text-blue-500 text-xl" />
                         </div>
                     </div>
                 </div>
@@ -135,10 +151,10 @@ console.log(stastics)
                     <div className="flex justify-content-between mb-3">
                         <div>
                             <span className="block text-500 font-medium mb-3">Products</span>
-                            <div className="text-900 font-medium text-xl">$2.100</div>
+                            <div className="text-900 font-medium text-xl">{stastics.products}</div>
                         </div>
-                        <div className="flex align-items-center justify-content-center bg-orange-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
-                            <i className="pi pi-map-marker text-orange-500 text-xl"/>
+                        <div className="flex align-items-center justify-content-center bg-orange-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                            <i className="pi pi-map-marker text-orange-500 text-xl" />
                         </div>
                     </div>
                 </div>
@@ -148,10 +164,10 @@ console.log(stastics)
                     <div className="flex justify-content-between mb-3">
                         <div>
                             <span className="block text-500 font-medium mb-3">Authors</span>
-                            <div className="text-900 font-medium text-xl">28441</div>
+                            <div className="text-900 font-medium text-xl">{stastics.authors}</div>
                         </div>
-                        <div className="flex align-items-center justify-content-center bg-cyan-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
-                            <i className="pi pi-inbox text-cyan-500 text-xl"/>
+                        <div className="flex align-items-center justify-content-center bg-cyan-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
+                            <i className="pi pi-inbox text-cyan-500 text-xl" />
                         </div>
                     </div>
                 </div>
@@ -176,15 +192,15 @@ console.log(stastics)
                 <div className="card">
                     <h5>Recent Blogs</h5>
                     <DataTable value={blogs} rows={5} paginator responsiveLayout="scroll">
-                    <Column header="Image" body={(data) => <img className="shadow-2" src={`assets/demo/images/gallery/${data.feature_image}`} alt={data.feature_image} width="50"/>}/>
-                        <Column field="blog_title" header="Blog title" sortable style={{width: '35%'}}/>
-                        <Column field="blogdate" header="Date" sortable style={{width: '35%'}} body={(data) => {
-                             let productDate = new Date(data.blogdate);
-                             const result=format(productDate,'dd/MM/yyyy')
-                             return(
+                        <Column header="Image" body={(data) => <img className="shadow-2" src={`assets/demo/images/gallery/${data.feature_image}`} alt={data.feature_image} width="50" />} />
+                        <Column field="blog_title" header="Blog title" sortable style={{ width: '35%' }} />
+                        <Column field="blogdate" header="Date" sortable style={{ width: '35%' }} body={(data) => {
+                            let productDate = new Date(data.blogdate);
+                            const result = format(productDate, 'dd/MM/yyyy')
+                            return (
                                 <>{result}</>
-                             )
-                        }}/>
+                            )
+                        }} />
                     </DataTable>
                 </div>
                 {/* <div className="card">
