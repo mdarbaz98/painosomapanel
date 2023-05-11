@@ -336,17 +336,7 @@ function Blogs() {
         _faq.splice(index, 1);
         setFaq(_faq);
     };
-    const renderHeader2 = () => {
-        return (
-            <div className="flex justify-content-end">
-                <span className="p-input-icon-left">
-                    <i className="pi pi-search" />
-                    <InputText value={globalFilterValue2} onChange={onGlobalFilterChange2} placeholder="Keyword Search" />
-                </span>
-            </div>
-        );
-    };
-
+    
     const statusItemTemplate = (option) => {
         return <span className={`status-badge status-${option} px-4 py-2 border-round`}>{option}</span>;
     };
@@ -356,7 +346,6 @@ function Blogs() {
         fetchImages();
     };
 
-    const header2 = renderHeader2();
 
     const leftToolbarTemplate = () => {
         return (
@@ -533,7 +522,6 @@ function Blogs() {
                         loading={loading2}
                         responsiveLayout="scroll"
                         globalFilterFields={["author", "review", "status"]}
-                        header={header2}
                         emptyMessage="No blogs found."
                         onSelectionChange={(e) => setSelectedBlogs(e.value)}
                     >
