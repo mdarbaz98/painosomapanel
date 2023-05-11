@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
-import { FilterMatchMode} from "primereact/api";
+import { FilterMatchMode } from "primereact/api";
 import { MultiSelect } from "primereact/multiselect";
 import { Column } from "primereact/column";
 import { Toast } from "primereact/toast";
@@ -83,6 +83,9 @@ function Blogs() {
     const [titleCount, ChangeTitleCount] = useState(0);
     const [blogCount, ChangeBlogCount] = useState(0);
     const [editorInsert, setEditorInsert] = useState(null);
+    const [searchgallery, setSearchGallery] = useState('');
+
+
 
     async function fetchData() {
         const blogData = new apiService();
@@ -809,9 +812,17 @@ function Blogs() {
 
                     {/* gallery for feature_image  */}
                     <Dialog visible={galleryDialog2} style={{ width: "100%" }} header="Gallery" modal onHide={hideGalleryDialog2}>
+                        <div className="col-12 mb-5 mt-3">
+                            <span className="p-input-icon-left">
+                                <i className="pi pi-search" />
+                                <InputText value={searchgallery} onChange={(e) => setSearchGallery(e.target.value)} placeholder="Search" />
+                            </span>
+                        </div>
                         <div className="grid">
                             {gallery2 && gallery2 ? (
-                                gallery2?.map((item, index) => {
+                                gallery2?.filter((image)=>{
+                                    return(image.title.toLowerCase().includes(searchgallery.toLowerCase()))
+                                   }).map((item, index) => {
                                     return (
                                         <div className="col-12 md:col-2" key={index}>
                                             <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={(e) => onImageChange2(e, "feature_image")} checked={images2.includes(`${item.image}`)}></Checkbox>
@@ -830,7 +841,7 @@ function Blogs() {
                                     );
                                 })
                             ) : (
-                                <p>No images </p>
+                                <p>No images</p>
                             )}
                         </div>
                     </Dialog>
