@@ -56,8 +56,14 @@ export const Login = (props) => {
     }
 
     const handleRegister = async () => {
-        // const value = await Axios.post('http://192.168.0.143:5000/api/register', register);
-        setIsRegister(false)
+        const value = await Axios.post('http://localhost:5000/api/register', register);
+        if(value?.data.message){
+            toast.current.show({ severity: "error", summary: "Error", detail: `${value?.data.message}`, life: 3000 });
+        }else{
+            toast.current.show({ severity: "success", summary: "Success", detail: "Registered sucessfully", life: 3000 });
+            setIsRegister(false)
+        }
+        
     }
 
     return (
