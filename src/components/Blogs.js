@@ -841,7 +841,7 @@ function Blogs() {
                                     );
                                 })
                             ) : (
-                                <p>No imagesssss</p>
+                                <p>No images</p>
                             )}
                         </div>
                     </Dialog>
