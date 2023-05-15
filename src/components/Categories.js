@@ -246,13 +246,13 @@ function Categories() {
         );
     };
 
-    const parent_categoryBodyTemplate = (rowData) => {
-        return (
-            <>
-                {rowData.parent_category}
-            </>
-        );
-    };
+    // const parent_categoryBodyTemplate = (rowData) => {
+    //     return (
+    //         <>
+    //             {rowData.parent_category}
+    //         </>
+    //     );
+    // };
 
     // const parent_categoryNameBodyTemplate = (rowData) => {
     //     return (
@@ -340,7 +340,7 @@ function Categories() {
                         <Column field="cat_slug" header="Slug" sortable body={slugBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="cat_title" header="Title" sortable body={titleBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column field="cat_desc" header="Description" sortable body={categoryDescBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
-                        <Column field="parent_category " header="Parent Category" sortable body={parent_categoryBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
+                        {/* <Column field="parent_category " header="Parent Category" sortable body={parent_categoryBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column> */}
                         <Column field="status" header="Status" sortable body={statusBodyTemplate} headerStyle={{ width: "14%", minWidth: "10rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>

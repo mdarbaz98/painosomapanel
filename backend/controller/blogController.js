@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 
 // get all blogs
 const getAllBlog = (req, res) => {
-    con.query("select * from blog", (err, result) => {
+    con.query("SELECT * FROM `blog` ORDER BY blogdate DESC", (err, result) => {
         if (err) {
             res.send(err);
         } else {
@@ -75,6 +75,9 @@ const getdescBlog = (req, res) => {
         }
     });
 };
+
+
+
 module.exports = {
     getAllBlog,
     addBlog,
