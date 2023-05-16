@@ -546,7 +546,7 @@ function Blogs() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "100%" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "100%"}} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                         <form className="grid p-fluid">
                             <div className="col-12 md:col-8">
                                 <Editor
