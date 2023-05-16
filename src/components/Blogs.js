@@ -473,7 +473,7 @@ function Blogs() {
             <div className="actions">
                 <Button icon="pi pi-pencil" className="p-button-rounded p-button-primary mr-2" onClick={() => editProduct(rowData)} />
                 <Button icon="pi pi-trash" className="p-button-rounded p-button-danger mt-2" onClick={() => confirmDeleteProduct(rowData)} />
-                <Button icon="pi pi-eye" className="p-button-rounded p-button-success mt-2" />
+                <Button icon="pi pi-eye" className="p-button-rounded p-button-success mt-2 ml-2" />
             </div>
         );
     };
@@ -656,7 +656,7 @@ function Blogs() {
                                 </Accordion>
                             </div>
 
-                            <div className="col-12 md:col-4">
+                            <div className="col-12 md:col-4" style={{height: "600px",overflowY:"scroll"}}>
                                 {/* titlesection  */}
                                 <Accordion>
                                     <AccordionTab header="Blog Section">
