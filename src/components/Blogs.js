@@ -19,6 +19,8 @@ import { Calendar } from "primereact/calendar";
 import Axios from "axios";
 import classNames from "classnames";
 import { Accordion, AccordionTab } from "primereact/accordion";
+import { format } from 'date-fns'
+
 
 function Blogs() {
     let emptyBlog = {
@@ -336,17 +338,7 @@ function Blogs() {
         _faq.splice(index, 1);
         setFaq(_faq);
     };
-    const renderHeader2 = () => {
-        return (
-            <div className="flex justify-content-end">
-                <span className="p-input-icon-left">
-                    <i className="pi pi-search" />
-                    <InputText value={globalFilterValue2} onChange={onGlobalFilterChange2} placeholder="Keyword Search" />
-                </span>
-            </div>
-        );
-    };
-
+    
     const statusItemTemplate = (option) => {
         return <span className={`status-badge status-${option} px-4 py-2 border-round`}>{option}</span>;
     };
@@ -356,7 +348,6 @@ function Blogs() {
         fetchImages();
     };
 
-    const header2 = renderHeader2();
 
     const leftToolbarTemplate = () => {
         return (
@@ -377,6 +368,17 @@ function Blogs() {
             </>
         );
     };
+
+
+    
+    const dateBodyTemplate = (rowData) => {
+        let productDate = new Date(rowData.blogdate);
+        const result = format(productDate, 'dd/MM/yyyy')
+        return (
+            <>{result}</>
+        )
+    };
+
     const parentcategory_idTemplate = (rowData) => {
         return (
             <>
@@ -533,7 +535,6 @@ function Blogs() {
                         loading={loading2}
                         responsiveLayout="scroll"
                         globalFilterFields={["author", "review", "status"]}
-                        header={header2}
                         emptyMessage="No blogs found."
                         onSelectionChange={(e) => setSelectedBlogs(e.value)}
                     >
@@ -541,8 +542,9 @@ function Blogs() {
                         <Column field="blog_title" header="Title" filter filterPlaceholder="Search by Title" body={nameBodyTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="author" header="Author" filterPlaceholder="Search by author" body={authorBodyTemplate} filter filterElement={authorRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
                         <Column field="review" header="Review" filterPlaceholder="Search by review" body={reviewBodyTemplate} filter filterElement={reviewRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="blogdate" header="Date"  body={dateBodyTemplate} headerStyle={{ width: "10%", minWidth: "10rem" }}></Column>
                         <Column field="parentcategory" header="Parentcat" filter filterPlaceholder="Search by Category" body={parentcategory_idTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
-                        <Column field="status" header="Status" filter filterPlaceholder="Search by status" body={statusTemplate} showFilterMenu={false} filterElement={statusRowFilterTemplate} headerStyle={{ width: "17%", minWidth: "17rem" }}></Column>
+                        <Column field="status" header="Status" filter filterPlaceholder="Search by status" body={statusTemplate} showFilterMenu={false} filterElement={statusRowFilterTemplate} headerStyle={{ width: "17    %", minWidth: "17    rem" }}></Column>
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
@@ -570,7 +572,7 @@ function Blogs() {
                                         font_formats:
                                             "Oswald=oswald; Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
                                         fontsize_formats: "8pt 10pt 12pt 14pt 18pt 24pt 36pt",
-                                        plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                        plugins: ["quickbars","advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
                                         setup: function (editor) {
                                             editor.ui.registry.addButton("addFaq", {
                                                 text: "Add FAQ",
@@ -587,8 +589,8 @@ function Blogs() {
                                                 },
                                             });
                                         },
-                                        toolbar:
-                                            "Gallery | addFaq | undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                        toolbar:"Gallery | addFaq | undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                        quickbars_selection_toolbar: 'bold italic | formatselect | quicklink blockquote',
                                         media_dimensions: false,
                                         media_url_resolver: function (data, resolve /*, reject*/) {
                                             if (data.url.startsWith("https://www.youtube.com/watch/") !== -1) {
