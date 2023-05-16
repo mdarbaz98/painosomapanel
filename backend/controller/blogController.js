@@ -14,7 +14,7 @@ const getAllBlog = (req, res) => {
 
 //Add blog
 const addBlog = asyncHandler(async (req, res) => {
-    console.log(req.body)
+
     const { blog_title, seo_title, slug,blog_desc, author, review, parentcategory, subcategory,content,reference, blogdate, status, publishdate } = req.body;
 
     const feature_image = req.file ? req.file.filename : req.body.image
