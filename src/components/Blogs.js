@@ -487,7 +487,7 @@ function Blogs() {
 
     const productDialogFooter = (
         <>
-            <Button label="Cancel" icon="pi pi-times" className="p-button-text" />
+            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog}/>
             <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
         </>
     );
@@ -548,7 +548,7 @@ function Blogs() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "100%" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "100%",maxHeight:"100vh" }} modal className="p-fluid blogmodal" footer={productDialogFooter}>
                         <form className="grid p-fluid">
                             <div className="col-12 md:col-8">
                                 <Editor
@@ -562,7 +562,7 @@ function Blogs() {
                                     tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
                                     value={blog.content}
                                     init={{
-                                        height: 500,
+                                        height: 580,
                                         resize: true, // true/false/'both'
                                         branding: true,
                                         statusbar: true,

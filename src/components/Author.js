@@ -319,7 +319,7 @@ function Author() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "100%" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "100%",maxHeight:"100vh" }} header="" modal className="p-fluid blogmodal" footer={productDialogFooter} onHide={hideDialog}>
                         <div>{blog && <img src={`assets/demo/images/gallery/${blog.image}`} alt={blog.image} className="shadow-2" width="100" />}</div>
                         <form className="grid py-5 p-fluid">
                             <div className="col-12 md:col-4">
