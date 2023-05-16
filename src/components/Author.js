@@ -301,7 +301,7 @@ function Author() {
                         onSelectionChange={(e) => setSelectedBlogs(e.value)}
                         dataKey="id"
                         paginator
-                        rows={10}
+                        rows={25}
                         rowsPerPageOptions={[5, 10, 25]}
                         className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"

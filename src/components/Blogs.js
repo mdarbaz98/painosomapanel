@@ -526,7 +526,7 @@ function Blogs() {
                         selection={selectedBlogs}
                         dataKey="id"
                         paginator
-                        rows={10}
+                        rows={25}
                         rowsPerPageOptions={[5, 10, 25]}
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         className="p-datatable-customers"
