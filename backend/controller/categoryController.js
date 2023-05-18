@@ -74,7 +74,7 @@ const updateCategory = asyncHandler(async (req, res) => {
         if (err) console.log(err);
         res.send(result);
     });
-    // res.status(200)     .json({ message: "Category updated" });
+    // res.status(200).json({ message: "Category updated" });
 });
 
 // updateCategoryStatus

@@ -91,8 +91,18 @@ function Blogs() {
 
     async function fetchData() {
         const blogData = new apiService();
-        blogData.getBlog().then((data) => {
-            setBlogs(data);
+        await blogData.getBlog().then((data) => {
+            const blogsdate = data.map((blog)=>{
+                let _dates = {...blog}
+                _dates["blogdate"] =  {date : new Date(blog.blogdate)}
+                return (_dates)
+              })
+        
+              blogsdate.sort(
+                (objA, objB) => {
+                   return Number(objB.blogdate.date) - Number(objA.blogdate.date)}
+                )
+            setBlogs(blogsdate);
             setLoading2(false);
         });
     }
@@ -240,9 +250,9 @@ function Blogs() {
         formData.append("reference", data.reference);
 
         if (blog.id) {
-            await Axios.put(`http://192.168.0.143:5000/api/blog/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/blog/${data.id}`, formData);
         } else {
-            await Axios.post("http://192.168.0.143:5000/api/blog", formData);
+            await Axios.post("http://localhost:5000/api/blog", formData);
         }
         setImages([]);
         setImages2([]);
@@ -278,9 +288,10 @@ function Blogs() {
 
     const deleteBlogFunction = async (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        await Axios.delete(`http://192.168.0.143:5000/api/blog/${selectedIds}`).then();
+        await Axios.delete(`http://localhost:5000/api/blog/${selectedIds}`).then();
         fetchData();
     };
+
 
     const deleteProduct = () => {
         deleteBlogFunction(blog.id);
@@ -372,7 +383,7 @@ function Blogs() {
 
     
     const dateBodyTemplate = (rowData) => {
-        let productDate = new Date(rowData.blogdate);
+        let productDate = new Date(rowData.blogdate.date);
         const result = format(productDate, 'dd/MM/yyyy')
         return (
             <>{result}</>
@@ -487,7 +498,7 @@ function Blogs() {
 
     const productDialogFooter = (
         <>
-            <Button label="Cancel" icon="pi pi-times" className="p-button-text" />
+            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog}/>
             <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
         </>
     );
@@ -526,7 +537,7 @@ function Blogs() {
                         selection={selectedBlogs}
                         dataKey="id"
                         paginator
-                        rows={10}
+                        rows={25}
                         rowsPerPageOptions={[5, 10, 25]}
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         className="p-datatable-customers"
@@ -548,7 +559,7 @@ function Blogs() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "100%"}} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "100%",maxHeight:"100vh" }} modal className="p-fluid blogmodal" footer={productDialogFooter}>
                         <form className="grid p-fluid">
                             <div className="col-12 md:col-8">
                                 <Editor
@@ -562,7 +573,7 @@ function Blogs() {
                                     tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
                                     value={blog.content}
                                     init={{
-                                        height: 500,
+                                        height: 580,
                                         resize: true, // true/false/'both'
                                         branding: true,
                                         statusbar: true,
@@ -607,7 +618,7 @@ function Blogs() {
                                             let image = new FormData();
                                             image.append("image", blobInfo.blob());
                                             try {
-                                                const { data } = await Axios.post("http://192.168.0.143:5000/api/image", image);
+                                                const { data } = await Axios.post("http://localhost:5000/api/image", image);
                                                 success(`assets/demo/images/gallery/${data}`);
                                             } catch (error) {
                                                 console.log(error);
@@ -716,7 +727,7 @@ function Blogs() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://192.168.0.143:5000/api/image" className="mb-5" onUpload={onImageUpload} name="image[]" accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" onUpload={onImageUpload} name="image[]" accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />

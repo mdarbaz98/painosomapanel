@@ -125,9 +125,9 @@ function Author() {
         formData.append("status", data.status);
         console.log(blog.id);
         if (blog.id) {
-            await Axios.put(`http://192.168.0.143:5000/api/author/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/author/${data.id}`, formData);
         } else {
-            await Axios.post("http://192.168.0.143:5000/api/author", formData);
+            await Axios.post("http://localhost:5000/api/author", formData);
         }
         setFile(null);
         fetchData();
@@ -139,7 +139,7 @@ function Author() {
     };
 
     const updateStatus = async (rowData) => {
-        await Axios.put(`http://192.168.0.143:5000/api/author/status/${rowData.id}`, rowData);
+        await Axios.put(`http://localhost:5000/api/author/status/${rowData.id}`, rowData);
         fetchData();
     };
 
@@ -160,7 +160,7 @@ function Author() {
 
     const deleteBlogFunction = async (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        await Axios.delete(`http://192.168.0.143:5000/api/author/${selectedIds}`).then();
+        await Axios.delete(`http://localhost:5000/api/author/${selectedIds}`).then();
         fetchData();
     };
 
@@ -301,7 +301,7 @@ function Author() {
                         onSelectionChange={(e) => setSelectedBlogs(e.value)}
                         dataKey="id"
                         paginator
-                        rows={10}
+                        rows={25}
                         rowsPerPageOptions={[5, 10, 25]}
                         className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -319,7 +319,7 @@ function Author() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "100%" }} header="" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "100%",maxHeight:"100vh" }} header="" modal className="p-fluid blogmodal" footer={productDialogFooter} onHide={hideDialog}>
                         <div>{blog && <img src={`assets/demo/images/gallery/${blog.image}`} alt={blog.image} className="shadow-2" width="100" />}</div>
                         <form className="grid py-5 p-fluid">
                             <div className="col-12 md:col-4">
@@ -389,7 +389,7 @@ function Author() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" name="image[]" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                         </TabView>
                                     </AccordionTab>
