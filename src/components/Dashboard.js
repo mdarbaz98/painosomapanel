@@ -114,12 +114,14 @@ const Dashboard = (props) => {
         let products = await data.getProducts().then(data => data.length);
         let authors = await data.getAuthor().then(data => data.length);
         let category = await data.getCategory().then(data => data.length);
+        let image   = await data.getImages().then(data => data.length);
 
         setStastics({
             blogs,
             products,
             authors,
-            category
+            category,
+            image
         })
     }
 
@@ -134,7 +136,7 @@ const Dashboard = (props) => {
 
     return (
         <div className="grid">
-            <div className="col-12 lg:col-6 xl:col-3">
+            <div className="col-12 lg:col-6 xl:col-2">
                 <div className="card mb-0">
                     <div className="flex justify-content-between mb-3">
                         <div>
@@ -147,7 +149,7 @@ const Dashboard = (props) => {
                     </div>
                 </div>
             </div>
-            <div className="col-12 lg:col-6 xl:col-3">
+            <div className="col-12 lg:col-6 xl:col-2">
                 <div className="card mb-0">
                     <div className="flex justify-content-between mb-3">
                         <div>
@@ -160,7 +162,7 @@ const Dashboard = (props) => {
                     </div>
                 </div>
             </div>
-            <div className="col-12 lg:col-6 xl:col-3">
+            <div className="col-12 lg:col-6 xl:col-2">
                 <div className="card mb-0">
                     <div className="flex justify-content-between mb-3">
                         <div>
@@ -173,12 +175,25 @@ const Dashboard = (props) => {
                     </div>
                 </div>
             </div>
-            <div className="col-12 lg:col-6 xl:col-3">
+            <div className="col-12 lg:col-6 xl:col-2">
                 <div className="card mb-0">
                     <div className="flex justify-content-between mb-3">
                         <div>
                             <span className="block text-500 font-medium mb-3">All category</span>
                             <div className="text-900 font-medium text-xl">{stastics.category}</div>
+                        </div>
+                        <div className="flex align-items-center justify-content-center bg-purple-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
+                            <i className="pi pi-comment text-purple-500 text-xl"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="col-12 lg:col-6 xl:col-2">
+                <div className="card mb-0">
+                    <div className="flex justify-content-between mb-3">
+                        <div>
+                            <span className="block text-500 font-medium mb-3">All Images</span>
+                            <div className="text-900 font-medium text-xl">{stastics.image}</div>
                         </div>
                         <div className="flex align-items-center justify-content-center bg-purple-100 border-round" style={{width: '2.5rem', height: '2.5rem'}}>
                             <i className="pi pi-comment text-purple-500 text-xl"/>
