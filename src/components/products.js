@@ -38,7 +38,8 @@ function Products() {
         advanceheader: "",
         advanceeditor: "",
         status: 0,
-        date: new Date()
+        date: new Date(),
+        segregation:"",
     };
 
     const [allProducts, setAllProducts] = useState("");
@@ -63,6 +64,14 @@ function Products() {
     { name: 'Draft', value: 'draft' },
     { name: 'Trash', value: 'trash' }]
 
+
+
+    const segregationOptions = [
+        {name:"1" ,value:"1"},
+        {name:"2" ,value:"2"},
+        {name:"3" ,value:"3"},
+        {name:"4" ,value:"4"},
+    ]
 
     useEffect(() => {
         const getProducts = new apiService();
@@ -156,6 +165,7 @@ function Products() {
         formData.append("newseditor", data.newseditor);
         formData.append("advanceheader", data.advanceheader);
         formData.append("advanceeditor", data.advanceeditor);
+        formData.append("segregation", data.segregation);
         formData.append("status", data.status);
         formData.append("date", data.date);
 
@@ -181,8 +191,15 @@ function Products() {
             var subCategoryArray = [];
             subCategoryArray.push(_product.subcategory);
         }
+        if (_product.segregation.includes(",")) {
+            var segregationArray = _product.segregation.split(",");
+        } else {
+            var segregationArray = [];
+            segregationArray.push(_product.segregation);
+        }
         _product["parentcategory"] = parentCategoryArray;
         _product["subcategory"] = subCategoryArray;
+        _product["segregation"] = segregationArray;
         _product["date"] = new Date(product.date);
         setproduct(_product);
         setProductDialog(true);
@@ -426,7 +443,8 @@ function Products() {
                                                 <label htmlFor="strength">product strength</label>
                                             </span>
                                             <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
-                                            <MultiSelect options={subCategory} value={product.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" />
+                                            <MultiSelect options={subCategory} className="mb-5" value={product.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" />
+                                            <MultiSelect options={segregationOptions} value={product.segregation} onChange={(e) => onInputChange(e, "segregation")} optionLabel="name" placeholder="Select a option" display="chip" />
                                         </div>
                                     </AccordionTab>
                                 </Accordion>
