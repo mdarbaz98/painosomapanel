@@ -34,7 +34,7 @@ function Blogs() {
         feature_image: "",
         parentcategory: null,
         subcategory: "",
-        blogdate: {date:new Date()},
+        blogdate: new Date(),
         status: "draft",
         publishdate: "",
         content: "",
@@ -276,7 +276,7 @@ function Blogs() {
         }
         _blog["parentcategory"] = parentCategoryArray;
         _blog["subcategory"] = subCategoryArray;
-        // _blog["blogdate"] = new Date(blog.blogdate);
+        _blog["blogdate"] = new Date(blog.blogdate);
         setBlog(_blog);
         setProductDialog(true);
     };
@@ -523,8 +523,6 @@ function Blogs() {
         </>
     );
 
-    console.log(blog)
-
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -767,7 +765,7 @@ function Blogs() {
                                         <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={blog.status} onChange={(e) => onInputChange(e.target.value, "status")} className={classNames({ "p-invalid": submitted && !blog.status }, "mb-5")} placeholder="Select status"></Dropdown>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <Calendar id="date" value={blog.blogdate.date} onChange={(e) => onInputChange(e.target.value, "blogdate")} />
+                                                <Calendar id="date" value={blog.blogdate} onChange={(e) => onInputChange(e.target.value, "blogdate")} />
                                                 <label htmlFor="date">Blog date</label>
                                             </span>
                                         </div>
