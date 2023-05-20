@@ -94,15 +94,16 @@ function Blogs() {
         await blogData.getBlog().then((data) => {
             const blogsdate = data.map((blog)=>{
                 let _dates = {...blog}
-                _dates["blogdate"] =  {date : new Date(blog.blogdate)}
+                _dates["blogdate"] =   new Date(blog.blogdate)
                 return (_dates)
               })
         
               blogsdate.sort(
                 (objA, objB) => {
-                   return Number(objB.blogdate.date) - Number(objA.blogdate.date)}
+                   return Number(objB.blogdate) - Number(objA.blogdate)}
                 )
             setBlogs(blogsdate);
+            console.log(blogsdate)
             setLoading2(false);
         });
     }
@@ -276,7 +277,7 @@ function Blogs() {
         }
         _blog["parentcategory"] = parentCategoryArray;
         _blog["subcategory"] = subCategoryArray;
-        // _blog["blogdate"] = new Date(blog.blogdate);
+        _blog["blogdate"] = new Date(blog.blogdate);
         setBlog(_blog);
         setProductDialog(true);
     };
@@ -383,7 +384,7 @@ function Blogs() {
 
     
     const dateBodyTemplate = (rowData) => {
-        let productDate = new Date(rowData.blogdate.date);
+        let productDate = new Date(rowData.blogdate);
         const result = format(productDate, 'dd/MM/yyyy')
         return (
             <>{result}</>
@@ -767,7 +768,7 @@ function Blogs() {
                                         <Dropdown options={statusOptions} itemTemplate={statusItemTemplate} value={blog.status} onChange={(e) => onInputChange(e.target.value, "status")} className={classNames({ "p-invalid": submitted && !blog.status }, "mb-5")} placeholder="Select status"></Dropdown>
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
-                                                <Calendar id="date" value={blog.blogdate.date} onChange={(e) => onInputChange(e.target.value, "blogdate")} />
+                                                <Calendar id="date" value={blog.blogdate} onChange={(e) => onInputChange(e.target.value, "blogdate")} />
                                                 <label htmlFor="date">Blog date</label>
                                             </span>
                                         </div>
