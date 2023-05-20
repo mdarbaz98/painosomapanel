@@ -103,7 +103,6 @@ function Blogs() {
                    return Number(objB.blogdate) - Number(objA.blogdate)}
                 )
             setBlogs(blogsdate);
-            console.log(blogsdate)
             setLoading2(false);
         });
     }
