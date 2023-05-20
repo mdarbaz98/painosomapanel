@@ -538,7 +538,7 @@ function Blogs() {
                         dataKey="id"
                         paginator
                         rows={25}
-                        rowsPerPageOptions={[5, 10, 25]}
+                        rowsPerPageOptions={[25,100,300,500]}
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                         className="p-datatable-customers"
                         filters={filters2}
