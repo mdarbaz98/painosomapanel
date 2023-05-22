@@ -66,9 +66,9 @@ function Products() {
         {
             question: "",
             answer: "",
-        },
+        }
     ]
-    const0 [faq, setFaq] = useState(emptyFaq);
+    const [faq, setFaq] = useState(emptyFaq);
     const statusOptions = [{ name: 'Publish', value: 'publish' },
     { name: 'Draft', value: 'draft' },
     { name: 'Trash', value: 'trash' }]
