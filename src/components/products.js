@@ -18,6 +18,7 @@ import { Dropdown } from "primereact/dropdown";
 import classNames from "classnames";
 import { Editor } from "@tinymce/tinymce-react";
 import { format } from 'date-fns'
+import { InputTextarea } from "primereact/inputtextarea";
 
 function Products() {
     let emptyproducts = {
@@ -54,12 +55,20 @@ function Products() {
     const [gallery2, setGallery2] = useState(null);
     const [globalFilter, setGlobalFilter] = useState(null);
     const [parentCategory, setParentCategory] = useState([null]);
+    const [faqDialog, setFaqDialog] = useState(false);
     const [subCategory, setSubCategory] = useState([{ name: "none", value: "none" }]);
     const toast = useRef(null);
     const dt = useRef(null);
     const [state, setState] = useState(null);
-
-
+    const [editorInsert, setEditorInsert] = useState(null);
+    
+    let emptyFaq = [
+        {
+            question: "",
+            answer: "",
+        },
+    ]
+    const0 [faq, setFaq] = useState(emptyFaq);
     const statusOptions = [{ name: 'Publish', value: 'publish' },
     { name: 'Draft', value: 'draft' },
     { name: 'Trash', value: 'trash' }]
@@ -82,7 +91,6 @@ function Products() {
         fetchImages()
     }, [state]);
 
-    console.log(product)
 
     async function fetchImages() {
         const galleryImages = new apiService();
@@ -108,6 +116,9 @@ function Products() {
         setSubmitted(false);
         setProductDialog(true);
     };
+    const newFaq = () => {
+        setFaq([...faq, { question: "", answer: "" }]);
+    };
 
     const hideDialog = () => {
         setSubmitted(false);
@@ -121,6 +132,50 @@ function Products() {
     const hideDeleteProductsDialog = () => {
         setDeleteProductsDialog(false);
     };
+    const hideFaqDialog = () => {
+        setFaqDialog(false);
+    };
+    const faqCloseDialog = () => {
+        setFaqDialog(false);
+    };
+    const handleFaqChange = (index, e) => {
+        let _faq = [...faq];
+        _faq[index][e.target.name] = e.target.value;
+        setFaq(_faq);
+    };
+
+    const removeFaq = (index) => {
+        let _faq = [...faq];
+        _faq.splice(index, 1);
+        setFaq(_faq);
+    };
+    
+
+    const saveFaq = () => {
+        let faqElement = "";
+       const accordionFaq= faq?.forEach((data, ind) => {
+            faqElement += `
+            <div class="accordion-item">
+            <p class="accordion-header" id="faq${ind}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${ind}" aria-expanded="true" aria-controls="#collapse${ind}">
+                   ${data.question}
+                </button>
+            </p>
+            <div id="collapse${ind}" class="accordion-collapse collapse show" aria-labelledby="faq${ind}" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                   ${data.answer}
+                </div>
+            </div>
+        </div>`
+        })
+        const faqData = `<div class="accordion faq" id="accordionExample">
+        ${faqElement}
+        </div>`
+        editorInsert.insertContent(faqData)
+        setFaqDialog(false)
+        setFaq(emptyFaq)
+    }
+
 
     const statusItemTemplate = (option) => {
         return <span className={`status-badge status-${option.name}`}>{option.name}</span>;
@@ -170,9 +225,9 @@ function Products() {
         formData.append("date", data.date);
 
         if (product.id) {
-            await Axios.put(`http://192.168.0.143:5000/api/products/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/products/${data.id}`, formData);
         } else {
-            await Axios.post("http://192.168.0.143:5000/api/products", formData);
+            await Axios.post("http://localhost:5000/api/products", formData);
         }
         setState(formData)
     };
@@ -213,7 +268,7 @@ function Products() {
 
     const deleteBlogFunction = (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        Axios.delete(`http://192.168.0.143:5000/api/products/${selectedIds}`)
+        Axios.delete(`http://localhost:5000/api/products/${selectedIds}`)
             .then()
             .catch((err) => {
                 console.log(err);
@@ -246,7 +301,7 @@ function Products() {
         event.files.map((item) => {
             formData.append("image[]",item)
         })
-        const res = await Axios.post('http://192.168.0.143:5000/api/image',formData)
+        const res = await Axios.post('http://localhost:5000/api/image',formData)
         fetchImages();
         setProductDialog(false)
         toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
@@ -366,6 +421,12 @@ function Products() {
             </span>
         </div>
     );
+    const FaqDialogFooter = (
+        <>
+            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={faqCloseDialog} />
+            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveFaq} />
+        </>
+    );
 
     const productDialogFooter = (
         <>
@@ -456,7 +517,7 @@ function Products() {
                                 <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                            <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
+                                            <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
@@ -567,6 +628,38 @@ function Products() {
                                     </AccordionTab>
                                 </Accordion>
                             </div>
+                            <div className="col-12 md:col-12">
+                                <Accordion>
+                                    <AccordionTab header="Advance Section">
+                                        <span className="p-float-label mb-5 mt-2">
+                                            <InputText type="text" id="advanceheader" value={product.advanceheader} onChange={(e) => onInputChange(e, "advanceheader")} style={{ fontSize: "12px" }} />
+                                            <label htmlFor="advanceheader">Advance</label>
+                                        </span>
+                                        <Editor
+                                            init={{
+                                                height: 300,
+                                                plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                                setup: function (editor) {
+                                                    editor.ui.registry.addButton("addFaq", {
+                                                        text: "Add FAQ",
+                                                        onAction: () => {
+                                                            setEditorInsert(editor);
+                                                            setFaqDialog(true);
+                                                        },
+                                                    });
+                                                },
+                                                toolbar:
+                                                    "undo redo |addFaq | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                            }}
+                                            tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
+                                            value={product.advanceeditor}
+                                            onEditorChange={(e) => {
+                                                onInputChange(e, "advanceeditor")
+                                            }}
+                                        />
+                                    </AccordionTab>
+                                </Accordion>
+                            </div>
                         </div>
                     </Dialog>
 
@@ -614,6 +707,54 @@ function Products() {
                             {product && <span>Are you sure you want to delete the selected product's?</span>}
                         </div>
                     </Dialog>
+                    {/* faq dialog */}
+
+                    <Dialog visible={faqDialog} style={{ width: "650px" }} header="Faq" footer={FaqDialogFooter} modal onHide={hideFaqDialog}>
+                        {faq?.map((item, index) => {
+                            return (
+                                <div className="p-fluid card" key={index}>
+                                    <div className=" p-field pt-3 mb-5">
+                                        <span className="p-float-label">
+                                            <InputText
+                                                type="text"
+                                                value={item.question}
+                                                onChange={(e) => {
+                                                    handleFaqChange(index, e);
+                                                }}
+                                                name="question"
+                                                id="Question"
+                                                style={{ fontSize: "12px" }}
+                                            />
+                                            <label htmlFor="Answer">Question</label>
+                                        </span>
+                                    </div>
+                                    <div className=" p-field pt-3 mb-5">
+                                        <span className="p-float-label">
+                                            <InputTextarea
+                                                rows={5}
+                                                cols={30}
+                                                value={item.answer}
+                                                name="answer"
+                                                onChange={(e) => {
+                                                    handleFaqChange(index, e);
+                                                }}
+                                            />
+                                            <label htmlFor="Answer">Answer</label>
+                                        </span>
+                                    </div>
+                                    {index > 0 && (
+                                        <div className="p-field">
+                                            <Button className="p-button-danger" label="Delete" icon="pi pi-trash" style={{ width: "fit-content" }} onClick={removeFaq} />
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+
+                        <Button label="Add More" onClick={newFaq} icon="pi pi-plus" />
+                    </Dialog>
+
+                    {/* faq dialog */}
                 </div>
             </div>
         </div>
