@@ -19,6 +19,7 @@ import classNames from "classnames";
 import { Editor } from "@tinymce/tinymce-react";
 import { format } from 'date-fns'
 import { InputTextarea } from "primereact/inputtextarea";
+import { Chips } from 'primereact/chips';
 
 function Products() {
     let emptyproducts = {
@@ -38,9 +39,12 @@ function Products() {
         newseditor: "",
         advanceheader: "",
         advanceeditor: "",
+        faqeditor: "",
+        title: "",
+        description: "",
         status: 0,
         date: new Date(),
-        segregation:"",
+        segregation: "",
     };
 
     const [allProducts, setAllProducts] = useState("");
@@ -61,7 +65,10 @@ function Products() {
     const dt = useRef(null);
     const [state, setState] = useState(null);
     const [editorInsert, setEditorInsert] = useState(null);
-    
+    const [titleCount, ChangeTitleCount] = useState(0);
+    const [descCount, ChangeDescCount] = useState(0);
+
+
     let emptyFaq = [
         {
             question: "",
@@ -76,10 +83,10 @@ function Products() {
 
 
     const segregationOptions = [
-        {name:"1" ,value:"1"},
-        {name:"2" ,value:"2"},
-        {name:"3" ,value:"3"},
-        {name:"4" ,value:"4"},
+        { name: "1", value: "1" },
+        { name: "2", value: "2" },
+        { name: "3", value: "3" },
+        { name: "4", value: "4" },
     ]
 
     useEffect(() => {
@@ -95,7 +102,8 @@ function Products() {
     async function fetchImages() {
         const galleryImages = new apiService();
         galleryImages.getImages().then((data) => {
-        setGallery2(data)});
+            setGallery2(data)
+        });
     }
 
     async function getParentCategory() {
@@ -119,7 +127,7 @@ function Products() {
     const newFaq = () => {
         setFaq([...faq, { question: "", answer: "" }]);
     };
-
+    console.log(product.othercompany, product.otherprice)
     const hideDialog = () => {
         setSubmitted(false);
         setProductDialog(false);
@@ -149,11 +157,11 @@ function Products() {
         _faq.splice(index, 1);
         setFaq(_faq);
     };
-    
+
 
     const saveFaq = () => {
         let faqElement = "";
-       const accordionFaq= faq?.forEach((data, ind) => {
+        const accordionFaq = faq?.forEach((data, ind) => {
             faqElement += `
             <div class="accordion-item">
             <p class="accordion-header" id="faq${ind}">
@@ -220,6 +228,9 @@ function Products() {
         formData.append("newseditor", data.newseditor);
         formData.append("advanceheader", data.advanceheader);
         formData.append("advanceeditor", data.advanceeditor);
+        formData.append("faqeditor", data.faqeditor);
+        formData.append("title", data.title);
+        formData.append("description", data.description);
         formData.append("segregation", data.segregation);
         formData.append("status", data.status);
         formData.append("date", data.date);
@@ -252,10 +263,32 @@ function Products() {
             var segregationArray = [];
             segregationArray.push(_product.segregation);
         }
+        if (_product.othercompany.includes(",")) {
+            var othercompanyArray = _product.othercompany.split(",");
+        } else {
+            var othercompanyArray = [];
+            othercompanyArray.push(_product.othercompany);
+        }
+        if (_product.otherprice.includes(",")) {
+            var otherpriceArray = _product.otherprice.split(",");
+        } else {
+            var otherpriceArray = [];
+            otherpriceArray.push(_product.otherprice);
+        }
+        if (_product.strength.includes(",")) {
+            var strengthArray = _product.strength.split(",");
+        } else {
+            var strengthArray = [];
+            strengthArray.push(_product.strength);
+        }
         _product["parentcategory"] = parentCategoryArray;
         _product["subcategory"] = subCategoryArray;
         _product["segregation"] = segregationArray;
+        _product["othercompany"] = othercompanyArray;
+        _product["otherprice"] = otherpriceArray;
+        _product["strength"] = strengthArray;
         _product["date"] = new Date(product.date);
+        console.log(product)
         setproduct(_product);
         setProductDialog(true);
     };
@@ -296,17 +329,17 @@ function Products() {
     };
 
     const myUploader = async (event) => {
-        try{
-        const formData = new FormData();
-        event.files.map((item) => {
-            formData.append("image[]",item)
-        })
-        const res = await Axios.post('http://192.168.0.143:5000/api/image',formData)
-        fetchImages();
-        setProductDialog(false)
-        toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
-        }catch(err){
-        toast.current.show({ severity: "danger", summary: "Error", detail: `${err}`, life: 3000 });
+        try {
+            const formData = new FormData();
+            event.files.map((item) => {
+                formData.append("image[]", item)
+            })
+            const res = await Axios.post('http://localhost:5000/api/image', formData)
+            fetchImages();
+            setProductDialog(false)
+            toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
+        } catch (err) {
+            toast.current.show({ severity: "danger", summary: "Error", detail: `${err}`, life: 3000 });
         }
     }
 
@@ -340,18 +373,18 @@ function Products() {
         toast.current.show({ severity: "success", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
     };
 
-    const onInputChange = (e, name,selectedImages) => {
+    const onInputChange = (e, name, selectedImages) => {
         let val;
-        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
+        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor" || name === "faqeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
         if (name === "product_slug") {
             val = e.target.value.replace(" ", "-");
         }
         if (name === "feature_image") {
-            _product[`${name}`] =  selectedImages[0];
+            _product[`${name}`] = selectedImages[0];
             _product[`image`] = selectedImages;
-        }else{
-        _product[`${name}`] = val;
+        } else {
+            _product[`${name}`] = val;
         }
         setproduct(_product);
     };
@@ -394,7 +427,7 @@ function Products() {
     };
     const dateBodyTemplate = (rowData) => {
         let productDate = new Date(rowData.date);
-        const result=format(productDate,'dd/MM/yyyy')
+        const result = format(productDate, 'dd/MM/yyyy')
         return (
             <>
                 {result}
@@ -480,7 +513,7 @@ function Products() {
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "100%",maxHeight:"100vh" }} header="" modal className="p-fluid blogmodal" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "100%", maxHeight: "100vh" }} header="" modal className="p-fluid blogmodal" footer={productDialogFooter} onHide={hideDialog}>
                         <div className="grid py-5 p-fluid">
                             <div className="col-12 md:col-4">
                                 {/* productsection  */}
@@ -496,16 +529,19 @@ function Products() {
                                                 <label htmlFor="product_price">product price</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
-                                                <InputText type="text" value={product.product_slug} onChange={(e) => onInputChange(e, "product_slug")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="product_slug">product slug</label>
-                                            </span>
-                                            <span className="p-float-label mb-5 mt-4">
-                                                <InputText type="text" value={product.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
+                                                <Chips value={product.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="strength">product strength</label>
                                             </span>
-                                            <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
-                                            <MultiSelect options={subCategory} className="mb-5" value={product.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" />
-                                            <MultiSelect options={segregationOptions} value={product.segregation} onChange={(e) => onInputChange(e, "segregation")} optionLabel="name" placeholder="Select a option" display="chip" />
+                                            {/* <MultiSelect options={subCategory} className="mb-5" value={product.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" /> */}
+                                            <MultiSelect className="mb-5 mt-4" options={segregationOptions} value={product.segregation} onChange={(e) => onInputChange(e, "segregation")} optionLabel="name" placeholder="Select a option" display="chip" />
+                                            <span className="p-float-label mb-5 mt-2">
+                                                <Chips value={product.othercompany} onChange={(e) => onInputChange(e, "othercompany")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="othercompany">Company name</label>
+                                            </span>
+                                            <span className="p-float-label mb-5 mt-2">
+                                                <Chips value={product.otherprice} onChange={(e) => onInputChange(e, "otherprice")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="otherprice">Company price</label>
+                                            </span>
                                         </div>
                                     </AccordionTab>
                                 </Accordion>
@@ -514,10 +550,10 @@ function Products() {
                             {/* imagesection */}
                             <div className="col-12 md:col-4">
                                 <Accordion>
-                                <AccordionTab header="Image Section">
+                                    <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                            <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
@@ -530,6 +566,28 @@ function Products() {
                                                 })}
                                             </TabPanel>
                                         </TabView>
+                                        <div className=" p-field mb-5">
+                                            <span className="p-float-label">
+                                                <InputText type="text" value={product.title} onChange={(e) => {
+                                                    let countvalue = e.target.value.length;
+                                                    ChangeTitleCount(countvalue);
+                                                    onInputChange(e, "title")
+                                                }} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="title">Title</label>
+                                            </span>
+                                            <p>{titleCount}/60</p>
+                                        </div>
+                                        <div className=" p-field">
+                                            <span className="p-float-label">
+                                                <InputText type="text" value={product.description} onChange={(e) => {
+                                                      let countvalue = e.target.value.length;
+                                                      ChangeDescCount(countvalue);
+                                                    onInputChange(e, "description")
+                                                }} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="description">Description</label>
+                                            </span>
+                                            <p>{descCount}/160</p>
+                                        </div>
                                     </AccordionTab>
                                 </Accordion>
                             </div>
@@ -544,14 +602,11 @@ function Products() {
                                                 <Calendar id="date" value={product.date} onChange={(e) => onInputChange(e, "date")} />
                                                 <label htmlFor="date">Product date</label>
                                             </span>
-                                            <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text" value={product.othercompany} onChange={(e) => onInputChange(e, "othercompany")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="othercompany">Company name</label>
+                                            <span className="p-float-label mb-5 mt-4">
+                                                <InputText type="text" value={product.product_slug} onChange={(e) => onInputChange(e, "product_slug")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="product_slug">product slug</label>
                                             </span>
-                                            <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text" value={product.otherprice} onChange={(e) => onInputChange(e, "otherprice")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="otherprice">Company price</label>
-                                            </span>
+                                            <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
                                         </div>
                                     </AccordionTab>
                                 </Accordion>
@@ -630,11 +685,7 @@ function Products() {
                             </div>
                             <div className="col-12 md:col-12">
                                 <Accordion>
-                                    <AccordionTab header="Advance Section">
-                                        <span className="p-float-label mb-5 mt-2">
-                                            <InputText type="text" id="advanceheader" value={product.advanceheader} onChange={(e) => onInputChange(e, "advanceheader")} style={{ fontSize: "12px" }} />
-                                            <label htmlFor="advanceheader">Advance</label>
-                                        </span>
+                                    <AccordionTab header="Faq Section">
                                         <Editor
                                             init={{
                                                 height: 300,
@@ -652,9 +703,9 @@ function Products() {
                                                     "undo redo |addFaq | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
                                             }}
                                             tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
-                                            value={product.advanceeditor}
+                                            value={product.faqeditor}
                                             onEditorChange={(e) => {
-                                                onInputChange(e, "advanceeditor")
+                                                onInputChange(e, "faqeditor")
                                             }}
                                         />
                                     </AccordionTab>
@@ -688,7 +739,7 @@ function Products() {
                         </div>
                     </Dialog>
                     {/* gallery for product  */}
-                    
+
 
                     <Dialog visible={deleteProductDialog} style={{ width: "450px" }} header="Confirm" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                         <div className="flex align-items-center justify-content-center">
