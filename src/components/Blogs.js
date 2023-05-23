@@ -250,9 +250,9 @@ function Blogs() {
         formData.append("reference", data.reference);
 
         if (blog.id) {
-            await Axios.put(`http://localhost:5000/api/blog/${data.id}`, formData);
+            await Axios.put(`http://192.168.0.143:5000/api/blog/${data.id}`, formData);
         } else {
-            await Axios.post("http://localhost:5000/api/blog", formData);
+            await Axios.post("http://192.168.0.143:5000/api/blog", formData);
         }
         setImages([]);
         setImages2([]);
@@ -288,7 +288,7 @@ function Blogs() {
 
     const deleteBlogFunction = async (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        await Axios.delete(`http://localhost:5000/api/blog/${selectedIds}`).then();
+        await Axios.delete(`http://192.168.0.143:5000/api/blog/${selectedIds}`).then();
         fetchData();
     };
 
@@ -617,7 +617,7 @@ function Blogs() {
                                             let image = new FormData();
                                             image.append("image", blobInfo.blob());
                                             try {
-                                                const { data } = await Axios.post("http://localhost:5000/api/image", image);
+                                                const { data } = await Axios.post("http://192.168.0.143:5000/api/image", image);
                                                 success(`assets/demo/images/gallery/${data}`);
                                             } catch (error) {
                                                 console.log(error);
@@ -726,7 +726,7 @@ function Blogs() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" onUpload={onImageUpload} name="image[]" accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://192.168.0.143:5000/api/image" className="mb-5" onUpload={onImageUpload} name="image[]" accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
