@@ -40,9 +40,11 @@ function Products() {
         advanceheader: "",
         advanceeditor: "",
         faqeditor: "",
+        title: "",
+        description: "",
         status: 0,
         date: new Date(),
-        segregation:"",
+        segregation: "",
     };
 
     const [allProducts, setAllProducts] = useState("");
@@ -63,7 +65,10 @@ function Products() {
     const dt = useRef(null);
     const [state, setState] = useState(null);
     const [editorInsert, setEditorInsert] = useState(null);
-    
+    const [titleCount, ChangeTitleCount] = useState(0);
+    const [descCount, ChangeDescCount] = useState(0);
+
+
     let emptyFaq = [
         {
             question: "",
@@ -78,10 +83,10 @@ function Products() {
 
 
     const segregationOptions = [
-        {name:"1" ,value:"1"},
-        {name:"2" ,value:"2"},
-        {name:"3" ,value:"3"},
-        {name:"4" ,value:"4"},
+        { name: "1", value: "1" },
+        { name: "2", value: "2" },
+        { name: "3", value: "3" },
+        { name: "4", value: "4" },
     ]
 
     useEffect(() => {
@@ -97,7 +102,8 @@ function Products() {
     async function fetchImages() {
         const galleryImages = new apiService();
         galleryImages.getImages().then((data) => {
-        setGallery2(data)});
+            setGallery2(data)
+        });
     }
 
     async function getParentCategory() {
@@ -121,7 +127,7 @@ function Products() {
     const newFaq = () => {
         setFaq([...faq, { question: "", answer: "" }]);
     };
-console.log(product.othercompany,product.otherprice)
+    console.log(product.othercompany, product.otherprice)
     const hideDialog = () => {
         setSubmitted(false);
         setProductDialog(false);
@@ -151,11 +157,11 @@ console.log(product.othercompany,product.otherprice)
         _faq.splice(index, 1);
         setFaq(_faq);
     };
-    
+
 
     const saveFaq = () => {
         let faqElement = "";
-       const accordionFaq= faq?.forEach((data, ind) => {
+        const accordionFaq = faq?.forEach((data, ind) => {
             faqElement += `
             <div class="accordion-item">
             <p class="accordion-header" id="faq${ind}">
@@ -223,6 +229,8 @@ console.log(product.othercompany,product.otherprice)
         formData.append("advanceheader", data.advanceheader);
         formData.append("advanceeditor", data.advanceeditor);
         formData.append("faqeditor", data.faqeditor);
+        formData.append("title", data.title);
+        formData.append("description", data.description);
         formData.append("segregation", data.segregation);
         formData.append("status", data.status);
         formData.append("date", data.date);
@@ -321,17 +329,17 @@ console.log(product.othercompany,product.otherprice)
     };
 
     const myUploader = async (event) => {
-        try{
-        const formData = new FormData();
-        event.files.map((item) => {
-            formData.append("image[]",item)
-        })
-        const res = await Axios.post('http://localhost:5000/api/image',formData)
-        fetchImages();
-        setProductDialog(false)
-        toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
-        }catch(err){
-        toast.current.show({ severity: "danger", summary: "Error", detail: `${err}`, life: 3000 });
+        try {
+            const formData = new FormData();
+            event.files.map((item) => {
+                formData.append("image[]", item)
+            })
+            const res = await Axios.post('http://localhost:5000/api/image', formData)
+            fetchImages();
+            setProductDialog(false)
+            toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
+        } catch (err) {
+            toast.current.show({ severity: "danger", summary: "Error", detail: `${err}`, life: 3000 });
         }
     }
 
@@ -365,18 +373,18 @@ console.log(product.othercompany,product.otherprice)
         toast.current.show({ severity: "success", summary: "Successfully", detail: "Blogs Deleted", life: 3000 });
     };
 
-    const onInputChange = (e, name,selectedImages) => {
+    const onInputChange = (e, name, selectedImages) => {
         let val;
-        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor" || name === "faqeditor" ) ? (val = e || "") : (val = (e.target && e.target.value) || "");
+        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor" || name === "faqeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
         if (name === "product_slug") {
             val = e.target.value.replace(" ", "-");
         }
         if (name === "feature_image") {
-            _product[`${name}`] =  selectedImages[0];
+            _product[`${name}`] = selectedImages[0];
             _product[`image`] = selectedImages;
-        }else{
-        _product[`${name}`] = val;
+        } else {
+            _product[`${name}`] = val;
         }
         setproduct(_product);
     };
@@ -419,7 +427,7 @@ console.log(product.othercompany,product.otherprice)
     };
     const dateBodyTemplate = (rowData) => {
         let productDate = new Date(rowData.date);
-        const result=format(productDate,'dd/MM/yyyy')
+        const result = format(productDate, 'dd/MM/yyyy')
         return (
             <>
                 {result}
@@ -505,7 +513,7 @@ console.log(product.othercompany,product.otherprice)
                         <Column body={actionBodyTemplate}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: "100%",maxHeight:"100vh" }} header="" modal className="p-fluid blogmodal" footer={productDialogFooter} onHide={hideDialog}>
+                    <Dialog visible={productDialog} style={{ width: "100%", maxHeight: "100vh" }} header="" modal className="p-fluid blogmodal" footer={productDialogFooter} onHide={hideDialog}>
                         <div className="grid py-5 p-fluid">
                             <div className="col-12 md:col-4">
                                 {/* productsection  */}
@@ -521,16 +529,19 @@ console.log(product.othercompany,product.otherprice)
                                                 <label htmlFor="product_price">product price</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
-                                                <InputText type="text" value={product.product_slug} onChange={(e) => onInputChange(e, "product_slug")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="product_slug">product slug</label>
-                                            </span>
-                                            <span className="p-float-label mb-5 mt-4">
                                                 <Chips value={product.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="strength">product strength</label>
                                             </span>
-                                            <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
-                                            <MultiSelect options={subCategory} className="mb-5" value={product.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" />
-                                            <MultiSelect options={segregationOptions} value={product.segregation} onChange={(e) => onInputChange(e, "segregation")} optionLabel="name" placeholder="Select a option" display="chip" />
+                                            {/* <MultiSelect options={subCategory} className="mb-5" value={product.subcategory} onChange={(e) => onInputChange(e, "subcategory")} optionLabel="name" placeholder="Select a category" display="chip" /> */}
+                                            <MultiSelect className="mb-5 mt-4" options={segregationOptions} value={product.segregation} onChange={(e) => onInputChange(e, "segregation")} optionLabel="name" placeholder="Select a option" display="chip" />
+                                            <span className="p-float-label mb-5 mt-2">
+                                                <Chips value={product.othercompany} onChange={(e) => onInputChange(e, "othercompany")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="othercompany">Company name</label>
+                                            </span>
+                                            <span className="p-float-label mb-5 mt-2">
+                                                <Chips value={product.otherprice} onChange={(e) => onInputChange(e, "otherprice")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="otherprice">Company price</label>
+                                            </span>
                                         </div>
                                     </AccordionTab>
                                 </Accordion>
@@ -539,10 +550,10 @@ console.log(product.othercompany,product.otherprice)
                             {/* imagesection */}
                             <div className="col-12 md:col-4">
                                 <Accordion>
-                                <AccordionTab header="Image Section">
+                                    <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                            <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
@@ -555,6 +566,28 @@ console.log(product.othercompany,product.otherprice)
                                                 })}
                                             </TabPanel>
                                         </TabView>
+                                        <div className=" p-field mb-5">
+                                            <span className="p-float-label">
+                                                <InputText type="text" value={product.title} onChange={(e) => {
+                                                    let countvalue = e.target.value.length;
+                                                    ChangeTitleCount(countvalue);
+                                                    onInputChange(e, "title")
+                                                }} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="title">Title</label>
+                                            </span>
+                                            <p>{titleCount}/60</p>
+                                        </div>
+                                        <div className=" p-field">
+                                            <span className="p-float-label">
+                                                <InputText type="text" value={product.description} onChange={(e) => {
+                                                      let countvalue = e.target.value.length;
+                                                      ChangeDescCount(countvalue);
+                                                    onInputChange(e, "description")
+                                                }} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="description">Description</label>
+                                            </span>
+                                            <p>{descCount}/160</p>
+                                        </div>
                                     </AccordionTab>
                                 </Accordion>
                             </div>
@@ -569,14 +602,11 @@ console.log(product.othercompany,product.otherprice)
                                                 <Calendar id="date" value={product.date} onChange={(e) => onInputChange(e, "date")} />
                                                 <label htmlFor="date">Product date</label>
                                             </span>
-                                            <span className="p-float-label mb-5 mt-2">
-                                                <Chips value={product.othercompany} onChange={(e) => onInputChange(e, "othercompany")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="othercompany">Company name</label>
+                                            <span className="p-float-label mb-5 mt-4">
+                                                <InputText type="text" value={product.product_slug} onChange={(e) => onInputChange(e, "product_slug")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="product_slug">product slug</label>
                                             </span>
-                                            <span className="p-float-label mb-5 mt-2">
-                                                <Chips value={product.otherprice} onChange={(e) => onInputChange(e, "otherprice")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="otherprice">Company price</label>
-                                            </span>
+                                            <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
                                         </div>
                                     </AccordionTab>
                                 </Accordion>
@@ -709,7 +739,7 @@ console.log(product.othercompany,product.otherprice)
                         </div>
                     </Dialog>
                     {/* gallery for product  */}
-                    
+
 
                     <Dialog visible={deleteProductDialog} style={{ width: "450px" }} header="Confirm" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                         <div className="flex align-items-center justify-content-center">
