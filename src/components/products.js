@@ -269,6 +269,7 @@ function Products() {
             var othercompanyArray = [];
             othercompanyArray.push(_product.othercompany);
         }
+        console.log(_product.otherprice)
         if (_product.otherprice.includes(",")) {
             var otherpriceArray = _product.otherprice.split(",");
         } else {
@@ -334,7 +335,7 @@ function Products() {
             event.files.map((item) => {
                 formData.append("image[]", item)
             })
-            const res = await Axios.post('http://localhost:5000/api/image', formData)
+            const res = await Axios.post('http://192.168.0.143:5000/api/image', formData)
             fetchImages();
             setProductDialog(false)
             toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
@@ -553,7 +554,7 @@ function Products() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
