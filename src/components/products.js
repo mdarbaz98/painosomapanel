@@ -19,6 +19,7 @@ import classNames from "classnames";
 import { Editor } from "@tinymce/tinymce-react";
 import { format } from 'date-fns'
 import { InputTextarea } from "primereact/inputtextarea";
+import { Chips } from 'primereact/chips';
 
 function Products() {
     let emptyproducts = {
@@ -120,7 +121,7 @@ function Products() {
     const newFaq = () => {
         setFaq([...faq, { question: "", answer: "" }]);
     };
-
+console.log(product.othercompany,product.otherprice)
     const hideDialog = () => {
         setSubmitted(false);
         setProductDialog(false);
@@ -254,10 +255,32 @@ function Products() {
             var segregationArray = [];
             segregationArray.push(_product.segregation);
         }
+        if (_product.othercompany.includes(",")) {
+            var othercompanyArray = _product.othercompany.split(",");
+        } else {
+            var othercompanyArray = [];
+            othercompanyArray.push(_product.othercompany);
+        }
+        if (_product.otherprice.includes(",")) {
+            var otherpriceArray = _product.otherprice.split(",");
+        } else {
+            var otherpriceArray = [];
+            otherpriceArray.push(_product.otherprice);
+        }
+        if (_product.strength.includes(",")) {
+            var strengthArray = _product.strength.split(",");
+        } else {
+            var strengthArray = [];
+            strengthArray.push(_product.strength);
+        }
         _product["parentcategory"] = parentCategoryArray;
         _product["subcategory"] = subCategoryArray;
         _product["segregation"] = segregationArray;
+        _product["othercompany"] = othercompanyArray;
+        _product["otherprice"] = otherpriceArray;
+        _product["strength"] = strengthArray;
         _product["date"] = new Date(product.date);
+        console.log(product)
         setproduct(_product);
         setProductDialog(true);
     };
@@ -502,7 +525,7 @@ function Products() {
                                                 <label htmlFor="product_slug">product slug</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
-                                                <InputText type="text" value={product.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
+                                                <Chips value={product.strength} onChange={(e) => onInputChange(e, "strength")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="strength">product strength</label>
                                             </span>
                                             <MultiSelect options={parentCategory} className="mb-5" value={product.parentcategory} onChange={(e) => onInputChange(e, "parentcategory")} optionLabel="name" placeholder="Select a parent category" display="chip" />
@@ -547,11 +570,11 @@ function Products() {
                                                 <label htmlFor="date">Product date</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text" value={product.othercompany} onChange={(e) => onInputChange(e, "othercompany")} style={{ fontSize: "12px" }} />
+                                                <Chips value={product.othercompany} onChange={(e) => onInputChange(e, "othercompany")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="othercompany">Company name</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text" value={product.otherprice} onChange={(e) => onInputChange(e, "otherprice")} style={{ fontSize: "12px" }} />
+                                                <Chips value={product.otherprice} onChange={(e) => onInputChange(e, "otherprice")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="otherprice">Company price</label>
                                             </span>
                                         </div>
