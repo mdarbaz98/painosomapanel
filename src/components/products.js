@@ -38,6 +38,7 @@ function Products() {
         newseditor: "",
         advanceheader: "",
         advanceeditor: "",
+        faqeditor: "",
         status: 0,
         date: new Date(),
         segregation:"",
@@ -220,6 +221,7 @@ function Products() {
         formData.append("newseditor", data.newseditor);
         formData.append("advanceheader", data.advanceheader);
         formData.append("advanceeditor", data.advanceeditor);
+        formData.append("faqeditor", data.faqeditor);
         formData.append("segregation", data.segregation);
         formData.append("status", data.status);
         formData.append("date", data.date);
@@ -342,7 +344,7 @@ function Products() {
 
     const onInputChange = (e, name,selectedImages) => {
         let val;
-        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
+        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor" || name === "faqeditor" ) ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
         if (name === "product_slug") {
             val = e.target.value.replace(" ", "-");
@@ -630,11 +632,7 @@ function Products() {
                             </div>
                             <div className="col-12 md:col-12">
                                 <Accordion>
-                                    <AccordionTab header="Advance Section">
-                                        <span className="p-float-label mb-5 mt-2">
-                                            <InputText type="text" id="advanceheader" value={product.advanceheader} onChange={(e) => onInputChange(e, "advanceheader")} style={{ fontSize: "12px" }} />
-                                            <label htmlFor="advanceheader">Advance</label>
-                                        </span>
+                                    <AccordionTab header="Faq Section">
                                         <Editor
                                             init={{
                                                 height: 300,
@@ -652,9 +650,9 @@ function Products() {
                                                     "undo redo |addFaq | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
                                             }}
                                             tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
-                                            value={product.advanceeditor}
+                                            value={product.faqeditor}
                                             onEditorChange={(e) => {
-                                                onInputChange(e, "advanceeditor")
+                                                onInputChange(e, "faqeditor")
                                             }}
                                         />
                                     </AccordionTab>
