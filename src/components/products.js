@@ -45,6 +45,8 @@ function Products() {
         status: 0,
         date: new Date(),
         segregation: "",
+        referenceeditor:"",
+        h1:"",
     };
 
     const [allProducts, setAllProducts] = useState("");
@@ -127,7 +129,6 @@ function Products() {
     const newFaq = () => {
         setFaq([...faq, { question: "", answer: "" }]);
     };
-    console.log(product.othercompany, product.otherprice)
     const hideDialog = () => {
         setSubmitted(false);
         setProductDialog(false);
@@ -215,6 +216,7 @@ function Products() {
         const formData = new FormData();
         formData.append("image[]", data.image);
         formData.append("product_name", data.product_name);
+        formData.append("h1", data.h1);
         formData.append("product_price", data.product_price);
         formData.append("product_slug", data.product_slug);
         formData.append("strength", data.strength);
@@ -232,13 +234,14 @@ function Products() {
         formData.append("title", data.title);
         formData.append("description", data.description);
         formData.append("segregation", data.segregation);
+        formData.append("referenceeditor", data.referenceeditor);
         formData.append("status", data.status);
         formData.append("date", data.date);
 
         if (product.id) {
-            await Axios.put(`http://192.168.0.143:5000/api/products/${data.id}`, formData);
+            await Axios.put(`http://localhost:5000/api/products/${data.id}`, formData);
         } else {
-            await Axios.post("http://192.168.0.143:5000/api/products", formData);
+            await Axios.post("http://localhost:5000/api/products", formData);
         }
         setState(formData)
     };
@@ -269,7 +272,6 @@ function Products() {
             var othercompanyArray = [];
             othercompanyArray.push(_product.othercompany);
         }
-        console.log(_product.otherprice)
         if (_product.otherprice.includes(",")) {
             var otherpriceArray = _product.otherprice.split(",");
         } else {
@@ -289,7 +291,6 @@ function Products() {
         _product["otherprice"] = otherpriceArray;
         _product["strength"] = strengthArray;
         _product["date"] = new Date(product.date);
-        console.log(product)
         setproduct(_product);
         setProductDialog(true);
     };
@@ -302,7 +303,7 @@ function Products() {
 
     const deleteBlogFunction = (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        Axios.delete(`http://192.168.0.143:5000/api/products/${selectedIds}`)
+        Axios.delete(`http://localhost:5000/api/products/${selectedIds}`)
             .then()
             .catch((err) => {
                 console.log(err);
@@ -335,7 +336,7 @@ function Products() {
             event.files.map((item) => {
                 formData.append("image[]", item)
             })
-            const res = await Axios.post('http://192.168.0.143:5000/api/image', formData)
+            const res = await Axios.post('http://localhost:5000/api/image', formData)
             fetchImages();
             setProductDialog(false)
             toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
@@ -376,12 +377,12 @@ function Products() {
 
     const onInputChange = (e, name, selectedImages) => {
         let val;
-        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor" || name === "faqeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
+        (name === "abouteditor" || name === "newseditor" || name === "advanceeditor" || name === "faqeditor" || name === "referenceeditor") ? (val = e || "") : (val = (e.target && e.target.value) || "");
         let _product = { ...product };
         if (name === "product_slug") {
             val = e.target.value.replace(" ", "-");
         }
-        if (name === "feature_image") {
+        if (name === "image") {
             _product[`${name}`] = selectedImages[0];
             _product[`image`] = selectedImages;
         } else {
@@ -525,6 +526,10 @@ function Products() {
                                                 <InputText type="text" id="name" value={product.product_name} onChange={(e) => onInputChange(e, "product_name")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="product_name">product name</label>
                                             </span>
+                                            <span className="p-float-label mb-5 mt-2">
+                                                <InputText type="text" id="name" value={product.h1} onChange={(e) => onInputChange(e, "h1")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="product_name">product H1</label>
+                                            </span>
                                             <span className="p-float-label mb-5 mt-4">
                                                 <InputText type="text" value={product.product_price} onChange={(e) => onInputChange(e, "product_price")} style={{ fontSize: "12px" }} />
                                                 <label htmlFor="product_price">product price</label>
@@ -554,7 +559,7 @@ function Products() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
@@ -574,7 +579,7 @@ function Products() {
                                                     ChangeTitleCount(countvalue);
                                                     onInputChange(e, "title")
                                                 }} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="title">Title</label>
+                                                <label htmlFor="title">Seo Title</label>
                                             </span>
                                             <p>{titleCount}/60</p>
                                         </div>
@@ -585,7 +590,7 @@ function Products() {
                                                       ChangeDescCount(countvalue);
                                                     onInputChange(e, "description")
                                                 }} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="description">Description</label>
+                                                <label htmlFor="description">Seo Description</label>
                                             </span>
                                             <p>{descCount}/160</p>
                                         </div>
@@ -613,7 +618,7 @@ function Products() {
                                 </Accordion>
                             </div>
                             {/* status */}
-                            <div className="col-12 md:col-4">
+                            <div className="col-12 md:col-12">
                                 <Accordion>
                                     <AccordionTab header="About Section">
                                         <span className="p-float-label mb-5 mt-2">
@@ -638,7 +643,7 @@ function Products() {
                                     </AccordionTab>
                                 </Accordion>
                             </div>
-                            <div className="col-12 md:col-4">
+                            <div className="col-12 md:col-12">
                                 <Accordion>
                                     <AccordionTab header="News Section">
                                         <span className="p-float-label mb-5 mt-2">
@@ -661,7 +666,7 @@ function Products() {
                                     </AccordionTab>
                                 </Accordion>
                             </div>
-                            <div className="col-12 md:col-4">
+                            <div className="col-12 md:col-12">
                                 <Accordion>
                                     <AccordionTab header="Advance Section">
                                         <span className="p-float-label mb-5 mt-2">
@@ -679,6 +684,25 @@ function Products() {
                                             value={product.advanceeditor}
                                             onEditorChange={(e) => {
                                                 onInputChange(e, "advanceeditor")
+                                            }}
+                                        />
+                                    </AccordionTab>
+                                </Accordion>
+                            </div>
+                            <div className="col-12 md:col-12">
+                                <Accordion>
+                                    <AccordionTab header="Add Reference">
+                                        <Editor
+                                            init={{
+                                                height: 300,
+                                                plugins: ["advlist media autolink lists link image charmap print preview anchor", "searchreplace visualblocks code fullscreen table", "importcss insertdatetime media table paste code help wordcount template"],
+                                                toolbar:
+                                                    "undo redo | fontselect | formatselect | image media | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol | removeformat | template | help",
+                                            }}
+                                            tinymceScriptSrc="https://cdn.tiny.cloud/1/crhihg018llbh8k3e3x0c5e5l8ewun4d1xr6c6buyzkpqwvb/tinymce/5/tinymce.min.js"
+                                            value={product.referenceeditor}
+                                            onEditorChange={(e) => {
+                                                onInputChange(e, "referenceeditor")
                                             }}
                                         />
                                     </AccordionTab>
@@ -722,7 +746,7 @@ function Products() {
                                 gallery2?.map((item, index) => {
                                     return (
                                         <div className="col-12 md:col-2" key={index}>
-                                            <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={(e) => onImageChange2(e, "feature_image")} checked={images2.includes(`${item.image}`)}></Checkbox>
+                                            <Checkbox className="cursor-pointer" inputId={`cb3${index}`} value={`${item.image}`} onChange={(e) => onImageChange2(e, "image")} checked={images2.includes(`${item.image}`)}></Checkbox>
                                             <label htmlFor={`cb3${index}`} className="p-checkbox-label">
                                                 <img
                                                     src={`assets/demo/images/gallery/${item.image}`}
