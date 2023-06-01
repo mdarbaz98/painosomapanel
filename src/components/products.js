@@ -42,7 +42,7 @@ function Products() {
         faqeditor: "",
         title: "",
         description: "",
-        status: 0,
+        status: 'draft',
         date: new Date(),
         segregation: "",
     };
@@ -481,6 +481,8 @@ function Products() {
         </>
     );
 
+    console.log(product)
+
     return (
         <div className="grid">
             <div className="col-12">
@@ -567,6 +569,7 @@ function Products() {
                                                 })}
                                             </TabPanel>
                                         </TabView>
+                                    
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <InputText type="text" value={product.title} onChange={(e) => {
