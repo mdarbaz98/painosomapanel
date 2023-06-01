@@ -14,11 +14,11 @@ const getAllproduct = (req, res) => {
 
 //Add blog
 const addproduct = asyncHandler(async (req, res) => {
-    const {product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,faqeditor,title,description,segregation, status,date} = req.body;
+    const {product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,faqeditor,title,description,segregation,referenceeditor,h1, status,date} = req.body;
     const image = req.file ? req.file.filename : req.body.image
     con.query(
-        "INSERT INTO products (image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,segregation,faqeditor,title,description, status,date) value (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        [image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,segregation,faqeditor,title,description, status,date],
+        "INSERT INTO products (image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,segregation,referenceeditor,h1,faqeditor,title,description, status,date) value (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        [image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,segregation,referenceeditor,h1,faqeditor,title,description, status,date],
         (err, result) => {
             if (err) console.log(err);
         }
@@ -27,12 +27,12 @@ const addproduct = asyncHandler(async (req, res) => {
 });
 
 const updateproduct = asyncHandler(async (req, res) => {
-    const { product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,segregation,faqeditor,title,description, status,date} = req.body;
+    const { product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,segregation,referenceeditor,h1,faqeditor,title,description, status,date} = req.body;
     const id = req.params.id;
     const feature_image = req.file ? req.file.filename : req.body.image
     console.log(req.body)
-    con.query('UPDATE `products` SET  image=?, product_name=?, product_price=?, product_slug=?, strength=?,parentcategory=?,subcategory=? , othercompany=?, otherprice=?, aboutheader=?, abouteditor=?, newsheader=?, newseditor=?, advanceheader=?, advanceeditor=?,segregation=?,faqeditor=?,title=?,description=?, status=? ,date=? WHERE id IN (?)',
-        [feature_image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,segregation,faqeditor,title,description, status,date, id], (err, result) => {
+    con.query('UPDATE `products` SET  image=?, product_name=?, product_price=?, product_slug=?, strength=?,parentcategory=?,subcategory=? , othercompany=?, otherprice=?, aboutheader=?, abouteditor=?, newsheader=?, newseditor=?, advanceheader=?, advanceeditor=?,segregation=?,referenceeditor=?,h1=?,faqeditor=?,title=?,description=?, status=? ,date=? WHERE id IN (?)',
+        [feature_image, product_name, product_price, product_slug, strength,parentcategory,subcategory, othercompany, otherprice, aboutheader, abouteditor, newsheader, newseditor, advanceheader, advanceeditor,segregation,referenceeditor,h1,faqeditor,title,description, status,date, id], (err, result) => {
             if (err) console.log(err)
             //  res.send(result)
         })
