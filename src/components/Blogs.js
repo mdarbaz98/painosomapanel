@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { DataTable } from "primereact/datatable";
 import { Dropdown } from "primereact/dropdown";
@@ -20,7 +20,7 @@ import Axios from "axios";
 import classNames from "classnames";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { format } from 'date-fns'
-
+import { AppContext } from "../context/appContext";
 
 function Blogs() {
     let emptyBlog = {
@@ -86,13 +86,19 @@ function Blogs() {
     const [blogCount, ChangeBlogCount] = useState(0);
     const [editorInsert, setEditorInsert] = useState(null);
     const [searchgallery, setSearchGallery] = useState('');
+    const {dataApi} = useContext(AppContext)
 
+    useEffect(() => {
+        getsubCategory();
+        fetchData();
+        fetchImages();
+        getParentCategory();
+        getAuthor();
+    }, [dataApi]);
 
 
     async function fetchData() {
-        const blogData = new apiService();
-        await blogData.getBlog().then((data) => {
-            const blogsdate = data.map((blog)=>{
+            const blogsdate = dataApi?.map((blog)=>{
                 let _dates = {...blog}
                 _dates["blogdate"] =   new Date(blog.blogdate)
                 return (_dates)
@@ -104,41 +110,23 @@ function Blogs() {
                 )
             setBlogs(blogsdate);
             setLoading2(false);
-        });
     }
     async function fetchImages() {
-        const galleryImages = new apiService();
-        galleryImages.getImages().then((data) => {
-            setGallery(data)
-            setGallery2(data)
-        });
+            setGallery(dataApi?.images)
+            setGallery2(dataApi?.images)
     }
 
-    useEffect(() => {
-        getsubCategory();
-        fetchData();
-        fetchImages();
-        getParentCategory();
-        getAuthor();
-    }, []);
-
     async function getAuthor() {
-        const apiData = new apiService();
-        const Authordata = await apiData.getAuthor();
-        const result = Authordata.map((data) => ({ name: data.name, value: `${data.name}` }));
+        const result = dataApi?.authors.map((data) => ({ name: data.name, value: `${data.name}` }));
         setAuthorOptions([...result]);
     }
     async function getParentCategory() {
-        const blogCategory = new apiService();
-        const res = await blogCategory.getParentCategory();
-        const output = res.map((data) => ({ name: data.cat_name, value: `${data.cat_name}` }));
+        const output = dataApi?.parentCategories.map((data) => ({ name: data.cat_name, value: `${data.cat_name}` }));
         setParentCategory([...output]);
     }
 
     async function getsubCategory() {
-        const blogSubCategory = new apiService();
-        const res = await blogSubCategory.getSubCategory();
-        const output = res.map((data) => ({ name: data.cat_name, value: `${data.cat_name}` }));
+        const output = dataApi?.subCategories.map((data) => ({ name: data.cat_name, value: `${data.cat_name}` }));
         setSubCategory([...output]);
     }
 

@@ -1,4 +1,4 @@
-const { data, map } = require("jquery");
+// const { data, map } = require("jquery");
 const con = require("../config");
 var fs = require("fs");
 const getAllImage = (req, resp) => {

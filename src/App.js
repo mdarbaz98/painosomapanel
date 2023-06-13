@@ -26,6 +26,8 @@ import Author from './components/Author';
 import Login from './components/Login';
 import { AuthContext } from './context/authContext';
 import { Value } from 'sass';
+import { AppContext } from './context/appContext';
+import { apiService } from './service/apiServices';
 
 const App = () => {
     const [layoutMode, setLayoutMode] = useState('overlay');
@@ -39,7 +41,16 @@ const App = () => {
     const copyTooltipRef = useRef();
     const location = useLocation();
     const toast = useRef(null);
-
+    const [dataApi, setDataApi] = useState({
+            categories: [],
+            parentCategories: [],
+            subCategories: [],
+            images: [],
+            products: [],
+            blogs: [],
+            authors: [],
+            blogsDesc: [],
+        })
     const [value, setValue] = useState(null);
 
     PrimeReact.ripple = true;
@@ -57,7 +68,43 @@ const App = () => {
 
     useEffect(() => {
         start()
-    },[value])
+    }, [value])
+
+    useEffect(()=>{
+        getAppData()
+    },[])
+    const getAppData = async () => {
+
+        var _dataApi = {...dataApi}
+
+        const appServices = new apiService();
+
+        await appServices.getCategory().then((data) =>{
+            _dataApi.categories = data
+        })  
+        await appServices.getParentCategory().then((data) =>{
+            _dataApi.parentCategories = data
+        })  
+        await appServices.getSubCategory().then((data) =>{
+            _dataApi.subCategories = data
+        })  
+        await appServices.getBlog().then((data) =>{
+            _dataApi.blogs = data
+        })  
+        await appServices.getAuthor().then((data) =>{
+            _dataApi.authors = data
+        })  
+        await appServices.getImages().then((data) =>{
+            _dataApi.images = data
+        })  
+        await appServices.getBlogsByDesc().then((data) =>{
+            _dataApi.blogsDesc = data
+        })  
+        await appServices.getProducts().then((data) =>{
+            _dataApi.products = data
+        })  
+        setDataApi(_dataApi)
+    }
 
     const start = () => {
         value && toast.current.show({ severity: "success", summary: "Welcome", detail: `${value}`, life: 3000 });
@@ -202,44 +249,46 @@ const App = () => {
     });
 
     return (
-        <AuthContext.Provider value={{value,setValue}}>
-        <div className={wrapperClass} onClick={onWrapperClick}>
-            <Toast ref={toast} />
-            <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
+        <AuthContext.Provider value={{ value, setValue }}>
+            <AppContext.Provider value ={{dataApi}}>
+                <div className={wrapperClass} onClick={onWrapperClick}>
+                    <Toast ref={toast} />
+                    <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-           {value &&  <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
-                mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />}
+                    {value && <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
+                        mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />}
 
-            <div className="layout-sidebar" onClick={onSidebarClick}>
-                <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
-            </div>
-
-            <div className="layout-main-container">
-                {value ?
-                    <div className="layout-main">
-                        <Route path="/" exact render={() => <Dashboard colorMode={layoutColorMode} location={location} />} />
-                        <Route path="/category" component={Categories} />
-                        <Route path="/blog" component={Blogs} />
-                        <Route path="/products" component={products} />
-                        <Route path="/gallery" component={Gallery} />
-                        <Route path="/author" component={Author} />
-                        <Route path="/Login" component={Login} />
+                    <div className="layout-sidebar" onClick={onSidebarClick}>
+                        <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
                     </div>
-                    :
-                    <Login ></Login>}
+
+                    <div className="layout-main-container">
+                        {value ?
+                            <div className="layout-main">
+                                <Route path="/" exact render={() => <Dashboard colorMode={layoutColorMode} location={location} />} />
+                                <Route path="/category" component={Categories} />
+                                <Route path="/blog" component={Blogs} />
+                                <Route path="/products" component={products} />
+                                <Route path="/gallery" component={Gallery} />
+                                <Route path="/author" component={Author} />
+                                <Route path="/Login" component={Login} />
+                            </div>
+                            :
+                            <Login ></Login>}
 
 
-                <AppFooter layoutColorMode={layoutColorMode} />
-            </div>
+                        <AppFooter layoutColorMode={layoutColorMode} />
+                    </div>
 
-            <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
-                layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+                    <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
+                        layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
 
-            <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-                <div className="layout-mask p-component-overlay"></div>
-            </CSSTransition>
+                    <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+                        <div className="layout-mask p-component-overlay"></div>
+                    </CSSTransition>
 
-        </div>
+                </div>
+            </AppContext.Provider>
         </AuthContext.Provider >
     );
 

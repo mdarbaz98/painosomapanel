@@ -32,7 +32,7 @@
         "react-router-dom": "^5.2.0",
         "react-scripts": "3.4.1",
         "react-transition-group": "^4.4.1",
-        "sass": "^1.32.8",
+        "sass": "^1.63.3",
         "tinymce": "^6.2.0"
     },
     "scripts": {
