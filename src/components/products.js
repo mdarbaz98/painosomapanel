@@ -42,11 +42,11 @@ function Products() {
         faqeditor: "",
         title: "",
         description: "",
-        status: 0,
+        status: 'draft',
         date: new Date(),
         segregation: "",
         referenceeditor:"",
-        h1:"",
+        heading:"",
     };
 
     const [allProducts, setAllProducts] = useState("");
@@ -208,6 +208,7 @@ function Products() {
 
             setAllProducts(_allProducts);
             setProductDialog(false);
+            setImages2([])
             setproduct(emptyproducts);
         }
     };
@@ -216,7 +217,7 @@ function Products() {
         const formData = new FormData();
         formData.append("image[]", data.image);
         formData.append("product_name", data.product_name);
-        formData.append("h1", data.h1);
+        formData.append("heading", data.heading);
         formData.append("product_price", data.product_price);
         formData.append("product_slug", data.product_slug);
         formData.append("strength", data.strength);
@@ -239,9 +240,9 @@ function Products() {
         formData.append("date", data.date);
 
         if (product.id) {
-            await Axios.put(`http://localhost:5000/api/products/${data.id}`, formData);
+            await Axios.put(`http://192.168.0.143:5000/api/products/${data.id}`, formData);
         } else {
-            await Axios.post("http://localhost:5000/api/products", formData);
+            await Axios.post("http://192.168.0.143:5000/api/products", formData);
         }
         setState(formData)
     };
@@ -284,14 +285,22 @@ function Products() {
             var strengthArray = [];
             strengthArray.push(_product.strength);
         }
+        if (_product.image.includes(",")) {
+            var imageArray = _product.image.split(",");
+        } else {
+            var imageArray = [];
+            imageArray.push(_product.image);
+        }
         _product["parentcategory"] = parentCategoryArray;
         _product["subcategory"] = subCategoryArray;
         _product["segregation"] = segregationArray;
         _product["othercompany"] = othercompanyArray;
         _product["otherprice"] = otherpriceArray;
+        _product["image"] = imageArray;
         _product["strength"] = strengthArray;
         _product["date"] = new Date(product.date);
         setproduct(_product);
+        setImages2(_product["image"]);
         setProductDialog(true);
     };
 
@@ -303,7 +312,7 @@ function Products() {
 
     const deleteBlogFunction = (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        Axios.delete(`http://localhost:5000/api/products/${selectedIds}`)
+        Axios.delete(`http://192.168.0.143:5000/api/products/${selectedIds}`)
             .then()
             .catch((err) => {
                 console.log(err);
@@ -336,7 +345,7 @@ function Products() {
             event.files.map((item) => {
                 formData.append("image[]", item)
             })
-            const res = await Axios.post('http://localhost:5000/api/image', formData)
+            const res = await Axios.post('http://192.168.0.143:5000/api/image', formData)
             fetchImages();
             setProductDialog(false)
             toast.current.show({ severity: "success", summary: "Successfully", detail: `${res.data}`, life: 3000 })
@@ -482,6 +491,8 @@ function Products() {
         </>
     );
 
+    console.log(product)
+
     return (
         <div className="grid">
             <div className="col-12">
@@ -527,8 +538,8 @@ function Products() {
                                                 <label htmlFor="product_name">product name</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-2">
-                                                <InputText type="text" id="name" value={product.h1} onChange={(e) => onInputChange(e, "h1")} style={{ fontSize: "12px" }} />
-                                                <label htmlFor="product_name">product H1</label>
+                                                <InputText type="text" id="name" value={product.heading} onChange={(e) => onInputChange(e, "heading")} style={{ fontSize: "12px" }} />
+                                                <label htmlFor="product_name">product title (H1)</label>
                                             </span>
                                             <span className="p-float-label mb-5 mt-4">
                                                 <InputText type="text" value={product.product_price} onChange={(e) => onInputChange(e, "product_price")} style={{ fontSize: "12px" }} />
@@ -559,19 +570,20 @@ function Products() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload url="http://localhost:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" multiple customUpload uploadHandler={myUploader} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                             <TabPanel header="Gallery">
                                                 <Button label="select image" icon="pi pi-check" iconPos="right" onClick={(e) => openImageGallery2(e)} />
                                                 {images2?.map((item, ind) => {
                                                     return (
-                                                        <div className="col" key={ind}>
-                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} width="250" className="mt-0 mx-auto mb-5 block shadow-2" />
+                                                        <div className="col-4" key={ind}>
+                                                            <img src={`assets/demo/images/gallery/${item}`} alt={item} style={{width:"100%"}} className="mt-0 mx-auto mb-5 block shadow-2" />
                                                         </div>
                                                     );
                                                 })}
                                             </TabPanel>
                                         </TabView>
+                                    
                                         <div className=" p-field mb-5">
                                             <span className="p-float-label">
                                                 <InputText type="text" value={product.title} onChange={(e) => {
