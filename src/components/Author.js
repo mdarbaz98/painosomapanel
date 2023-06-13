@@ -123,11 +123,10 @@ function Author() {
         formData.append("education", data.education);
         formData.append("about_soma", data.about_soma);
         formData.append("status", data.status);
-        console.log(blog.id);
         if (blog.id) {
-            await Axios.put(`http://localhost:5000/api/author/${data.id}`, formData);
+            await Axios.put(`http://192.168.0.143:5000/api/author/${data.id}`, formData);
         } else {
-            await Axios.post("http://localhost:5000/api/author", formData);
+            await Axios.post("http://192.168.0.143:5000/api/author", formData);
         }
         setFile(null);
         fetchData();
@@ -139,7 +138,7 @@ function Author() {
     };
 
     const updateStatus = async (rowData) => {
-        await Axios.put(`http://localhost:5000/api/author/status/${rowData.id}`, rowData);
+        await Axios.put(`http://192.168.0.143:5000/api/author/status/${rowData.id}`, rowData);
         fetchData();
     };
 
@@ -160,7 +159,7 @@ function Author() {
 
     const deleteBlogFunction = async (data) => {
         let selectedIds = typeof data === "number" ? data : data.map((res) => res.id);
-        await Axios.delete(`http://localhost:5000/api/author/${selectedIds}`).then();
+        await Axios.delete(`http://192.168.0.143:5000/api/author/${selectedIds}`).then();
         fetchData();
     };
 
@@ -305,7 +304,7 @@ function Author() {
                         rowsPerPageOptions={[5, 10, 25]}
                         className="datatable-responsive"
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} categories"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Authors"
                         globalFilter={globalFilter}
                         emptyMessage="No blogs found."
                         header={header}
@@ -389,7 +388,7 @@ function Author() {
                                     <AccordionTab header="Image Section">
                                         <TabView>
                                             <TabPanel header="upload">
-                                                <FileUpload auto url="http://localhost:5000/api/image" className="mb-5" name="image[]" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
+                                                <FileUpload auto url="http://192.168.0.143:5000/api/image" className="mb-5" name="image[]" customUpload uploadHandler={imageUpload} accept="image/*" maxFileSize={1000000} />
                                             </TabPanel>
                                         </TabView>
                                     </AccordionTab>
