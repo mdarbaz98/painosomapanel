@@ -74,7 +74,6 @@ const App = () => {
         getAppData()
     },[])
     const getAppData = async () => {
-
         var _dataApi = {...dataApi}
 
         const appServices = new apiService();
@@ -250,7 +249,7 @@ const App = () => {
 
     return (
         <AuthContext.Provider value={{ value, setValue }}>
-            <AppContext.Provider value ={{dataApi}}>
+            <AppContext.Provider value ={{dataApi,getAppData}}>
                 <div className={wrapperClass} onClick={onWrapperClick}>
                     <Toast ref={toast} />
                     <Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />

@@ -86,7 +86,7 @@ function Blogs() {
     const [blogCount, ChangeBlogCount] = useState(0);
     const [editorInsert, setEditorInsert] = useState(null);
     const [searchgallery, setSearchGallery] = useState('');
-    const {dataApi} = useContext(AppContext)
+    const {dataApi,getAppData} = useContext(AppContext)
 
     useEffect(() => {
         getsubCategory();
@@ -95,6 +95,7 @@ function Blogs() {
         getParentCategory();
         getAuthor();
     }, [dataApi]);
+
 
     async function fetchData() {
             const blogsdate = dataApi?.blogs.map((blog)=>{
@@ -241,9 +242,9 @@ function Blogs() {
         } else {
             await Axios.post("http://192.168.0.143:5000/api/blog", formData);
         }
+        getAppData();
         setImages([]);
         setImages2([]);
-        fetchData();
         setFile(null);
     };
 
